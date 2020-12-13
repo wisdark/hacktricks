@@ -1,4 +1,4 @@
-# Reversing
+# Reversing Tools
 
 ## Wasm decompiler
 
@@ -45,7 +45,7 @@ DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
 
 And click on **compile**:
 
-![](../.gitbook/assets/image%20%28144%29.png)
+![](../.gitbook/assets/image%20%28314%29%20%281%29.png)
 
 Then save the new file on _**File &gt;&gt; Save module...**_:
 
@@ -153,6 +153,10 @@ apt-get install libz3-dev
 And [install keystone](https://github.com/keystone-engine/keystone/blob/master/docs/COMPILE-NIX.md) \(`apt-get install cmake; mkdir build; cd build; ../make-share.sh; make install`\)
 
 If you are playing a **CTF, this workaround to find the flag** could be very useful: [https://dustri.org/b/defeating-the-recons-movfuscator-crackme.html](https://dustri.org/b/defeating-the-recons-movfuscator-crackme.html) 
+
+## Delphi
+
+For Delphi compiled binaries you can use [https://github.com/crypto2011/IDR](https://github.com/crypto2011/IDR)
 
 ## Courses
 

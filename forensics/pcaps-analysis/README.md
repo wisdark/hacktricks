@@ -8,6 +8,7 @@ A note about PCAP vs PCAPNG: there are two versions of the PCAP file format; PCA
 
 * If the header of your pcap is **broken** you should try to **fix** it using: [http://f00l.de/hacking/**pcapfix.php**](http://f00l.de/hacking/pcapfix.php)\*\*\*\*
 * Extract **information** and search for **malware** inside a pcap in [**PacketTotal**](https://packettotal.com/)\*\*\*\*
+* Search for **malicious activity** using [**www.virustotal.com**](https://www.virustotal.com/) and [**www.hybrid-analysis.com**](https://www.hybrid-analysis.com/)\*\*\*\*
 
 ## Basic Statistics
 
@@ -24,7 +25,11 @@ Inside wireshark you can see different **statistics** that could be useful. Some
 If you want to **search** for **content** inside the **packets** of the sessions press _CTRL+f_  
 You can add new layers to the main information bar _\(No., Time, Source...\)_ pressing _right bottom_ and _Edit Column_
 
-[Some WireShark tricks here.](wireshark-tricks.md)
+Practice: [https://www.malware-traffic-analysis.net/](https://www.malware-traffic-analysis.net/)
+
+_**You can find more Wireshark trick in:**_
+
+{% page-ref page="wireshark-tricks.md" %}
 
 ## Suricata
 

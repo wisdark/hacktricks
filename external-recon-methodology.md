@@ -1,4 +1,4 @@
-# Bug Bounties Methodology
+# External Recon Methodology
 
 ## Assets discoveries
 
@@ -34,7 +34,8 @@ amass intel -org tesla
 amass intel -asn 8911,50313,394161
 ```
 
-You can find the IP ranges of an organisation also using [http://asnlookup.com/](http://asnlookup.com/) \(it has free API\).
+You can find the IP ranges of an organisation also using [http://asnlookup.com/](http://asnlookup.com/) \(it has free API\).  
+You can fins the IP and ASN of a domain using [http://ipv4info.com/](http://ipv4info.com/).
 
 ### Looking for vulnerabilities
 
@@ -98,7 +99,7 @@ There are some pages that let you search by these trackers and more:
 
 Did you know that we can find related domains and sub domains to our target by looking for the same favicon icon hash? This is exactly what [favihash.py](https://github.com/m4ll0k/Bug-Bounty-Toolz/blob/master/favihash.py) tool made by [@m4ll0k2](https://twitter.com/m4ll0k2) does. Here’s how to use it:
 
-```text
+```bash
 cat my_targets.txt | xargs -I %% bash -c 'echo "http://%%/favicon.ico"' > targets.txt
 python3 favihash.py -f https://target/favicon.ico -t targets.txt -s
 ```
@@ -150,7 +151,9 @@ dnsrecon -a -d tesla.com
 
 The fastest way to obtain a lot of subdomains is search in external sources. I'm not going to discuss which sources are the bests and how to use them, but you can find here several utilities: [https://pentester.land/cheatsheets/2018/11/14/subdomains-enumeration-cheatsheet.html](https://pentester.land/cheatsheets/2018/11/14/subdomains-enumeration-cheatsheet.html)
 
-The most used tools are [**Amass**](https://github.com/OWASP/Amass)**,** [**subfinder**](https://github.com/projectdiscovery/subfinder)**,** [**findomain**](https://github.com/Edu4rdSHL/findomain/)**,** [**OneForAll**](https://github.com/shmilylty/OneForAll/blob/master/README.en.md)**,** [**assetfinder**](https://github.com/tomnomnom/assetfinder) ****and [**Subvenkon**](https://github.com/CoffeeJunkiee/Subvenkon), I would recommend to start using them configuring the API keys, and then start testing other tools or possibilities.
+A really good place to search for subdomains is [https://crt.sh/](https://crt.sh/).
+
+The most used tools are [**Amass**](https://github.com/OWASP/Amass)**,** [**subfinder**](https://github.com/projectdiscovery/subfinder)**,** [**findomain**](https://github.com/Edu4rdSHL/findomain/)**,** [**OneForAll**](https://github.com/shmilylty/OneForAll/blob/master/README.en.md)**,** [**assetfinder**](https://github.com/tomnomnom/assetfinder)**,** [**Sudomy**](https://github.com/Screetsec/Sudomy)**.** I would recommend to start using them configuring the API keys, and then start testing other tools or possibilities.
 
 ```bash
 amass enum [-active] [-ip] -d tesla.com
@@ -300,6 +303,7 @@ Now that we have built the list of assets of our scope it's time to search for s
 * [https://github.com/awslabs/git-secrets](https://github.com/awslabs/git-secrets)
 * [https://github.com/kootenpv/gittyleaks](https://github.com/kootenpv/gittyleaks)
 * [https://github.com/dxa4481/truffleHog](https://github.com/dxa4481/truffleHog)
+* [https://github.com/obheda12/GitDorker](https://github.com/obheda12/GitDorker)
 
 **Dorks**:  _AWS\_SECRET\_ACCESS\_KEY, API KEY, API SECRET, API TOKEN… ROOT PASSWORD, ADMIN PASSWORD, COMPANYNAME SECRET, COMPANYNAME ROOT, GCP SECRET, AWS SECRET, “username password” extension:sql, “private” extension:pgp..._
 
