@@ -2,24 +2,6 @@
 
 Start **searching** for **malware** inside the pcap. Use the **tools** mentioned in [**Malware Analysis**](malware-analysis.md).
 
-## Bulk Extractor
-
-This tool comes inside kali but you can find it here: [https://github.com/simsong/bulk\_extractor](https://github.com/simsong/bulk_extractor)
-
-This tool can scan an image and will **extract pcaps** inside it, **network information\(URLs, domains, IPs, MACs, mails\)** and more **files**. You only have to do:
-
-```text
-bulk_extractor memory.img -o out_folder
-```
-
-Navigate through **all the information** that the tool has gathered \(passwords?\), **analyze** the **packets** \(read[ **Pcaps analysis**](pcaps-analysis/)\), search for **weird domains** \(domains related to **malware** or **non-existent**\).
-
-## FindAES
-
-Searches for AES keys by searching for their key schedules. Able to find 128. 192, and 256 bit keys, such as those used by TrueCrypt and BitLocker.
-
-Download [here](https://sourceforge.net/projects/findaes/).
-
 ## [Volatility](volatility-examples.md)
 
 The premiere open-source framework for memory dump analysis is [Volatility](volatility-examples.md). Volatility is a Python script for parsing memory dumps that were gathered with an external tool \(or a VMware memory image gathered by pausing the VM\). So, given the memory dump file and the relevant "profile" \(the OS from which the dump was gathered\), Volatility can start identifying the structures in the data: running processes, passwords, etc. It is also extensible using plugins for extracting various types of artifact.  
