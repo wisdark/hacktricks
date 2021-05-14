@@ -234,6 +234,18 @@ wfuzz -c -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-2
 vhostbrute.py --url="example.com" --remoteip="10.1.1.15" --base="www.example.com" --vhosts="vhosts_full.list" 
 ```
 
+{% hint style="info" %}
+With this technique you may even be able to access internal/hidden endpoints.
+{% endhint %}
+
+### CORS Brute Force
+
+Sometimes you will find pages that only return the header _**Access-Control-Allow-Origin**_ when a valid domain/subdomain is set in the _**Origin**_ header. In these scenarios, you can abuse this behavior to **discover** new **subdomains**.
+
+```bash
+ffuf -w subdomains-top1million-5000.txt -u http://10.10.10.208 -H 'Origin: http://FUZZ.crossfit.htb' -mr "Access-Control-Allow-Origin" -ignore-body
+```
+
 ### DNS Brute Force v2
 
 Once you have finished looking for subdomains you can use [**dnsgen** ](https://github.com/ProjectAnte/dnsgen)and [**altdns**](https://github.com/infosec-au/altdns) to generate possible permutations of the discovered subdomains and use again **massdns** and **gobuster** to search new domains.
@@ -242,6 +254,10 @@ Once you have finished looking for subdomains you can use [**dnsgen** ](https://
 
 While looking for **subdomains** keep an eye to see if it is **pointing** to any type of **bucket**, and in that case [**check the permissions**](pentesting/pentesting-web/buckets/)**.**  
 Also, as at this point you will know all the domains inside the scope, try to [**brute force possible bucket names and check the permissions**](pentesting/pentesting-web/buckets/).
+
+### Monitorization
+
+You can **monitor** if **new subdomains** of a domain are created by monitoring the **Certificate Transparency** Logs [**sublert** ](https://github.com/yassineaboukir/sublert/blob/master/sublert.py)does.
 
 ### Looking for vulnerabilities
 
@@ -319,6 +335,8 @@ Now that we have built the list of assets of our scope it's time to search for s
 * extension:avastlic “support.avast.com”
 * extension:js jsforce conn.login
 * extension:json googleusercontent client\_secret
+
+You can also search for leaked secrets in all open repository platforms using: [https://searchcode.com/?q=auth\_key](https://searchcode.com/?q=auth_key)
 
 ## [**Pentesting Web Methodology**](pentesting/pentesting-web/)\*\*\*\*
 

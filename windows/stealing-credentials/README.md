@@ -135,12 +135,14 @@ The easiest way to steal those files is to get a copy from the registry:
 ```text
 reg save HKLM\sam sam
 reg save HKLM\system system
+reg save HKLM\security security
 ```
 
 **Download** those files to your Kali machine and **extract the hashes** using:
 
 ```text
 samdump2 SYSTEM SAM
+impacket-secretsdump -sam sam -security security -system system LOCAL
 ```
 
 ### Volume Shadow Copy
@@ -225,7 +227,7 @@ You could also use the [**volume shadow copy**](./#stealing-sam-and-system) ****
 Once you have **obtained** the files **NTDS.dit** and **SYSTEM** you can use tools like _secretsdump.py_ to **extract the hashes**:
 
 ```bash
-secretsdump.py -ntds ntds.dit -system SYSTEM LOCAL -outputfile credentials.txt
+secretsdump.py LOCAL -ntds ntds.dit -system SYSTEM -outputfile credentials.txt
 ```
 
 You can also **extract them automatically** using a valid domain admin user:
