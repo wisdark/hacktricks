@@ -1,8 +1,12 @@
 # Linux Privilege Escalation
 
-If you want to **know** about my **latest modifications**/**additions** or you have **any suggestion for HackTricks or PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/) [**PEASS & HackTricks telegram group**](https://t.me/peass)**, or** follow me on Twitter ****[**🐦**](https://emojipedia.org/bird/)[**@carlospolopm**](https://twitter.com/carlospolopm).  
-**If you want to** share some tricks with the community **you can also submit** pull requests **to** [https://github.com/carlospolop/hacktricks](https://github.com/carlospolop/hacktricks) **that will be reflected in this book.  
-Don't forget to** give ⭐ on the github to motivate me to continue developing this book.
+{% hint style="danger" %}
+Do you use **Hacktricks every day**? Did you find the book **very** **useful**? Would you like to **receive extra help** with cybersecurity questions? Would you like to **find more and higher quality content on Hacktricks**?  
+[**Support Hacktricks through github sponsors**](https://github.com/sponsors/carlospolop) **so we can dedicate more time to it and also get access to the Hacktricks private group where you will get the help you need and much more!**
+{% endhint %}
+
+If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**  
+If you want to **share some tricks with the community** you can also submit **pull requests** to [**https://github.com/carlospolop/hacktricks**](https://github.com/carlospolop/hacktricks) that will be reflected in this book and don't forget to **give ⭐** on **github** to **motivate** **me** to continue developing this book.
 
 ## System Information
 
@@ -281,6 +285,8 @@ Typically, `/dev/mem` is only readable by **root** and **kmem** group.
 ```text
 strings /dev/mem -n10 | grep -i PASS
 ```
+
+#### 
 
 #### Tools
 
@@ -999,6 +1005,12 @@ There are some alternatives to the `sudo` binary such as `doas` for OpenBSD, rem
 permit nopass demo as root cmd vim
 ```
 
+### Sudo Hijacking
+
+If you know that a **user usually connects to a machine and uses `sudo`** to escalate privileges and you got a shell within that user context, you can **create a new sudo executable** that will execute your code as root and then the users command. Then, **modify the $PATH** of the user context \(for example adding the new path in .bash\_profile\) so we the user executed sudo, your sudo executable is executed.
+
+Note that if the user uses a different shell \(not bash\) you will need to modify other files to add the new path. For example[ sudo-piggyback](https://github.com/APTy/sudo-piggyback) modifies `~/.bashrc`, `~/.zshrc`, `~/.bash_profile`. You can find another example in [bashdoor.py](https://github.com/n00py/pOSt-eX/blob/master/empire_modules/bashdoor.py)
+
 ## Shared Library
 
 ### ld.so
@@ -1057,6 +1069,11 @@ Linux capabilities provide a **subset of the available root privileges to a proc
 Read the following page to **learn more about capabilities and how to abuse them**:
 
 {% page-ref page="linux-capabilities.md" %}
+
+## Directory permissions
+
+In a directory the **bit for execute** implies that the user affected can "**cd**" into the folder.  
+The **read** bit implies the user can **list** the **files**, and the **write** bit implies the user can **delete** and **create** new **files**.
 
 ## ACLs
 

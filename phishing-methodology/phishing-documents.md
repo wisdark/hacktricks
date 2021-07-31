@@ -6,7 +6,7 @@ Usually Word files containing macros uses the `.docm` extension. However, it's p
 For example, an RTF file does not support macros, by design, but a DOCM file renamed to RTF will be handled by Microsoft Word and will be capable of macro execution.  
 The same internals and mechanisms apply to all software of the Microsoft Office Suite \(Excel, PowerPoint etc.\).
 
-You can use the following command to check with extensions are going to be executed by some Office programs:
+You can use the following command to check which extensions are going to be executed by some Office programs:
 
 ```bash
 assoc | findstr /i "word excel powerp"
@@ -17,7 +17,7 @@ DOCX files referencing a remote template \(File –Options –Add-ins –Manage:
 ### Word with external image
 
 Go to: _Insert --&gt; Quick Parts --&gt; Field_  
-_**Categories**: Links and References, **Filed names**: includePicture, and **Filename or URL**: http://&lt;ip&gt;/whatever_
+_**Categories**: Links and References, **Filed names**: includePicture, and **Filename or URL**:_ [http://&lt;ip&gt;/whatever](http://<ip>/whatever)
 
 ![](../.gitbook/assets/image%20%28347%29.png)
 
