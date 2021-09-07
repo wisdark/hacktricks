@@ -56,10 +56,13 @@
 ## MacOS
 
 * [MacOS Security & Privilege Escalation](macos/macos-security-and-privilege-escalation/README.md)
-  * [Mac OS Protocols](macos/macos-security-and-privilege-escalation/mac-os-protocols.md)
-  * [Inspecting and debugging Mac OS Sotware](macos/macos-security-and-privilege-escalation/inspecting-and-debugging-mac-os-apps.md)
-  * [Mac OS Serial Number](macos/macos-security-and-privilege-escalation/macos-serial-number.md)
   * [Mac OS Architecture](macos/macos-security-and-privilege-escalation/mac-os-architecture.md)
+  * [MacOS MDM](macos/macos-security-and-privilege-escalation/macos-mdm/README.md)
+    * [Enrolling Devices in Other Organisations](macos/macos-security-and-privilege-escalation/macos-mdm/enrolling-devices-in-other-organisations.md)
+  * [MacOS Protocols](macos/macos-security-and-privilege-escalation/macos-protocols.md)
+  * [MacOS Red Teaming](macos/macos-security-and-privilege-escalation/macos-red-teaming.md)
+  * [MacOS Serial Number](macos/macos-security-and-privilege-escalation/macos-serial-number.md)
+  * [MacOS Apps - Inspecting, debugging and Fuzzing](macos/macos-security-and-privilege-escalation/macos-apps-inspecting-debugging-and-fuzzing.md)
 
 ## Windows
 
@@ -434,6 +437,7 @@
 ## Forensics
 
 * [Basic Forensic Methodology](forensics/basic-forensic-methodology/README.md)
+  * [Baseline Monitoring](forensics/basic-forensic-methodology/file-integrity-monitoring.md)
   * [Anti-Forensic Techniques](forensics/basic-forensic-methodology/anti-forensic-techniques.md)
   * [Docker Forensics](forensics/basic-forensic-methodology/docker-forensics.md)
   * [Image Adquisition & Mount](forensics/basic-forensic-methodology/image-adquisition-and-mount.md)
@@ -447,7 +451,7 @@
     * [NTFS](forensics/basic-forensic-methodology/partitions-file-systems-carving/ntfs.md)
   * [Pcap Inspection](forensics/basic-forensic-methodology/pcap-inspection/README.md)
     * [DNSCat pcap analysis](forensics/basic-forensic-methodology/pcap-inspection/dnscat-exfiltration.md)
-    * [USB Keyboard pcap analysis](forensics/basic-forensic-methodology/pcap-inspection/usb-keyboard-pcap-analysis.md)
+    * [USB Keystrokes](forensics/basic-forensic-methodology/pcap-inspection/usb-keystrokes.md)
     * [Wifi Pcap Analysis](forensics/basic-forensic-methodology/pcap-inspection/wifi-pcap-analysis.md)
     * [Wireshark tricks](forensics/basic-forensic-methodology/pcap-inspection/wireshark-tricks.md)
   * [Specific Software/File-Type Tricks](forensics/basic-forensic-methodology/specific-software-file-type-tricks/README.md)
@@ -461,6 +465,7 @@
     * [Video and Audio file analysis](forensics/basic-forensic-methodology/specific-software-file-type-tricks/video-and-audio-file-analysis.md)
     * [ZIPs tricks](forensics/basic-forensic-methodology/specific-software-file-type-tricks/zips-tricks.md)
   * [Windows Artifacts](forensics/basic-forensic-methodology/windows-forensics/README.md)
+    * [Windows Processes](forensics/basic-forensic-methodology/windows-forensics/windows-processes.md)
     * [Interesting Windows Registry Keys](forensics/basic-forensic-methodology/windows-forensics/interesting-windows-registry-keys.md)
 
 ## A.I. Exploiting
@@ -470,6 +475,10 @@
   * [Basic Captcha Breaker](a.i.-exploiting/bra.i.nsmasher-presentation/basic-captcha-breaker.md)
   * [BIM Bruteforcer](a.i.-exploiting/bra.i.nsmasher-presentation/bim-bruteforcer.md)
   * [Hybrid Malware Classifier Part 1](a.i.-exploiting/bra.i.nsmasher-presentation/hybrid-malware-classifier-part-1.md)
+
+## Blockchain
+
+* [Blockchain & Crypto Currencies](blockchain/blockchain-and-crypto-currencies.md)
 
 ## Courses and Certifications Reviews
 
@@ -488,9 +497,10 @@
 
 ## Reversing
 
+* [Reversing Tools & Basic Methods](reversing/reversing-tools-basic-methods/README.md)
+  * [Cheat Engine](reversing/reversing-tools-basic-methods/cheat-engine.md)
+  * [Blobrunner](reversing/reversing-tools-basic-methods/blobrunner.md)
 * [Common API used in Malware](reversing/common-api-used-in-malware.md)
-* [Reversing Tools](reversing/reversing-tools/README.md)
-  * [Blobrunner](reversing/reversing-tools/blobrunner.md)
 * [Cryptographic/Compression Algorithms](reversing/cryptographic-algorithms/README.md)
   * [Unpacking binaries](reversing/cryptographic-algorithms/unpacking-binaries.md)
 * [Word Macros](reversing/word-macros.md)
@@ -509,15 +519,15 @@
   * [PwnTools](exploiting/tools/pwntools.md)
 * [Windows Exploiting \(Basic Guide - OSCP lvl\)](exploiting/windows-exploiting-basic-guide-oscp-lvl.md)
 
-## Crypto
+## Cryptography
 
-* [Certificates](crypto/certificates.md)
-* [Cipher Block Chaining CBC-MAC](crypto/cipher-block-chaining-cbc-mac-priv.md)
-* [Crypto CTFs Tricks](crypto/crypto-ctfs-tricks.md)
-* [Electronic Code Book \(ECB\)](crypto/electronic-code-book-ecb.md)
-* [Hash Length Extension Attack](crypto/hash-length-extension-attack.md)
-* [Padding Oracle](crypto/padding-oracle-priv.md)
-* [RC4 - Encrypt&Decrypt](crypto/rc4-encrypt-and-decrypt.md)
+* [Certificates](cryptography/certificates.md)
+* [Cipher Block Chaining CBC-MAC](cryptography/cipher-block-chaining-cbc-mac-priv.md)
+* [Crypto CTFs Tricks](cryptography/crypto-ctfs-tricks.md)
+* [Electronic Code Book \(ECB\)](cryptography/electronic-code-book-ecb.md)
+* [Hash Length Extension Attack](cryptography/hash-length-extension-attack.md)
+* [Padding Oracle](cryptography/padding-oracle-priv.md)
+* [RC4 - Encrypt&Decrypt](cryptography/rc4-encrypt-and-decrypt.md)
 
 ## BACKDOORS
 
@@ -564,4 +574,5 @@
 * [1911 - Pentesting fox](1911-pentesting-fox.md)
 * [Online Platforms with API](online-platforms-with-api.md)
 * [Stealing Sensitive Information Disclosure from a Web](stealing-sensitive-information-disclosure-from-a-web.md)
+* [Post Exploitation](post-exploitation.md)
 

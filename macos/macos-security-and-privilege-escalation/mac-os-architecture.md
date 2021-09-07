@@ -97,7 +97,9 @@ As you may be thinking usually a universal binary compiled for 2 architectures *
 
 ### Mach-o Format
 
-* **Header**
+![](../../.gitbook/assets/image%20%28557%29.png)
+
+#### **Header**
 
 The header contains basic information about the file, such as magic bytes to identify it as a Mach-O file and information about the target architecture. You can find it in: `mdfind loader.h | grep -i mach-o | grep -E "loader.h$"`
 
@@ -113,11 +115,81 @@ struct mach_header {
 };
 ```
 
-* **load-commands region**
+Filetypes:
 
-This specifies the **layout of the file in memory**. It contains the **location of the symbol table**, the main thread context at the beginning of execution, and which shared libraries are required.
+* MH\_EXECUTE \(0x2\): Standard Mach-O executable             
+* MH\_DYLIB \(0x6\): A Mach-O dynamic linked library \(i.e. .dylib\)
+* MH\_BUNDLE \(0x8\): A Mach-O bundle \(i.e. .bundle\)
 
-* **data region**
+#### \*\*\*\*
+
+#### **Load commands**
+
+This specifies the **layout of the file in memory**. It contains the **location of the symbol table**, the main thread context at the beginning of execution, and which **shared libraries** are required.  
+The commands basically instruct the dynamic loader **\(dyld\) how to load the binary in memory.**
+
+Load commands all begin with a **load\_command** structure, defined in mach-o/loader.h:
+
+```objectivec
+struct load_command {
+        uint32_t cmd;           /* type of load command */
+        uint32_t cmdsize;       /* total size of command in bytes */
+};
+```
+
+A **common** type of load command is **LC\_SEGMENT/LC\_SEGMENT\_64**, which **describes** a **segment:**   
+_A segment defines a **range of bytes** in a Mach-O file and the **addresses** and **memory** **protection** **attributes** at which those bytes are **mapped into** virtual memory when the dynamic linker loads the application._
+
+![](../../.gitbook/assets/image%20%28554%29.png)
+
+Common segments:
+
+* **`__TEXT`**: Contains **executable** **code** and **data** that is **read-only.** Common sections of this segment:
+  * `__text`: ****Compiled binary code
+  * `__const`: Constant data
+  * `__cstring`: String constants
+* **`__DATA`**: Contains data that is **writable.**
+  * `__data`: Global variables \(that have been initialized\)
+  * `__bss`: Static variables \(that have not been initialized\)
+  * `__objc_*` \(\_\_objc\_classlist, \_\_objc\_protolist, etc\): Information used by the Objective-C runtime 
+* **`__LINKEDIT`**: Contains information for the linker \(dyld\) such as, "symbol, string, and relocation table entries."
+* **`__OBJC`**: Contains information used by the Objective-C runtime. Though this information might also be found in the \_\_DATA segment, within various in \_\_objc\_\* sections.
+* **`LC_MAIN`**: Contains the entrypoint in the **entryoff attribute.** At load time, **dyld** simply **adds** this value to the \(in-memory\) **base of the binary**, then **jumps** to this instruction to kickoff execution of the binary’s code.
+* **`LC_LOAD_DYLIB`**: ****This load command describes a **dynamic** **library** dependency which **instructs** the **loader** \(dyld\) to l**oad and link said library**. There is a LC\_LOAD\_DYLIB load command **for each library** that the Mach-O binary requires.
+
+  * This load command is a structure of type **`dylib_command`** \(which contains a struct dylib, describing the actual dependent dynamic library\):
+
+  ```objectivec
+  struct dylib_command {
+          uint32_t        cmd;            /* LC_LOAD_{,WEAK_}DYLIB */
+          uint32_t        cmdsize;        /* includes pathname string */
+          struct dylib    dylib;          /* the library identification */ 
+  };
+
+  struct dylib {
+      union lc_str  name;                 /* library's path name */
+      uint32_t timestamp;                 /* library's build time stamp */
+      uint32_t current_version;           /* library's current version number */
+      uint32_t compatibility_version;     /* library's compatibility vers number*/
+  };
+  ```
+
+![](../../.gitbook/assets/image%20%28558%29.png)
+
+Some potential malware related libraries are:
+
+* **DiskArbitration**: Monitoring USB drives
+* **AVFoundation:** Capture audio and video
+* **CoreWLAN**: Wifi scans.
+
+{% hint style="info" %}
+A Mach-O binary can contain one or **more** **constructors**, that will be **executed** **before** the address specified in **LC\_MAIN**.   
+The offsets of any constructors are held in the **\_\_mod\_init\_func** section of the **\_\_DATA\_CONST** segment.
+{% endhint %}
+
+#### \*\*\*\*
+
+#### **Data**
 
 The heart of the file is the final region, the data, which consists of a number of segments as laid out in the load-commands region. **Each segment can contain a number of data sections**. Each of these sections **contains code or data** of one particular type.
 
@@ -127,9 +199,12 @@ The heart of the file is the final region, the data, which consists of a number 
 
 ```bash
 otool -f /bin/ls #Get universal headers info
-otool -h /bin/ls #get the Mach header
+otool -hv /bin/ls #Get the Mach header
 otool -l /bin/ls #Get Load commands
+otool -L /bin/ls #Get libraries used by the binary
 ```
+
+Or you can use the GUI tool [**machoview**](https://sourceforge.net/projects/machoview/).
 
 ### Bundles
 
@@ -139,11 +214,64 @@ Basically, a bundle is a **directory structure** within the file system. Interes
 ls -lR /Applications/Safari.app/Contents
 ```
 
-* The **MacOS** **folder** contains the executable of the application
-* The **Resources** **folder** contains the resources of the app \(icons, images...\)
-* **Plist** **files** contains configuration information. You can find find information about the meaning of they plist keys in [https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html)
+* `Contents/_CodeSignature`
+
+  Contains **code-signing information** about the application \(i.e., hashes, etc.\).
+
+* `Contents/MacOS`
+
+  Contains the **application’s binary** \(which is executed when the user double-clicks the application icon in the UI\). 
+
+* `Contents/Resources`
+
+  Contains **UI elements of the application**, such as images, documents, and nib/xib files \(that describe various user interfaces\). 
+
+* `Contents/Info.plist` ****The application’s main “**configuration file.**” Apple notes that “the system relies on the presence of this file to identify relevant information about \[the\] application and any related files”.
+  * **Plist** **files** contains configuration information. You can find find information about the meaning of they plist keys in [https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html)
+  * Pairs that may be of interest when analyzing an application include:  
+
+
+    * **CFBundleExecutable**
+
+    Contains the **name of the application’s binary** \(found in Contents/MacOS\).
+
+    * **CFBundleIdentifier**
+
+    Contains the application’s bundle identifier \(often used by the system to **globally** **identify** the application\).
+
+    * **LSMinimumSystemVersion**
+
+    Contains the **oldest** **version** of **macOS** that the application is compatible with.
+
+### Objective-C
+
+Programs written in Objective-C **retain** their class declarations **when** **compiled** into \(Mach-O\) binaries. Such class declarations **include** the name and type of:
+
+* The class
+* The class methods
+* The class instance variables
+
+You can get this information using [**class-dump**](https://github.com/nygard/class-dump):
+
+```bash
+class-dump Kindle.app
+```
+
+Note that this names can be obfuscated to make the reversing of the binary more difficult.
+
+### Native Packages
+
+There are some projects that allow to generate a binary executable by MacOS containing script code which will be executed. Some examples are:
+
+* **Platypus**: Generate MacOS binary executing ****shell scripts, Python, Perl, Ruby, PHP, Swift, Expect, Tcl, AWK, JavaScript, AppleScript or any other user-specified interpreter.
+  * **It saves the script in `Contents/Resources/script`. So finding this script is a good indicator that Platypus was used.**
+* **PyInstaller:** Python
+  * Ways to detect this is the use of the embedded ****string **“Py\_SetPythonHome”** or a a **call** into a function named **`pyi_main`.**
+* **Electron:** JavaScript, HTML, and CSS.
+  * These binaries will use **Electron Framework.framework**. Moreover, the non-binary components \(e.g. JavaScript files\) maybe found in the application’s **`Contents/Resources/`** directory, achieved in `.asar` files. These binaries will use Electron Framework.framework. Moreover, the non-binary components \(e.g. JavaScript files\) maybe found in the application’s **`Contents/Resources/`** directory, achieved in **`.asar` files**. It's possible **unpack** such archives via the **asar** node module, or the **npx** **utility:** `npx asar extract StrongBox.app/Contents/Resources/app.asar appUnpacked` 
 
 ## References
 
 * \*\*\*\*[**The Mac Hacker's Handbook**](https://www.amazon.com/-/es/Charlie-Miller-ebook-dp-B004U7MUMU/dp/B004U7MUMU/ref=mt_other?_encoding=UTF8&me=&qid=)\*\*\*\*
+* \*\*\*\*[**https://taomm.org/vol1/analysis.html**](https://taomm.org/vol1/analysis.html)\*\*\*\*
 

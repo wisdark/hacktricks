@@ -42,8 +42,8 @@ If you want to **share some tricks with the community** you can also submit **pu
 
 #### Automatic Tools
 
-* \*\*\*\*[**dnstwist**](https://github.com/elceef/dnstwist)\*\*\*\*
-* [**urlcrazy**](https://github.com/urbanadventurer/urlcrazy)\*\*\*\*
+* [**dnstwist**](https://github.com/elceef/dnstwist)
+* [**urlcrazy**](https://github.com/urbanadventurer/urlcrazy)
 
 #### **Websites**
 
@@ -88,11 +88,11 @@ Moreover, don't forget that if the users use **any web portal to access their ma
 
 You can download it from [https://github.com/gophish/gophish/releases/tag/v0.11.0](https://github.com/gophish/gophish/releases/tag/v0.11.0)
 
-Download and decompress it inside `/opt/gophish` and execute  `/opt/gophish/gophish`  
-You will be given a password for the admin user in port 3333 in the output. Therefore, access that port and use those credentials to change the admin password. You may need to tunnel that port to local: 
+Download and decompress it inside `/opt/gophish` and execute `/opt/gophish/gophish`  
+You will be given a password for the admin user in port 3333 in the output. Therefore, access that port and use those credentials to change the admin password. You may need to tunnel that port to local:
 
 ```bash
-ssh -L 333:127.0.0.1:3333 <user>@<ip>
+ssh -L 3333:127.0.0.1:3333 <user>@<ip>
 ```
 
 ### Configuration
@@ -119,7 +119,7 @@ cp "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" /opt/gophish/ssl_keys/key.crtâ€
 
 #### Mail configuration
 
-Start installing:  `apt-get install postfix`
+Start installing: `apt-get install postfix`
 
 Then add the domain to the following files:
 
@@ -129,12 +129,12 @@ Then add the domain to the following files:
 
 **Change also the values of the following variables inside /etc/postfix/main.cf**
 
-`myhostname = <domain>  
+`myhostname = <domain>    
 mydestination = $myhostname, <domain>, localhost.com, localhost`
 
 Finally modify the files **`/etc/hostname`** and **`/etc/mailname`** to your domain name and **restart your VPS.**
 
-Now, create a **DNS A record** of `mail.<domain>` pointing to the **ip address** of the VPS and a **DNS MX** record pointing to `mail.<domain>` 
+Now, create a **DNS A record** of `mail.<domain>` pointing to the **ip address** of the VPS and a **DNS MX** record pointing to `mail.<domain>`
 
 Now lets test to send an email:
 
@@ -242,7 +242,7 @@ service gophish stop
 ### Wait
 
 The older a domain is the less probable it's going to be caught as spam. Then you should wait as much time as possible \(at least 1week\) before the phishing assessment.  
-Note that even if you have to wait a week you can finish configuring everything now. 
+Note that even if you have to wait a week you can finish configuring everything now.
 
 ### Configure Reverse DNS \(rDNS\) record
 
@@ -339,7 +339,7 @@ The page www.mail-tester.com can indicate you if you your domain is being blocke
 * Decide from which account are you going to send the phishing emails. Suggestions: _noreply, support, servicedesk, salesforce..._
 * You can leave blank the username and password, but make sure to check the Ignore Certificate Errors
 
-![](../.gitbook/assets/image%20%28253%29%20%281%29%20%282%29%20%281%29%20%281%29%20%281%29.png)
+![](../.gitbook/assets/image%20%28253%29%20%281%29%20%282%29%20%281%29%20%281%29%20%282%29%20%282%29%20%283%29%20%283%29%20%285%29%20%283%29.png)
 
 {% hint style="info" %}
 It's recommended to use the "**Send Test Email**" functionality to test that everything is working.  
@@ -356,7 +356,7 @@ I would recommend to **send the test emails to 10min mails addresses** in order 
 ```markup
 <html>
 <head>
-	<title></title>
+    <title></title>
 </head>
 <body>
 <p class="MsoNormal"><span style="font-size:10.0pt;font-family:&quot;Verdana&quot;,sans-serif;color:black">Dear {{.FirstName}} {{.LastName}},</span></p>
@@ -374,7 +374,7 @@ WRITE HERE SOME SIGNATURE OF SOMEONE FROM THE COMPANY
 </html>
 ```
 
-Note that **in order to increase the credibility of the email**, it's recommended to use some signature from an email from the client. Suggestions: 
+Note that **in order to increase the credibility of the email**, it's recommended to use some signature from an email from the client. Suggestions:
 
 * Send an email to a **non existent address** and check if the response has any signature.
 * Search for **public emails** like info@ex.com or press@ex.com or public@ex.com and send them an email and wait for the response.
@@ -431,6 +431,17 @@ If for any reason you want to clone the website check the following page:
 
 {% page-ref page="clone-a-website.md" %}
 
+## Phishing2.0
+
+The previous attack is pretty clever as you are faking a real website and gathering the information set by the user. Unfortunately, if the user didn't put the correct password or if the application you faked is configured with 2FA, **this information won't allow you to impersonate the tricked user**.
+
+This is where tools like [**evilginx2**](https://github.com/kgretzky/evilginx2) are useful. This tool will allow you to generate a MitM like attack. Basically, the attacks works in the following way:
+
+1. You **impersonate the login** form of the real webpage.
+2. The user **send** his **credentials** to your fake page and the tool send those to the real webpage, **checking if the credentials work**.
+3. If the account is configured with **2FA**, the MitM page will ask for it and once the **user introduces** it the tool will send it to the real web page.
+4. Once the user is authenticated you \(as attacker\) will have **captured the credentials, the 2FA, the cookie and any information** of every interaction your while the tool is performing a MitM.
+
 ## Detecting the detection
 
 Obviously one of the best ways to know if you have been busted is to **search your domain inside blacklists**. If it appears listed, somehow your domain was detected as suspicions.  
@@ -440,7 +451,7 @@ However, there are other ways to know if the victim is **actively looking for su
 
 {% page-ref page="detecting-phising.md" %}
 
-You can **buy a domain with a very similar name** to the victims domain **and/or generate a certificate** for a **subdomain** of a domain controlled by you **containing** the **keyword** of the victim's domain. If the **victim** perform any kind of **DNS or HTTP interaction** with them, you will now that **he is actively looking** for suspicious domains and you will need to very very stealth.
+You can **buy a domain with a very similar name** to the victims domain **and/or generate a certificate** for a **subdomain** of a domain controlled by you **containing** the **keyword** of the victim's domain. If the **victim** perform any kind of **DNS or HTTP interaction** with them, you will know that **he is actively looking** for suspicious domains and you will need to be very stealth.
 
 ## References
 

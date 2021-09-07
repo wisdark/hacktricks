@@ -1352,6 +1352,19 @@ grep -RE 'comm="su"|comm="sudo"' /var/log* 2>/dev/null
 
 In order to **read logs the group** [**adm**](interesting-groups-linux-pe/#adm-group) will be really helpful.
 
+### Shell files
+
+```bash
+~/.bash_profile # if it exists, read once when you log in to the shell
+~/.bash_login # if it exists, read once if .bash_profile doesn't exist
+~/.profile # if it exists, read once if the two above don't exist
+/etc/profile # only read if none of the above exist
+~/.bashrc # if it exists, read every time you start a new shell
+~/.bash_logout # if it exists, read when the login shell exits
+~/.zlogin #zsh shell
+~/.zshrc #zsh shell
+```
+
 ### Generic Creds Search/Regex
 
 You should also check for files containing the word "**password**" in it's **name** or inside the **content**, also check for IPs and emails inside logs, or hashes regexps.  
@@ -1428,6 +1441,11 @@ Files that ships in packages downloaded from distribution repository go into `/u
 
 {% page-ref page="cisco-vmanage.md" %}
 
+### Kernel Security Protections
+
+* [https://github.com/a13xp0p0v/kconfig-hardened-check](https://github.com/a13xp0p0v/kconfig-hardened-check)
+* [https://github.com/a13xp0p0v/linux-kernel-defence-map](https://github.com/a13xp0p0v/linux-kernel-defence-map)
+
 ## More help
 
 [Static impacket binaries](https://github.com/ropnop/impacket_static_binaries)
@@ -1437,6 +1455,7 @@ Files that ships in packages downloaded from distribution repository go into `/u
 #### **Best tool to look for Linux local privilege escalation vectors:** [**LinPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS)
 
 **LinEnum**: [https://github.com/rebootuser/LinEnum](https://github.com/rebootuser/LinEnum)\(-t option\)  
+**Enumy**: [https://github.com/luke-goddard/enumy](https://github.com/luke-goddard/enumy)  
 **Unix Privesc Check:** [http://pentestmonkey.net/tools/audit/unix-privesc-check](http://pentestmonkey.net/tools/audit/unix-privesc-check)  
 **Linux Priv Checker:** [www.securitysift.com/download/linuxprivchecker.py](http://www.securitysift.com/download/linuxprivchecker.py)  
 **BeeRoot:** [https://github.com/AlessandroZ/BeRoot/tree/master/Linux](https://github.com/AlessandroZ/BeRoot/tree/master/Linux)  

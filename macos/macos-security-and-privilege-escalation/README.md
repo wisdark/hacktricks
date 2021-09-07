@@ -4,11 +4,186 @@ First of all, please note that **most of the tricks about privilege escalation a
 
 {% page-ref page="../../linux-unix/privilege-escalation/" %}
 
-## Security Restrictions
+## Basic MacOS
+
+### OS X Specific Extensions
+
+* **`.dmg`**: Apple Disk Image files are very frequent for installers.
+* **`.kext`**: It must follow a specific structure and it's the OS X version of a driver.
+* **`.plist`**: Also known as property list stores information in XML or binary format.
+  * Can be XML or binary. Binary ones can be read with:
+    * `defaults read config.plist`
+    * `/usr/libexec/PlistBuddy -c print config.plsit`
+    * `plutil -p config.plist`
+* **`.app`**: Apple applications that follows  directory structure.
+* **`.dylib`**: Dynamic libraries \(like Windows DLL files\)
+* **`.pkg`**: Are the same as xar \(eXtensible Archive format\). The installer command can be use to install the contents of these files.
+
+### File hierarchy layout
+
+* **/Applications**: The installed apps should be here. All the users will be able to access them.
+* **/bin**: Command line binaries
+* **/cores**: If exists, it's used to store core dumps
+* **/dev**: Everything is treated as a file so you may see hardware devices stored here.
+* **/etc**: Configuration files
+* **/Library**: A lot of subdirectories and files related to preferences, caches and logs can be found here. A Library folder exists in root and on each user's directory.
+* **/private**: Undocumented but a lot of the mentioned folders are symbolic links to the private directory.
+* **/sbin**: Essential system binaries \(related to administration\)
+* **/System**: File fo making OS X run. You should find mostly only Apple specific files here \(not third party\).
+* **/tmp**: Files are deleted after 3 days \(it's a soft link to /private/tmp\)
+* **/Users**: Home directory for users.
+* **/usr**: Config and system binaries
+* **/var**: Log files
+* **/Volumes**: The mounted drives will apear here.
+* **/.vol**: Running `stat a.txt` you obtain something like `16777223 7545753 -rw-r--r-- 1 username wheel ...` where the first number is the id number of the volume where the file exists and the second one is the inode number. You can access the content of this file through /.vol/ with that information running  `cat /.vol/16777223/7545753`
+
+### Special MacOS files and folders
+
+* **`.DS_Store`**: This file is on each directory, it saves the attributes and customisations of the directory.
+* **`.Spotlight-V100`**: This folder appears on the root directory of every volume on the system.
+* **`.metadata_never_index`**: If this file is at the root of a volume Spotlight won't index that volume.
+* **`<name>.noindex`**: Files and folder with this extension won't be indexed by Spotlight.
+* **`$HOME/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV`**2: Contains information about downloaded files, like the URL from where they were downloaded.
+* **`/var/log/system.log`**: Main log of OSX systems. com.apple.syslogd.plist is responsible for the execution of syslogging \(you can check if it's disabled looking for "com.apple.syslogd" in `launchctl list`.
+* **`/private/var/log/asl/*.asl`**: These are the Apple System Logs which may contain interesting information.
+* **`$HOME/Library/Preferences/com.apple.recentitems.plist`**: Stores recently accessed files and applications through "Finder".
+* **`$HOME/Library/Preferences/com.apple.loginitems.plsit`**: Stores items to launch upon system startup
+* **`$HOME/Library/Logs/DiskUtility.log`**: Log file for thee DiskUtility App \(info about drives, including USBs\)
+* **`/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist`**: Data about wireless access points.
+* **`/private/var/db/launchd.db/com.apple.launchd/overrides.plist`**: List of daemons deactivated.
+* **`/private/etc/kcpassword`**: If autologin is enabled this file will contain the users login password XORed with a key.
+
+### Common users
+
+* **Daemon**: User reserved for system daemons. The default daemon account names usually start with  a "\_":
+
+  ```bash
+  _amavisd, _analyticsd, _appinstalld, _appleevents, _applepay, _appowner, _appserver, _appstore, _ard, _assetcache, _astris, _atsserver, _avbdeviced, _calendar, _captiveagent, _ces, _clamav, _cmiodalassistants, _coreaudiod, _coremediaiod, _coreml, _ctkd, _cvmsroot, _cvs, _cyrus, _datadetectors, _demod, _devdocs, _devicemgr, _diskimagesiod, _displaypolicyd, _distnote, _dovecot, _dovenull, _dpaudio, _driverkit, _eppc, _findmydevice, _fpsd, _ftp, _fud, _gamecontrollerd, _geod, _hidd, _iconservices, _installassistant, _installcoordinationd, _installer, _jabber, _kadmin_admin, _kadmin_changepw, _knowledgegraphd, _krb_anonymous, _krb_changepw, _krb_kadmin, _krb_kerberos, _krb_krbtgt, _krbfast, _krbtgt, _launchservicesd, _lda, _locationd, _logd, _lp, _mailman, _mbsetupuser, _mcxalr, _mdnsresponder, _mobileasset, _mysql, _nearbyd, _netbios, _netstatistics, _networkd, _nsurlsessiond, _nsurlstoraged, _oahd, _ondemand, _postfix, _postgres, _qtss, _reportmemoryexception, _rmd, _sandbox, _screensaver, _scsd, _securityagent, _softwareupdate, _spotlight, _sshd, _svn, _taskgated, _teamsserver, _timed, _timezone, _tokend, _trustd, _trustevaluationagent, _unknown, _update_sharing, _usbmuxd, _uucp, _warmd, _webauthserver, _windowserver, _www, _wwwproxy, _xserverdocs
+  ```
+
+* **Guest**: Account for guests with very strict permissions
+  * `state=("automaticTime" "afpGuestAccess" "filesystem" "guestAccount" "smbGuestAccess"); for i in "${state[@]}"; do sysadminctl -"${i}" status; done;`
+* **Nobody**: Processes are executed with this user when minimal permissions are required
+* **Root**
+
+### User Privileges
+
+* **Standard User:** The most basic of users. This user needs permissions granted from an admin user when attempting to install software or perform other advanced tasks. They are not able to do it on their own.
+* **Admin User**: A user who operates most of the time as a standard user but is also allowed to perform root actions such as install software and other administrative tasks. All users belonging to the admin group are **given access to root via the sudoers file**.
+* **Root**: Root is a user allowed to perform almost any action \(there are limitations imposed by protections like System Integrity Protection\).
+  * For example root won't be able to place a file inside `/System`
+
+### **File ACLs**
+
+When the file contains ACLs you will **find a "+" when listing the permissions like in**:
+
+```bash
+ls -ld Movies
+drwx------+   7 username  staff     224 15 Apr 19:42 Movies
+```
+
+You can **read the ACLs** of the file with:
+
+```bash
+ls -lde Movies
+drwx------+ 7 username  staff  224 15 Apr 19:42 Movies
+ 0: group:everyone deny delete
+```
+
+You can find **all the files with ACLs** with \(this is veeery slow\):
+
+```bash
+ls -RAle / 2>/dev/null | grep -E -B1 "\d: "
+```
+
+### Resource Forks or MacOS ADS
+
+This is a way to obtain **Alternate Data Streams in MacOS** machines. You can save content inside an extended attribute called **com.apple.ResourceFork** inside a file by saving it in **file/..namedfork/rsrc**.
+
+```bash
+echo "Hello" > a.txt
+echo "Hello Mac ADS" > a.txt/..namedfork/rsrc
+
+xattr -l a.txt #Read extended attributes
+com.apple.ResourceFork: Hello Mac ADS
+
+ls -l a.txt #The file length is still q
+-rw-r--r--@ 1 username  wheel  6 17 Jul 01:15 a.txt
+```
+
+You can **find all the files containing this extended attribute** with:
+
+```bash
+find / -type f -exec ls -ld {} \; 2>/dev/null | grep -E "[x\-]@ " | awk '{printf $9; printf "\n"}' | xargs -I {} xattr -lv {} | grep "com.apple.ResourceFork"
+```
+
+### Risk Files Mac OS
+
+The files `/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/System` contains the risk associated to files depending on the file extension.
+
+The possible categories include the following:
+
+* **LSRiskCategorySafe**: **Totally** **safe**; Safari will auto-open after download
+* **LSRiskCategoryNeutral**: No warning, but **not auto-opened**
+* **LSRiskCategoryUnsafeExecutable**: **Triggers** a **warning** “This file is an application...”
+* **LSRiskCategoryMayContainUnsafeExecutable**: This is for things like archives that contain an executable. It **triggers a warning unless Safari can determine all the contents are safe or neutral**.
+
+### Remote Access Services
+
+You can enable/disable these services in "System Preferences" --&gt; Sharing
+
+* **VNC**, known as “Screen Sharing”
+* **SSH**, called “Remote Login”
+* **Apple Remote Desktop** \(ARD\), or “Remote Management”
+* **AppleEvent**, known as “Remote Apple Event”
+
+Check if any is enabled running:
+
+```bash
+rmMgmt=$(netstat -na | grep LISTEN | grep tcp46 | grep "*.3283" | wc -l);
+scrShrng=$(netstat -na | grep LISTEN | egrep 'tcp4|tcp6' | grep "*.5900" | wc -l);
+flShrng=$(netstat -na | grep LISTEN | egrep 'tcp4|tcp6' | egrep "\*.88|\*.445|\*.548" | wc -l);
+rLgn=$(netstat -na | grep LISTEN | egrep 'tcp4|tcp6' | grep "*.22" | wc -l);
+rAE=$(netstat -na | grep LISTEN | egrep 'tcp4|tcp6' | grep "*.3031" | wc -l);
+bmM=$(netstat -na | grep LISTEN | egrep 'tcp4|tcp6' | grep "*.4488" | wc -l);
+printf "\nThe following services are OFF if '0', or ON otherwise:\nScreen Sharing: %s\nFile Sharing: %s\nRemote Login: %s\nRemote Mgmt: %s\nRemote Apple Events: %s\nBack to My Mac: %s\n\n" "$scrShrng" "$flShrng" "$rLgn" "$rmMgmt" "$rAE" "$bmM";
+```
+
+### MacOS Architecture
+
+{% page-ref page="mac-os-architecture.md" %}
+
+### MacOS Serial Number
+
+{% page-ref page="macos-serial-number.md" %}
+
+### MacOS MDM
+
+{% page-ref page="macos-mdm/" %}
+
+### MacOS Protocols
+
+{% page-ref page="macos-protocols.md" %}
+
+### MacOS - Inspecting, Debugging and Fuzzing
+
+{% page-ref page="macos-apps-inspecting-debugging-and-fuzzing.md" %}
+
+## MacOS Security Mechanisms
 
 ### Gatekeeper
 
-_Gatekeeper_ is designed to ensure that, by default, **only trusted software runs on a user’s Mac**. Gatekeeper is used when a user **downloads** and **opens** an app, a plug-in or an installer package from outside the App Store. Gatekeeper verifies that the **software is from an identified developer**, is notarised by Apple to be **free of known malicious content**, and **hasn’t been altered**. Gatekeeper also **requests user approval** before opening downloaded software for the first time to make sure the user hasn’t been tricked into running executable code they believed to simply be a data file.
+[**In this talk**](https://www.youtube.com/watch?v=T5xfL9tEg44) Jeremy Brown talks about this protections and a bug that allowed to bypass them.
+
+_**Gatekeeper**_ is designed to ensure that, by default, **only trusted software runs on a user’s Mac**. Gatekeeper is used when a user **downloads** and **opens** an app, a plug-in or an installer package from outside the App Store. Gatekeeper verifies that the software is **signed by** an **identified developer**, is **notarised** by Apple to be **free of known malicious content**, and **hasn’t been altered**. Gatekeeper also **requests user approval** before opening downloaded software for the first time to make sure the user hasn’t been tricked into running executable code they believed to simply be a data file.
+
+### Notarizing
+
+In order for an **app to be notarised by Apple**, the developer needs to send the app for review. Notarization is **not App Review**. The Apple notary service is an **automated system** that **scans your software for malicious content**, checks for code-signing issues, and returns the results to you quickly. If there are no issues, the notary service generates a ticket for you to staple to your software; the notary service also **publishes that ticket online where Gatekeeper can find it**.
+
+When the user first installs or runs your software, the presence of a ticket \(either online or attached to the executable\) **tells Gatekeeper that Apple notarized the software**. **Gatekeeper then places descriptive information in the initial launch dialog** indicating that Apple has already checked for malicious content.
+
+### File Quarantine
 
 Gatekeeper builds upon **File Quarantine.**  
 Upon download of an application, a particular **extended file attribute** \("quarantine flag"\) can be **added** to the **downloaded** **file**. This attribute **is added by the application that downloads the file**, such as a **web** **browser** or email client, but is not usually added by others like common BitTorrent client software.  
@@ -63,20 +238,64 @@ find / -exec ls -ld {} \; 2>/dev/null | grep -E "[x\-]@ " | awk '{printf $9; pri
 
 ### XProtect
 
-**X-Protect is Apple’s built in malware scanner.** It keeps track of known malware hashes and patterns.  
+**X-Protect** is also part of Gatekeeper. **It's Apple’s built in malware scanner.** It keeps track of known malware hashes and patterns.  
 You can get information about the latest XProtect update running:
 
 ```bash
 system_profiler SPInstallHistoryDataType 2>/dev/null | grep -A 4 "XProtectPlistConfigData" | tail -n 5
 ```
 
-## Sandbox
+### MRT: Malware Removal Tool
+
+Should malware make its way onto a Mac, macOS also includes technology to remediate infections. The _Malware Removal Tool \(MRT\)_ is an engine in macOS that remediates infections based on updates automatically delivered from Apple \(as part of automatic updates of system data files and security updates\). **MRT removes malware upon receiving updated information** and it continues to check for infections on restart and login. MRT doesn’t automatically reboot the Mac. \(From [here](https://support.apple.com/en-gb/guide/security/sec469d47bd8/web#:~:text=The%20Malware%20Removal%20Tool%20%28MRT,data%20files%20and%20security%20updates%29.)\)
+
+### Automatic Security Updates
+
+Apple issues the **updates for XProtect and MRT automatically** based on the latest threat intelligence available. By default, macOS checks for these updates **daily**. Notarisation updates are distributed using CloudKit sync and are much more frequent.
+
+### TCC
+
+**TCC \(Transparency, Consent, and Control\)** is a mechanism in macOS to **limit and control application access to certain features**, usually from a privacy perspective. This can include things such as location services, contacts, photos, microphone, camera, accessibility, full disk access, and a bunch more.
+
+From a user’s perspective, they see TCC in action **when an application wants access to one of the features protected by TCC**. When this happens the user is prompted with a dialog asking them whether they want to allow access or not. This response is then stored in the TCC database.
+
+![An example of a TCC prompt](https://rainforest.engineering/images/posts/macos-tcc/tcc-prompt.png?1620047855)
+
+Check some of the **already given permissions** to apps in `System Preferences --> Security & Privacy --> Privacy --> Files and Folders`.
+
+The TCC database is just a **sqlite3 database**, which makes the task of investigating it much simpler. There are two different databases, a global one in `/Library/Application Support/com.apple.TCC/TCC.db` and a per-user one located in `/Users/<username>/Library/Application Support/com.apple.TCC/TCC.db`. The first database is **protected from editing with SIP**\(System Integrity Protection\), but you can read them by granting terminal\(or your editor\) **full disk access**.
+
+This information was [taken from here](https://rainforest.engineering/2021-02-09-macos-tcc/) \(read the **original source for more information**\).
+
+Some protected directories:
+
+* $HOME/Desktop
+* $HOME/Documents
+* $HOME/Downloads
+* iCloud Drive
+* ...
+
+Unprotected directories:
+
+* $HOME \(itself\)
+* $HOME/.ssh, $HOME/.aws, etc
+* /tmp
+
+#### Bypasses
+
+By default an access via **SSH** will have **"Full Disk Access"**. In order to disable this you need to have it listed but disabled \(removing it from the list won't remove those privileges\):
+
+![](../../.gitbook/assets/image%20%28563%29.png)
+
+Here you can find examples of how some **malwares have been able to bypass this protection**:
+
+* [https://www.jamf.com/blog/zero-day-tcc-bypass-discovered-in-xcsset-malware/](https://www.jamf.com/blog/zero-day-tcc-bypass-discovered-in-xcsset-malware/)
+
+### Seatbelt Sandbox
 
 MacOS Sandbox works with the kernel extension Seatbelt. It makes applications run inside the sandbox **need to request access to resources outside of the limited sandbox**. This helps to ensure that **the application will be accessing only expected resources** and if it wants to access anything else it will need to ask for permissions to the user.
 
 Important **system services** also run inside their own custom **sandbox** such as the mdnsresponder service. You can view these custom **sandbox profiles** inside the **`/usr/share/sandbox`** directory. Other sandbox profiles can be checked in [https://github.com/s7ephen/OSX-Sandbox--Seatbelt--Profiles](https://github.com/s7ephen/OSX-Sandbox--Seatbelt--Profiles).
-
-Check some of the **already given permissions** to apps in `System Preferences --> Security & Privacy --> Privacy --> Files and Folders`.
 
 To start an application with a sandbox config you can use:
 
@@ -87,6 +306,11 @@ sandbox-exec -f example.sb /Path/To/The/Application
 {% hint style="info" %}
 Note that the **Apple-authored** **software** that runs on **Windows** **doesn’t have additional security precautions**, such as application sandboxing.
 {% endhint %}
+
+Bypasses examples:
+
+* [https://lapcatsoftware.com/articles/sandbox-escape.html](https://lapcatsoftware.com/articles/sandbox-escape.html)
+* [https://desi-jarvis.medium.com/office365-macos-sandbox-escape-fcce4fa4123c](https://desi-jarvis.medium.com/office365-macos-sandbox-escape-fcce4fa4123c) \(they are able to write files outside the sandbox whose name starts with `~$`\).
 
 ### SIP - System Integrity Protection
 
@@ -114,7 +338,7 @@ The final exception to these rules is that **any installer package signed with t
 
 Note that if **a file is specified** in the previous config file **but** it **doesn't exist, it can be created**. This might be used by malware to obtain stealth persistence. For example, imagine that a **.plist** in `/System/Library/LaunchDaemons` appears listed but it doesn't exist. A malware may c**reate one and use it as persistence mechanism.**
 
-Also, not how files and directories specified in **`rootless.conf`** have a **rootless extended attribute**:
+Also, note how files and directories specified in **`rootless.conf`** have a **rootless extended attribute**:
 
 ```bash
 xattr /System/Library/LaunchDaemons/com.apple.UpdateSettings.plist
@@ -124,7 +348,7 @@ ls -lO /System/Library/LaunchDaemons/com.apple.UpdateSettings.plist
 -rw-r--r--@ 1 root  wheel  restricted,compressed 412  1 Jan  2020 /System/Library/LaunchDaemons/com.apple.UpdateSettings.plist
 ```
 
-**SIP** handles a number of **other limitations as well**. Like it **doesn't allows for the loading of unsigned kext**s.  SIP is also responsible for **ensuring** that no OS X **system processes are debugged**. This also means that Apple put a stop to dtrace inspecting system processes.
+**SIP** handles a number of **other limitations as well**. Like it **doesn't allows for the loading of unsigned kexts**.  SIP is also responsible for **ensuring** that no OS X **system processes are debugged**. This also means that Apple put a stop to dtrace inspecting system processes.
 
 Check if SIP is enabled with:
 
@@ -133,105 +357,53 @@ csrutil status
 System Integrity Protection status: enabled.
 ```
 
-If you want to disable it, you need to put the computer in recovery mode \(start it pressing command+R\) and execute: `csrutil disable`
-
-## Common users
-
-* **Daemon**: User reserved for system daemons
-* **Guest**: Account for guests with very strict permissions
-* **Nobody**: Processes are executed with this user when minimal permissions are required
-* **Root**
-
-## **File ACLs**
-
-When the file contains ACLs you will **find a "+" when listing the permissions like in**:
+If you want to **disable** **it**, you need to put the computer in recovery mode \(start it pressing command+R\) and execute: `csrutil disable`   
+You can also maintain it **enable but without debugging protections** doing: 
 
 ```bash
-ls -ld Movies
-drwx------+   7 username  staff     224 15 Apr 19:42 Movies
+csrutil enable --without debug
 ```
 
-You can **read the ACLs** of the file with:
+For more **information about SIP** read the following response: [https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really](https://apple.stackexchange.com/questions/193368/what-is-the-rootless-feature-in-el-capitan-really)
+
+### Apple Binary Signatures
+
+When checking some **malware sample** you should always **check the signature** of the binary as the **developer** that signed it may be already **related** with **malware.**
 
 ```bash
-ls -lde Movies
-drwx------+ 7 username  staff  224 15 Apr 19:42 Movies
- 0: group:everyone deny delete
+#Get signer
+codesign -vv -d /bin/ls 2>&1 | grep -E "Authority|TeamIdentifier"
+
+#Check if the app’s contents have been modified
+codesign --verify --verbose /Applications/Safari.app
+
+#Check if the signature is valid
+spctl --assess --verbose /Applications/Safari.app
 ```
 
-You can find **all the files with ACLs** with \(this is veeery slow\):
+## Installed Software & Services
+
+Check for **suspicious** applications installed and **privileges** over the.installed resources: 
 
 ```bash
-ls -RAle / 2>/dev/null | grep -E -B1 "\d: "
+system_profiler SPApplicationsDataType #Installed Apps
+system_profiler SPFrameworksDataType #Instaled framework
+lsappinfo list #Installed Apps
+launchtl list #Services
 ```
 
-## Resource Forks or MacOS ADS
-
-This is a way to obtain **Alternate Data Streams in MacOS** machines. You can save content inside an extended attribute called **com.apple.ResourceFork** inside a file by saving it in **file/..namedfork/rsrc**.
+## User Processes
 
 ```bash
-echo "Hello" > a.txt
-echo "Hello Mac ADS" > a.txt/..namedfork/rsrc
+# will print all the running services under that particular user domain.
+launchctl print gui/<users UID>
 
-xattr -l a.txt #Read extended attributes
-com.apple.ResourceFork: Hello Mac ADS
+# will print all the running services under root
+launchctl print system
 
-ls -l a.txt #The file length is still q
--rw-r--r--@ 1 username  wheel  6 17 Jul 01:15 a.txt
+# will print detailed information about the specific launch agent. And if it’s not running or you’ve mistyped, you will get some output with a non-zero exit code: Could not find service “com.company.launchagent.label” in domain for login
+launchctl print gui/<user's UID>/com.company.launchagent.label
 ```
-
-You can **find all the files containing this extended attribute** with:
-
-```bash
-find / -type f -exec ls -ld {} \; 2>/dev/null | grep -E "[x\-]@ " | awk '{printf $9; printf "\n"}' | xargs -I {} xattr -lv {} | grep "com.apple.ResourceFork"
-```
-
-## OS X Specific Extensions
-
-* **`.dmg`**: Apple Disk Image files are very frequent for installers.
-* **`.kext`**: It must follow a specific structure and it's the OS X version of a driver.
-* **`.plist`**: Also known as property list stores information in XML or binary format.
-  * Can be XML or binary. Binary ones can be read with:
-    * `defaults read config.plist`
-    * `/usr/libexec/PlistBuddy -c print config.plsit`
-    * `plutil -p config.plist`
-* **`.app`**: Apple applications that follows  directory structure.
-* **`.dylib`**: Dynamic libraries \(like Windows DLL files\)
-* **`.pkg`**: Are the same as xar \(eXtensible Archive format\). The installer command can be use to install the contents of these files.
-
-## File hierarchy layout
-
-* **/Applications**: The installed apps should be here. All the users will be able to access them.
-* **/bin**: Command line binaries
-* **/cores**: If exists, it's used to store core dumps
-* **/dev**: Everything is treated as a file so you may see hardware devices stored here.
-* **/etc**: Configuration files
-* **/Library**: A lot of subdirectories and files related to preferences, caches and logs can be found here. A Library folder exists in root and on each user's directory.
-* **/private**: Undocumented but a lot of the mentioned folders are symbolic links to the private directory.
-* **/sbin**: Essential system binaries \(related to administration\)
-* **/System**: File fo making OS X run. You should find mostly only Apple specific files here \(not third party\).
-* **/tmp**: Files are deleted after 3 days \(it's a soft link to /private/tmp\)
-* **/Users**: Home directory for users.
-* **/usr**: Config and system binaries
-* **/var**: Log files
-* **/Volumes**: The mounted drives will apear here.
-* **/.vol**: Running `stat a.txt` you obtain something like `16777223 7545753 -rw-r--r-- 1 username wheel ...` where the first number is the id number of the volume where the file exists and the second one is the inode number. You can access the content of this file through /.vol/ with that information running  `cat /.vol/16777223/7545753`
-
-### Special MacOS files and folders
-
-* **`.DS_Store`**: This file is on each directory, it saves the attributes and customisations of the directory.
-* **`.Spotlight-V100`**: This folder appears on the root directory of every volume on the system.
-* **`.metadata_never_index`**: If this file is at the root of a volume Spotlight won't index that volume.
-* **`<name>.noindex`**: Files and folder with this extension won't be indexed by Spotlight.
-* **`$HOME/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV`**2: Contains information about downloaded files, like the URL from where they were downloaded.
-* **`/var/log/system.log`**: Main log of OSX systems. com.apple.syslogd.plist is responsible for the execution of syslogging \(you can check if it's disabled looking for "com.apple.syslogd" in `launchctl list`.
-* **`/private/var/log/asl/*.asl`**: These are the Apple System Logs which may contain interesting information.
-* **`$HOME/Library/Preferences/com.apple.recentitems.plist`**: Stores recently accessed files and applications through "Finder".
-* **`$HOME/Library/Preferences/com.apple.loginitems.plsit`**: Stores items to launch upon system startup
-* **`$HOME/Library/Logs/DiskUtility.log`**: Log file for thee DiskUtility App \(info about drives, including USBs\)
-* **`/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist`**: Data about wireless access points.
-* **`/private/var/db/launchd.db/com.apple.launchd/overrides.plist`**: List of daemons deactivated.
-* **`/private/etc/kcpassword`**: If autologin is enabled this file will contain the users login password XORed with a key.
 
 ## Auto Start Extensibility Point \(ASEP\)
 
@@ -246,7 +418,7 @@ An **ASEP** is a location on the system that could lead to the **execution** of 
 * `/System/Library/LaunchAgents`: Per-user agents provided by Apple.
 * `/System/Library/LaunchDaemons`: System-wide daemons provided by Apple.
 
-When a user logs in the plists located in `/Users/$USER/Library/LaunchAgents` are started with the **logged users permissions**.
+When a user logs in the plists located in `/Users/$USER/Library/LaunchAgents` and `/Users/$USER/Library/LaunchDemons` are started with the **logged users permissions**.
 
 The **main difference between agents and daemons is that agents are loaded when the user logs in and the daemons are loaded at system startup** \(as there are services like ssh that needs to be executed before any user access the system\). Also agents may use GUI while daemons need to run in the background.
 
@@ -297,6 +469,14 @@ crontab -l
 ```
 
 You can also see all the cron jobs of the users in **`/usr/lib/cron/tabs/`** and **`/var/at/tabs/`** \(needs root\).
+
+In MacOS several folders executing scripts with **certain frequency** can be found in:
+
+```bash
+ls -lR /usr/lib/cron/tabs/ /private/var/at/jobs /etc/periodic/
+```
+
+There you can find the regular **cron** **jobs**, the **at** **jobs** \(not very used\) and the **periodic** **jobs** \(mainly used for cleaning temporary files\). The daily periodic jobs can be executed for example with: `periodic daily`.
 
 ### kext
 
@@ -392,9 +572,25 @@ In the previous example we have created and deleted a **LoginHook**, it's also p
 
 The root user one is stored in `/private/var/root/Library/Preferences/com.apple.loginwindow.plist`
 
+### Emond
+
+Apple introduced a logging mechanism called **emond**. It appears it was never fully developed, and development may have been **abandoned** by Apple for other mechanisms, but it remains **available**.
+
+This little-known service may **not be much use to a Mac admin**, but to a threat actor one very good reason would be to use it as a **persistence mechanism that most macOS admins probably wouldn't know** to look for. Detecting malicious use of emond shouldn't be difficult, as the System LaunchDaemon for the service looks for scripts to run in only one place:
+
+```bash
+ls -l /private/var/db/emondClients
+```
+
+{% hint style="danger" %}
+**As this isn't used much, anything in that folder should be suspicious**
+{% endhint %}
+
 ### Startup Items
 
-This is deprecated, so nothing should be found in the following directories.
+{% hint style="danger" %}
+**This is deprecated, so nothing should be found in the following directories.**
+{% endhint %}
 
 A **StartupItem** is a **directory** that gets **placed** in one of these two folders. `/Library/StartupItems/` or `/System/Library/StartupItems/`
 
@@ -441,6 +637,10 @@ RunService "$1"
 {% endcode %}
 
 ### /etc/rc.common
+
+{% hint style="danger" %}
+**This isn't working in modern MacOS versions**
+{% endhint %}
 
 It's also possible to place here **commands that will be executed at startup.** Example os regular rc.common script:
 
@@ -537,6 +737,21 @@ RunService ()
 }
 ```
 
+### Profiles
+
+Configuration profiles can force a user to use certain browser settings, DNS proxy settings, or VPN settings. Many other payloads are possible which make them ripe for abuse.
+
+You can enumerate them running:
+
+```bash
+ls -Rl /Library/Managed\ Preferences/
+```
+
+### Other persistence techniques and tools
+
+* [https://github.com/cedowens/Persistent-Swift](https://github.com/cedowens/Persistent-Swift)
+* [https://github.com/D00MFist/PersistentJXA](https://github.com/D00MFist/PersistentJXA)
+
 ## Memory Artifacts
 
 ### Swap Files
@@ -574,15 +789,9 @@ sudo osxpmem.app/osxpmem --format raw -o /tmp/dump_mem
 You can also use this **oneliner** to download the application, load the kext and dump the memory:
 
 ```bash
+sudo su
 cd /tmp; wget https://github.com/google/rekall/releases/download/v1.5.1/osxpmem-2.1.post4.zip; unzip osxpmem-2.1.post4.zip; chown -R root:wheel osxpmem.app/MacPmem.kext; kextload osxpmem.app/MacPmem.kext; osxpmem.app/osxpmem --format raw -o /tmp/dump_mem
 ```
-
-## User Privileges
-
-* **Standard User:** The most basic of users. This user needs permissions granted from an admin user when attempting to install software or perform other advanced tasks. They are not able to do it on their own.
-* **Admin User**: A user who operates most of the time as a standard user but is also allowed to perform root actions such as install software and other administrative tasks. All users belonging to the admin group are **given access to root via the sudoers file**.
-* **Root**: Root is a user allowed to perform almost any action \(there are limitations imposed by protections like System Integrity Protection\).
-  * For example root won't be able to place a file inside `/System`
 
 ## Passwords
 
@@ -597,22 +806,6 @@ for l in /var/db/dslocal/nodes/Default/users/*; do if [ -r "$l" ];then echo "$l"
 
 \*\*\*\*[**Scripts like this one**](https://gist.github.com/teddziuba/3ff08bdda120d1f7822f3baf52e606c2) or [**this one**](https://github.com/octomagon/davegrohl.git) can be used to transform the hash to **hashcat** **format**.
 
-### [Keychaindump](https://github.com/juuso/keychaindump)
-
-The attacker still needs to gain access to the system as well as escalate to root privileges in order to run keychaindump. This approach comes with its own conditions. As mentioned earlier, upon login your keychain is unlocked by default and remains unlocked while you use your system. This is for convenience so that the user doesn’t need to enter their password every time an application wishes to access the keychain. If the user has changed this setting and chosen to lock the keychain after every use, keychaindump will no longer work; it relies on an unlocked keychain to function.
-
-It’s important to understand how Keychaindump extracts passwords out of memory. The most important process in this transaction is the ”securityd“ process. Apple refers to this process as a security context daemon for authorization and cryptographic operations. The Apple developer libraries don’t say a whole lot about it; however, they do tell us that securityd handles access to the keychain. In his research, Juuso refers to the key needed to decrypt the keychain as ”The Master Key“. A number of steps need to be taken to acquire this key as it is derived from the user’s OS X login password. If you want to read the keychain file you must have this master key. The following steps can be done to acquire it. Perform a scan of securityd’s heap \(keychaindump does this with the vmmap command\). Possible master keys are stored in an area flagged as MALLOC\_TINY. You can see the locations of these heaps yourself with the following command:
-
-```bash
-sudo vmmap <securityd PID> | grep MALLOC_TINY
-```
-
-**Keychaindump** will then search the returned heaps for occurrences of 0x0000000000000018. If the following 8-byte value points to the current heap, we’ve found a potential master key. From here a bit of deobfuscation still needs to occur which can be seen in the source code, but as an analyst the most important part to note is that the necessary data to decrypt this information is stored in securityd’s process memory. Here’s an example of keychain dump output.
-
-```bash
-sudo ./keychaindump
-```
-
 ### Keychain Dump
 
 Note that when using the security binary to **dump the passwords decrypted**, several prompts will ask the user to allow this operation.
@@ -624,6 +817,93 @@ security list-keychains #List keychain dbs
 security list-smartcards #List smartcards
 security dump-keychain | grep -A 5 "keychain" | grep -v "version" #List keychains entries
 security dump-keychain -d #Dump all the info, included secrets (the user will be asked for his password, even if root)
+```
+
+### [Keychaindump](https://github.com/juuso/keychaindump)
+
+The attacker still needs to gain access to the system as well as escalate to **root** privileges in order to run **keychaindump**. This approach comes with its own conditions. As mentioned earlier, **upon login your keychain is unlocked by default** and remains unlocked while you use your system. This is for convenience so that the user doesn’t need to enter their password every time an application wishes to access the keychain. If the user has changed this setting and chosen to lock the keychain after every use, keychaindump will no longer work; it relies on an unlocked keychain to function.
+
+It’s important to understand how Keychaindump extracts passwords out of memory. The most important process in this transaction is the ”**securityd**“ **process**. Apple refers to this process as a **security context daemon for authorization and cryptographic operations**. The Apple developer libraries don’t say a whole lot about it; however, they do tell us that securityd handles access to the keychain. In his research, Juuso refers to the **key needed to decrypt the keychain as ”The Master Key“**. A number of steps need to be taken to acquire this key as it is derived from the user’s OS X login password. If you want to read the keychain file you must have this master key. The following steps can be done to acquire it. **Perform a scan of securityd’s heap \(keychaindump does this with the vmmap command\)**. Possible master keys are stored in an area flagged as MALLOC\_TINY. You can see the locations of these heaps yourself with the following command:
+
+```bash
+sudo vmmap <securityd PID> | grep MALLOC_TINY
+```
+
+**Keychaindump** will then search the returned heaps for occurrences of 0x0000000000000018. If the following 8-byte value points to the current heap, we’ve found a potential master key. From here a bit of deobfuscation still needs to occur which can be seen in the source code, but as an analyst the most important part to note is that the necessary data to decrypt this information is stored in securityd’s process memory. Here’s an example of keychain dump output.
+
+```bash
+sudo ./keychaindump
+```
+
+{% hint style="danger" %}
+Base on this comment [https://github.com/juuso/keychaindump/issues/10\#issuecomment-751218760](https://github.com/juuso/keychaindump/issues/10#issuecomment-751218760) it looks like this tools isn't working anymore in Big Sur.
+{% endhint %}
+
+### chainbreaker
+
+\*\*\*\*[**Chainbreaker**](https://github.com/n0fate/chainbreaker) can be used to extract the following types of information from an OSX keychain in a forensically sound manner:
+
+* Hashed Keychain password, suitable for cracking with [hashcat](https://hashcat.net/hashcat/) or [John the Ripper](https://www.openwall.com/john/)
+* Internet Passwords
+* Generic Passwords
+* Private Keys
+* Public Keys
+* X509 Certificates
+* Secure Notes
+* Appleshare Passwords
+
+Given the keychain unlock password, a master key obtained using [volafox](https://github.com/n0fate/volafox) or [volatility](https://github.com/volatilityfoundation/volatility), or an unlock file such as SystemKey, Chainbreaker will also provide plaintext passwords.
+
+Without one of these methods of unlocking the Keychain, Chainbreaker will display all other available information.
+
+#### Dump keychain keys
+
+```bash
+#Dump all keys of the keychain (without the passwords)
+python2.7 chainbreaker.py --dump-all /Library/Keychains/System.keychain
+```
+
+#### Dump keychain keys \(with passwords\) with SystemKey
+
+```bash
+# First, get the keychain decryption key
+## To get this decryption key you need to be root and SIP must be disabled
+hexdump -s 8 -n 24 -e '1/1 "%.2x"' /var/db/SystemKey && echo
+### Use the previous key to decrypt the passwords
+python2.7 chainbreaker.py --dump-all --key 0293847570022761234562947e0bcd5bc04d196ad2345697 /Library/Keychains/System.keychain
+```
+
+#### Dump keychain keys \(with passwords\) cracking the hash
+
+```bash
+# Get the keychain hash
+python2.7 chainbreaker.py --dump-keychain-password-hash /Library/Keychains/System.keychain
+# Crack it with hashcat
+hashcat.exe -m 23100 --keep-guessing hashes.txt dictionary.txt
+# Use the key to decrypt the passwords
+python2.7 chainbreaker.py --dump-all --key 0293847570022761234562947e0bcd5bc04d196ad2345697 /Library/Keychains/System.keychain
+```
+
+#### Dump keychain keys \(with passwords\) with memory dump
+
+[Follow these steps](./#dumping-memory-with-osxpmem) to perform a **memory dump**
+
+```bash
+#Use volafox (https://github.com/n0fate/volafox) to extract possible keychain passwords
+## Unformtunately volafox isn't working with the latest versions of MacOS
+python vol.py -i ~/Desktop/show/macosxml.mem -o keychaindump
+
+#Try to extract the passwords using the extracted keychain passwords
+python2.7 chainbreaker.py --dump-all --key 0293847570022761234562947e0bcd5bc04d196ad2345697 /Library/Keychains/System.keychain
+```
+
+#### Dump keychain keys \(with passwords\) using users password
+
+If you know the users password you can use it to **dump and decrypt keychains that belong to the user**.
+
+```bash
+#Prompt to ask for the password
+python2.7 chainbreaker.py --dump-all --password-prompt /Users/<username>/Library/Keychains/login.keychain-db
 ```
 
 ### kcpassword
@@ -669,15 +949,39 @@ For example the dynamic loader \(dyld\) ignores the DYLD\_INSERT\_LIBRARIES envi
 For more details on the security features afforded by the hardened runtime, see Apple’s documentation: “[Hardened Runtime](https://developer.apple.com/documentation/security/hardened_runtime)” 
 {% endhint %}
 
-## Crons
+## Interesting Information in Databases
 
-In MacOS several folders executing scripts with **certain frequency** can be found in:
+### Messages
 
 ```bash
-ls -lR /usr/lib/cron/tabs/ /private/var/at/jobs /etc/periodic/
+sqlite3 $HOME/Library/Messages/chat.db .tables
+sqlite3 $HOME/Library/Messages/chat.db 'select * from message'
+sqlite3 $HOME/Library/Messages/chat.db 'select * from attachment'
+sqlite3 $HOME/Library/Messages/chat.db 'select * from deleted_messages'
+sqlite3 $HOME/Suggestions/snippets.db 'select * from emailSnippets'
 ```
 
-There you can find the regular **cron** **jobs**, the **at** **jobs** \(not very used\) and the **periodic** **jobs** \(mainly used for cleaning temporary files\). The daily periodic jobs can be executed for example with: `periodic daily`.
+### Notifications
+
+You can find the Notifications data in `$(getconf DARWIN_USER_DIR)/com.apple.notificationcenter/`
+
+Most of the interesting information is going to be in **blob**. So you will need to **extract** that content and **transform** it to **human** **readable** or use **`strings`**. To access it you can do:
+
+```bash
+cd $(getconf DARWIN_USER_DIR)/com.apple.notificationcenter/
+strings $(getconf DARWIN_USER_DIR)/com.apple.notificationcenter/db2/db | grep -i -A4 slack
+```
+
+### Notes
+
+The users **notes** can be found in `~/Library/Group Containers/group.com.apple.notes/NoteStore.sqlite`
+
+```bash
+sqlite3 ~/Library/Group\ Containers/group.com.apple.notes/NoteStore.sqlite .tables
+
+#To dump it in a readable format:
+for i in $(sqlite3 ~/Library/Group\ Containers/group.com.apple.notes/NoteStore.sqlite "select Z_PK from ZICNOTEDATA;"); do sqlite3 ~/Library/Group\ Containers/group.com.apple.notes/NoteStore.sqlite "select writefile('body1.gz.z', ZDATA) from ZICNOTEDATA where Z_PK = '$i';"; zcat body1.gz.Z ; done
+```
 
 ## File Extensions Apps
 
@@ -687,7 +991,14 @@ The following line can be useful to find the applications that can open files de
 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -dump | grep -E "path:|bindings:|name:"
 ```
 
-Or use something like [https://github.com/Lord-Kamina/SwiftDefaultApps](https://github.com/Lord-Kamina/SwiftDefaultApps).
+Or use something like [**SwiftDefaultApps**](https://github.com/Lord-Kamina/SwiftDefaultApps):
+
+```bash
+./swda getSchemes #Get all the available schemes
+./swda getApps #Get all the apps declared
+./swda getUTIs #Get all the UTIs
+./swda getHandler --URL ftp #Get ftp handler
+```
 
 You can also check the extensions supported by an application doing:
 
@@ -723,40 +1034,161 @@ grep -A3 CFBundleTypeExtensions Info.plist  | grep string
 				<string>svg</string>
 ```
 
-## Risk Files Mac OS
+## Apple Scripts
 
-The files `/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/System` contains the risk associated to files depending on the file extension.
-
-The possible categories include the following:
-
-* **LSRiskCategorySafe**: **Totally** **safe**; Safari will auto-open after download
-* **LSRiskCategoryNeutral**: No warning, but **not auto-opened**
-* **LSRiskCategoryUnsafeExecutable**: **Triggers** a **warning** “This file is an application...”
-* **LSRiskCategoryMayContainUnsafeExecutable**: This is for things like archives that contain an executable. It **triggers a warning unless Safari can determine all the contents are safe or neutral**.
-
-## Specific MacOS Enumeration
+It's a scripting language used for task automation **interacting with remote processes**. It makes pretty easy to **ask other processes to perform some actions**. **Malware** may abuse these features to abuse functions exported by other processes.  
+For example, a malware could **inject arbitrary JS code in browser opened pages**. Or **auto click** some allow permissions requested to the user;
 
 ```bash
-smbutil statshares -a #View smb shares mounted to the hard drive
+tell window 1 of process “SecurityAgent” 
+     click button “Always Allow” of group 1
+end tell
+```
+
+Here you have some examples: [https://github.com/abbeycode/AppleScripts](https://github.com/abbeycode/AppleScripts)  
+Find more info about malware using applescripts [**here**](https://www.sentinelone.com/blog/how-offensive-actors-use-applescript-for-attacking-macos/).
+
+Apple scripts may be easily "**compiled**". These versions can be easily "**decompiled**" with `osadecompile`
+
+However, this scripts can also be **exported as "Read only"** \(via the "Export..." option\):
+
+![](../../.gitbook/assets/image%20%28535%29.png)
+
+```bash
+file mal.scpt
+mal.scpt: AppleScript compiled
+```
+
+and tin this case the content cannot be decompiled even with `osadecompile`
+
+However, there are still some tools that can be used to understand this kind of executables, [**read this research for more info**](https://labs.sentinelone.com/fade-dead-adventures-in-reversing-malicious-run-only-applescripts/)\). The tool [**applescript-disassembler**](https://github.com/Jinmo/applescript-disassembler) with [**aevt\_decompile**](https://github.com/SentineLabs/aevt_decompile) will be very useful to understand how the script works.
+
+## MacOS Red Teaming
+
+Red Teaming in **environments where MacOS** is used instead of Windows can be very **different**. In this guide you will find some interesting tricks for this kind of assessments:
+
+{% page-ref page="macos-red-teaming.md" %}
+
+## MacOS Automatic Enumeration Tools
+
+* **MacPEAS**: [https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS](https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS)
+* **Metasploit**: [https://github.com/rapid7/metasploit-framework/blob/master/modules/post/osx/gather/enum\_osx.rb](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/osx/gather/enum_osx.rb)
+* **SwiftBelt**: [https://github.com/cedowens/SwiftBelt](https://github.com/cedowens/SwiftBelt)
+
+## Specific MacOS Commands
+
+```bash
+#System info
+date
+cal
+uptime #show time from starting
+w #list users
+whoami #this user
+finger username #info about user
+uname -a #sysinfo
+cat /proc/cpuinfo #processor
+cat /proc/meminfo #memory
+free #check memory
+df #check disk
+
 launchctl list #List services
 atq #List "at" tasks for the user
-mdfind password #Show all the files that contains the word password
-mfind -name password #List all the files containing the word password in the name
 sysctl -a #List kernel configuration
 diskutil list #List connected hard drives
-codesign -vv -d /bin/ls #Check the signature of a binary
 nettop #Monitor network usage of processes in top style
 
-#networksetup - set or view network options: Proxies, FW options and more
+system_profiler SPSoftwareDataType #System info
+system_profiler SPPrintersDataType #Printer
+system_profiler SPApplicationsDataType #Installed Apps
+system_profiler SPFrameworksDataType #Instaled framework
+system_profiler SPDeveloperToolsDataType #Developer tools info
+system_profiler SPStartupItemDataType #Startup Items
+system_profiler SPNetworkDataType #Network Capabilities
+system_profiler SPFirewallDataType #Firewall Status
+system_profiler SPNetworkLocationDataType #Known Network
+system_profiler SPBluetoothDataType #Bluetooth Info
+system_profiler SPEthernetDataType #Ethernet Info
+system_profiler SPUSBDataType #USB info
+system_profiler SPAirPortDataType #Airport Info
+
+
+#Searches
+mdfind password #Show all the files that contains the word password
+mfind -name password #List all the files containing the word password in the name
+
+
+#Open any app
+open -a <Application Name> --hide #Open app hidden
+open some.doc -a TextEdit #Open a file in one application
+
+
+#Computer doesn't go to sleep
+caffeinate &
+
+
+#Screenshot
+## This will ask for permission to the user
+screencapture -x /tmp/ss.jpg #Save screenshot in that file
+
+
+#Get clipboard info
+pbpaste
+
+
+#system_profiler
+system_profiler --help #This command without arguments take lot of memory and time.
+system_profiler -listDataTypes
+system_profiler SPSoftwareDataType SPNetworkDataType
+
+
+#Network
+arp -i en0 -l -a #Print the macOS device's ARP table
+lsof -i -P -n | grep LISTEN
+smbutil statshares -a #View smb shares mounted to the hard drive
+
+##networksetup - set or view network options: Proxies, FW options and more
 networksetup -listallnetworkservices #List network services
 networksetup -listallhardwareports #Hardware ports
 networksetup -getinfo Wi-Fi #Wi-Fi info
 networksetup -getautoproxyurl Wi-Fi #Get proxy URL for Wifi
 networksetup -getwebproxy Wi-Fi #Wifi Web proxy
 networksetup -getftpproxy Wi-Fi #Wifi ftp proxy
+
+
+#Brew
+brew list #List installed
+brew search <text> #Search package
+brew info <formula>
+brew install <formula>
+brew uninstall <formula>
+brew cleanup #Remove older versions of installed formulae.
+brew cleanup <formula> #Remove older versions of specified formula.
+
+
+#Make the machine talk
+say hello -v diego
+#spanish: diego, Jorge, Monica
+#mexican: Juan, Paulina
+#french: Thomas, Amelie
+
+############ High privileges actions
+sudo purge #purge RAM
+#Sharing preferences
+sudo launchctl load -w /System/Library/LaunchDaemons/ssh.plist (enable ssh)
+sudo launchctl unload /System/Library/LaunchDaemons/ssh.plist (disable ssh)
+#Start apache
+sudo apachectl (start|status|restart|stop)
+ ##Web folder: /Library/WebServer/Documents/
+#Remove DNS cache
+dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+
 ```
 
 ## References
 
-* [https://taomm.org/vol1/analysis.html](https://taomm.org/vol1/analysis.html)
+* \*\*\*\*[**OS X Incident Response: Scripting and Analysis**](https://www.amazon.com/OS-Incident-Response-Scripting-Analysis-ebook/dp/B01FHOHHVS)\*\*\*\*
+* \*\*\*\*[**https://taomm.org/vol1/analysis.html**](https://taomm.org/vol1/analysis.html)\*\*\*\*
+* \*\*\*\*[**https://github.com/NicolasGrimonpont/Cheatsheet**](https://github.com/NicolasGrimonpont/Cheatsheet)\*\*\*\*
+* \*\*\*\*[**https://assets.sentinelone.com/c/sentinal-one-mac-os-?x=FvGtLJ**](https://assets.sentinelone.com/c/sentinal-one-mac-os-?x=FvGtLJ)\*\*\*\*
 

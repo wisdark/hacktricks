@@ -14,6 +14,10 @@ Timeline is a Windows characteristic that provides **chronological history** of 
 The database resides in the path `\Users\<username>\AppData\Local\ConnectedDevicesPlatform\<id>\ActivitiesCache.db`  
 This database can be open with a SQLite tool or with the tool [**WxTCmd**](https://github.com/EricZimmerman/WxTCmd) **which generates 2 files that can be opened with the tool** [**TimeLine Explorer**](https://ericzimmerman.github.io/#!index.md).
 
+### ADS/Alternate Data Streams
+
+Files downloaded may contain the **ADS Zone.Identifier** indicating **how** was **downloaded** \(from the intranet, Internet...\) and some software \(like browser\) usually put even **more** **information** like the **URL** from where the file was downloaded.
+
 ## **File Backups**
 
 ### Recycle Bin
@@ -130,7 +134,7 @@ The files in the folder WPDNSE are a copy of the original ones, then won't survi
 
 Check the file `C:\Windows\inf\setupapi.dev.log` to get the timestamps about when the USB connection was produced \(search for `Section start`\).
 
-![](../../../.gitbook/assets/image%20%28477%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%281%29.png)
+![](../../../.gitbook/assets/image%20%28477%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%282%29%20%283%29%20%281%29.png)
 
 ### USB Detective
 
@@ -265,6 +269,12 @@ In `SAM\Domains\Account\Users` you can obtain the username, the RID, last logon,
 {% page-ref page="interesting-windows-registry-keys.md" %}
 
 ## Programs Executed
+
+### Basic Windows Processes
+
+in the following page you can learn about the basic Windows processes to detect suspicious behaviours:
+
+{% page-ref page="windows-processes.md" %}
 
 ### Windows RecentAPPs
 
