@@ -414,6 +414,7 @@ Check this out before trying to bruteforce a Hash.
 ### ZIP
 
 ```bash
+#sudo apt-get install fcrackzip 
 fcrackzip -u -D -p '/usr/share/wordlists/rockyou.txt' chall.zip
 ```
 
@@ -470,7 +471,7 @@ john jwt.john #It does not work with Kali-John
 
 ```bash
 Format:USUARIO:ID:HASH_LM:HASH_NT:::
-jhon --wordlist=/usr/share/wordlists/rockyou.txt --format=NT file_NTLM.hashes
+john --wordlist=/usr/share/wordlists/rockyou.txt --format=NT file_NTLM.hashes
 hashcat -a 0 -m 1000 --username file_NTLM.hashes /usr/share/wordlists/rockyou.txt --potfile-path salida_NT.pot
 ```
 
@@ -516,12 +517,21 @@ ls /dev/mapper/ #You should find here the image mylucksopen
 mount /dev/mapper/mylucksopen /mnt
 ```
 
+Another Luks BF tutorial: [http://blog.dclabs.com.br/2020/03/bruteforcing-linux-disk-encription-luks.html?m=1](http://blog.dclabs.com.br/2020/03/bruteforcing-linux-disk-encription-luks.html?m=1)
+
 ### Mysql
 
 ```bash
 #John hash format
 <USERNAME>:$mysqlna$<CHALLENGE>*<RESPONSE>
 dbuser:$mysqlna$112233445566778899aabbccddeeff1122334455*73def07da6fba5dcc1b19c918dbd998e0d1f3f9d
+```
+
+### PGP/GPG Private key
+
+```bash
+gpg2john private_pgp.key #This will generate the hash, save it in a file
+john --wordlist=/usr/share/wordlists/rockyou.txt ./hash
 ```
 
 ## Tools
