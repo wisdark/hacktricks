@@ -34,11 +34,11 @@ Container images are stored either in private repository or public repository. F
 
 ### Image Scanning
 
-Containers can have** security vulnerabilities **either because of the base image or because of the software installed on top of the base image. Docker is working on a project called **Nautilus** that does security scan of Containers and lists the vulnerabilities. Nautilus works by comparing the each Container image layer with vulnerability repository to identify security holes.
+Containers can have **security vulnerabilities** either because of the base image or because of the software installed on top of the base image. Docker is working on a project called **Nautilus** that does security scan of Containers and lists the vulnerabilities. Nautilus works by comparing the each Container image layer with vulnerability repository to identify security holes.
 
 For more [**information read this**](https://docs.docker.com/engine/scan/).
 
-#### How to scan images <a href="how-to-scan-images" id="how-to-scan-images"></a>
+#### How to scan images <a href="#how-to-scan-images" id="how-to-scan-images"></a>
 
 The `docker scan` command allows you to scan existing Docker images using the image name or ID. For example, run the following command to scan the hello-world image:
 
@@ -137,7 +137,7 @@ ls -l /proc/<PID>/ns #Get the Group and the namespaces (some may be uniq to the 
 
 ### Capabilities
 
-Capabilities allow **finer control for the capabilities that can be allowed** for root user. Docker uses the Linux kernel capability feature to** limit the operations that can be done inside a Container** irrespective of the type of user.
+Capabilities allow **finer control for the capabilities that can be allowed** for root user. Docker uses the Linux kernel capability feature to **limit the operations that can be done inside a Container** irrespective of the type of user.
 
 {% content-ref url="../linux-capabilities.md" %}
 [linux-capabilities.md](../linux-capabilities.md)
@@ -145,7 +145,7 @@ Capabilities allow **finer control for the capabilities that can be allowed** fo
 
 ### Seccomp in Docker
 
-This is not a technique to breakout from a Docker container but a security feature that Docker uses and you should know about as it might prevent you from breaking out from docker:
+This is a security feature that allows Docker to **limit the syscalls** that can be used inside the container:
 
 {% content-ref url="seccomp.md" %}
 [seccomp.md](seccomp.md)
@@ -153,10 +153,20 @@ This is not a technique to breakout from a Docker container but a security featu
 
 ### AppArmor in Docker
 
-This is not a technique to breakout from a Docker container but a security feature that Docker uses and you should know about as it might prevent you from breaking out from docker:
+**AppArmor** is a kernel enhancement to confine **containers** to a **limited** set of **resources** with **per-program profiles**.:
 
 {% content-ref url="apparmor.md" %}
 [apparmor.md](apparmor.md)
+{% endcontent-ref %}
+
+### SELinux in Docker
+
+[SELinux](https://www.redhat.com/en/blog/latest-container-exploit-runc-can-be-blocked-selinux) is a **labeling** **system**. Every **process** and every **file** system object has a **label**. SELinux policies define rules about what a **process label is allowed to do with all of the other labels** on the system.
+
+Container engines launch **container processes with a single confined SELinux label**, usually `container_t`, and then set the container inside of the container to be labeled `container_file_t`. The SELinux policy rules basically say that the **`container_t` processes can only read/write/execute files labeled `container_file_t`**.
+
+{% content-ref url="../selinux.md" %}
+[selinux.md](../selinux.md)
 {% endcontent-ref %}
 
 ### AuthZ & AuthN
@@ -167,7 +177,19 @@ An authorization plugin **approves** or **denies** **requests** to the Docker **
 [authz-and-authn-docker-access-authorization-plugin.md](authz-and-authn-docker-access-authorization-plugin.md)
 {% endcontent-ref %}
 
-### no-new-privileges
+## Interesting Docker Flags
+
+### --privileged flag
+
+In the following page you can learn **what does the `--privileged` flag imply**:
+
+{% content-ref url="docker-privileged.md" %}
+[docker-privileged.md](docker-privileged.md)
+{% endcontent-ref %}
+
+### --security-opt
+
+#### no-new-privileges
 
 If you are running a container where an attacker manages to get access as a low privilege user. If you have a **miss-configured suid binary**, the attacker may abuse it and **escalate privileges inside** the container. Which, may allow him to escape from it.
 
@@ -176,6 +198,27 @@ Running the container with the **`no-new-privileges`** option enabled will **pre
 ```
 docker run -it --security-opt=no-new-privileges:true nonewpriv
 ```
+
+#### Other
+
+```bash
+#You can manually add/drop capabilities with
+--cap-add
+--cap-drop
+
+# You can manually disable seccomp in docker with
+--security-opt seccomp=unconfined
+
+# You can manually disable seccomp in docker with
+--security-opt apparmor=unconfined
+
+# You can manually disable selinux in docker with
+--security-opt label:disable
+```
+
+For more **`--security-opt`** options check: [https://docs.docker.com/engine/reference/run/#security-configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
+
+## Other Security Considerations
 
 ### Managing Secrets
 
@@ -238,19 +281,19 @@ If you’re using [Kubernetes](https://kubernetes.io/docs/concepts/configuration
 
 ### Kata Containers
 
-**Kata Containers** is an open source community working to build a secure container runtime with lightweight virtual machines that feel and perform like containers, but provide** stronger workload isolation using hardware virtualization** technology as a second layer of defense.
+**Kata Containers** is an open source community working to build a secure container runtime with lightweight virtual machines that feel and perform like containers, but provide **stronger workload isolation using hardware virtualization** technology as a second layer of defense.
 
 {% embed url="https://katacontainers.io/" %}
 
 ### Summary Tips
 
-* **Do not use the `--privileged` flag or mount a **[**Docker socket inside the container**](https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/)**.** The docker socket allows for spawning containers, so it is an easy way to take full control of the host, for example, by running another container with the `--privileged` flag.
-* Do **not run as root inside the container. Use a **[**different user**](https://docs.docker.com/develop/develop-images/dockerfile\_best-practices/#user)** and **[**user namespaces**](https://docs.docker.com/engine/security/userns-remap/)**.** The root in the container is the same as on host unless remapped with user namespaces. It is only lightly restricted by, primarily, Linux namespaces, capabilities, and cgroups.
-* [**Drop all capabilities**](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities)** (`--cap-drop=all`) and enable only those that are required** (`--cap-add=...`). Many of workloads don’t need any capabilities and adding them increases the scope of a potential attack.
-* [**Use the “no-new-privileges” security option**](https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/)** **to prevent processes from gaining more privileges, for example through suid binaries.
+* **Do not use the `--privileged` flag or mount a** [**Docker socket inside the container**](https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/)**.** The docker socket allows for spawning containers, so it is an easy way to take full control of the host, for example, by running another container with the `--privileged` flag.
+* Do **not run as root inside the container. Use a** [**different user**](https://docs.docker.com/develop/develop-images/dockerfile\_best-practices/#user) **and** [**user namespaces**](https://docs.docker.com/engine/security/userns-remap/)**.** The root in the container is the same as on host unless remapped with user namespaces. It is only lightly restricted by, primarily, Linux namespaces, capabilities, and cgroups.
+* [**Drop all capabilities**](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) **(`--cap-drop=all`) and enable only those that are required** (`--cap-add=...`). Many of workloads don’t need any capabilities and adding them increases the scope of a potential attack.
+* [**Use the “no-new-privileges” security option**](https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/) to prevent processes from gaining more privileges, for example through suid binaries.
 * ****[**Limit resources available to the container**](https://docs.docker.com/engine/reference/run/#runtime-constraints-on-resources)**.** Resource limits can protect the machine from denial of service attacks.
-* **Adjust **[**seccomp**](https://docs.docker.com/engine/security/seccomp/)**, **[**AppArmor**](https://docs.docker.com/engine/security/apparmor/)** (or SELinux) **profiles to restrict the actions and syscalls available for the container to the minimum required.
-* **Use **[**official docker images**](https://docs.docker.com/docker-hub/official\_images/) **and require signatures **or build your own based on them. Don’t inherit or use [backdoored](https://arstechnica.com/information-technology/2018/06/backdoored-images-downloaded-5-million-times-finally-removed-from-docker-hub/) images. Also store root keys, passphrase in a safe place. Docker has plans to manage keys with UCP.
+* **Adjust** [**seccomp**](https://docs.docker.com/engine/security/seccomp/)**,** [**AppArmor**](https://docs.docker.com/engine/security/apparmor/) **(or SELinux)** profiles to restrict the actions and syscalls available for the container to the minimum required.
+* **Use** [**official docker images**](https://docs.docker.com/docker-hub/official\_images/) **and require signatures** or build your own based on them. Don’t inherit or use [backdoored](https://arstechnica.com/information-technology/2018/06/backdoored-images-downloaded-5-million-times-finally-removed-from-docker-hub/) images. Also store root keys, passphrase in a safe place. Docker has plans to manage keys with UCP.
 * **Regularly** **rebuild** your images to **apply security patches to the host an images.**
 * Manage your **secrets wisely** so it's difficult to the attacker to access them.
 * If you **exposes the docker daemon use HTTPS** with client & server authentication.
@@ -274,6 +317,11 @@ If you have access to the docker socket or have access to a user in the **docker
 {% content-ref url="authz-and-authn-docker-access-authorization-plugin.md" %}
 [authz-and-authn-docker-access-authorization-plugin.md](authz-and-authn-docker-access-authorization-plugin.md)
 {% endcontent-ref %}
+
+## Hardening Docker
+
+* The tool [**docker-bench-security**](https://github.com/docker/docker-bench-security) is a script that checks for dozens of common best-practices around deploying Docker containers in production. The tests are all automated, and are based on the [CIS Docker Benchmark v1.3.1](https://www.cisecurity.org/benchmark/docker/).\
+  You need to run the tool from the host running docker or from a container with enough privileges. Find out **how to run it in the README:** [**https://github.com/docker/docker-bench-security**](https://github.com/docker/docker-bench-security).
 
 ## References
 

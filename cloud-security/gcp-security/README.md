@@ -1,8 +1,6 @@
 # GCP Security
 
-![](<../../.gitbook/assets/image (629) (1) (1).png>)
-
-## Security concepts <a href="security-concepts" id="security-concepts"></a>
+## Security concepts <a href="#security-concepts" id="security-concepts"></a>
 
 ### **Resource hierarchy**
 
@@ -21,15 +19,17 @@ A virtual machine (called a Compute Instance) is a resource. A resource resides 
 
 ### **IAM Roles**
 
-There are** three types** of roles in IAM:
+There are **three types** of roles in IAM:
 
 * **Basic/Primitive roles**, which include the **Owner**, **Editor**, and **Viewer** roles that existed prior to the introduction of IAM.
-* **Predefined roles**, which provide granular access for a specific service and are managed by Google Cloud. There are a lot of predefined roles, you can **see all of them with the privileges they have **[**here**](https://cloud.google.com/iam/docs/understanding-roles#predefined\_roles).
+* **Predefined roles**, which provide granular access for a specific service and are managed by Google Cloud. There are a lot of predefined roles, you can **see all of them with the privileges they have** [**here**](https://cloud.google.com/iam/docs/understanding-roles#predefined\_roles).
 * **Custom roles**, which provide granular access according to a user-specified list of permissions.
 
 There are thousands of permissions in GCP. In order to check if a role has a permissions you can [**search the permission here**](https://cloud.google.com/iam/docs/permissions-reference) and see which roles have it.
 
-**You can also **[**search here predefined roles**](https://cloud.google.com/iam/docs/understanding-roles#product\_specific\_documentation)** offered by each product.**
+**You can also** [**search here predefined roles**](https://cloud.google.com/iam/docs/understanding-roles#product\_specific\_documentation) **offered by each product.**
+
+**You can find a** [**list of all the granular permissions here**](https://cloud.google.com/iam/docs/custom-roles-permissions-support)**.**
 
 #### Basic roles
 
@@ -66,9 +66,21 @@ Or to see the IAM policy [assigned to a single Compute Instance](https://cloud.g
 gcloud compute instances get-iam-policy [INSTANCE] --zone [ZONE]
 ```
 
+### **Organization Policies**
+
+The IAM policies indicates the permissions principals has over resources via roles which ara assigned granular permissions. Organization policies **restrict how those service can be used or which features are enabled disabled**. This helps in order to improve the least privilege of each resource in the gcp environment.
+
+### **Terraform IAM Policies, Bindings and Memberships**
+
+As defined by terraform in [https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google\_project\_iam](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google\_project\_iam) using terraform with GCP there are different ways to grant a principal access over a resource:
+
+* **Memberships**: You set **principals as members of roles** **without restrictions** over the role or the principals. You can put a user as a member of a role and then put a group as a member of the same role and also set those principals (user and group) as member of other roles.
+* **Bindings**: Several **principals can be binded to a role**. Those **principals can still be binded or be members of other roles**. However, if a principal which isn’t binded to the role is set as **member of a binded role**, the next time the **binding is applied, the membership will disappear**.
+* **Policies**: A policy is **authoritative**, it indicates roles and principals and then, **those principals cannot have more roles and those roles cannot have more principals** unless that policy is modified (not even in other policies, bindings or memberships). Therefore, when a role or principal is specified in policy all its privileges are **limited by that policy**. Obviously, this can be bypassed in case the principal is given the option to modify the policy or privilege escalation permissions (like create a new principal and bind him a new role).
+
 ### **Service accounts**
 
-Virtual machine instances are usually **assigned a service account**. Every GCP project has a [default service account](https://cloud.google.com/compute/docs/access/service-accounts#default\_service\_account), and this will be assigned to new Compute Instances unless otherwise specified. Administrators can choose to use either a custom account or no account at all. This service account** can be used by any user or application on the machine** to communicate with the Google APIs. You can run the following command to see what accounts are available to you:
+Virtual machine instances are usually **assigned a service account**. Every GCP project has a [default service account](https://cloud.google.com/compute/docs/access/service-accounts#default\_service\_account), and this will be assigned to new Compute Instances unless otherwise specified. Administrators can choose to use either a custom account or no account at all. This service account **can be used by any user or application on the machine** to communicate with the Google APIs. You can run the following command to see what accounts are available to you:
 
 ```
 gcloud auth list
@@ -81,7 +93,7 @@ PROJECT_NUMBER-compute@developer.gserviceaccount.com
 PROJECT_ID@appspot.gserviceaccount.com
 ```
 
-A** custom service account **will look like this:
+A **custom service account** will look like this:
 
 ```
 SERVICE_ACCOUNT_NAME@PROJECT_NAME.iam.gserviceaccount.com
@@ -91,7 +103,7 @@ If `gcloud auth list` returns **multiple** accounts **available**, something int
 
 ### **Access scopes**
 
-The **service account** on a GCP Compute Instance will **use** **OAuth** to communicate with the Google Cloud APIs. When [access scopes](https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam) are used, the OAuth token that is generated for the instance will **have a **[**scope**](https://oauth.net/2/scope/)** limitation included**. This defines **what API endpoints it can authenticate to**. It does **NOT define the actual permissions**.
+The **service account** on a GCP Compute Instance will **use** **OAuth** to communicate with the Google Cloud APIs. When [access scopes](https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam) are used, the OAuth token that is generated for the instance will **have a** [**scope**](https://oauth.net/2/scope/) **limitation included**. This defines **what API endpoints it can authenticate to**. It does **NOT define the actual permissions**.
 
 When using a **custom service account**, Google [recommends](https://cloud.google.com/compute/docs/access/service-accounts#service\_account\_permissions) that access scopes are not used and to **rely totally on IAM**. The web management portal actually enforces this, but access scopes can still be applied to instances using custom service accounts programatically.
 
@@ -128,7 +140,7 @@ This `cloud-platform` scope is what we are really hoping for, as it will allow u
 
 It is possible to encounter some **conflicts** when using both **IAM and access scopes**. For example, your service account may have the IAM role of `compute.instanceAdmin` but the instance you've breached has been crippled with the scope limitation of `https://www.googleapis.com/auth/compute.readonly`. This would prevent you from making any changes using the OAuth token that's automatically assigned to your instance.
 
-### Default credentials <a href="default-credentials" id="default-credentials"></a>
+### Default credentials <a href="#default-credentials" id="default-credentials"></a>
 
 **Default service account token**
 
@@ -136,14 +148,14 @@ The **metadata server** available to a given instance will **provide** any user/
 
 You can retrieve and inspect the token with the following curl command:
 
-```
-$ curl "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token" \
+```bash
+curl "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token" \
     -H "Metadata-Flavor: Google"
 ```
 
 Which will receive a response like the following:
 
-```
+```json
 {
       "access_token":"ya29.AHES6ZRN3-HlhAPya30GnW_bHSb_QtAS08i85nHq39HE3C2LTrCARA",
       "expires_in":3599,
@@ -151,7 +163,7 @@ Which will receive a response like the following:
  }
 ```
 
-This token is the **combination of the service account and access scopes** assigned to the Compute Instance. So, even though your service account may have **every IAM privilege **imaginable, this particular OAuth token **might be limited** in the APIs it can communicate with due to **access scopes**.
+This token is the **combination of the service account and access scopes** assigned to the Compute Instance. So, even though your service account may have **every IAM privilege** imaginable, this particular OAuth token **might be limited** in the APIs it can communicate with due to **access scopes**.
 
 **Application default credentials**
 
@@ -247,6 +259,14 @@ We've automated this completely using [this python script](https://gitlab.com/gi
 [gcp-buckets-brute-force-and-privilege-escalation.md](gcp-buckets-brute-force-and-privilege-escalation.md)
 {% endcontent-ref %}
 
+#### Phishing
+
+You could **OAuth phish** a user with high privileges.
+
+#### Dorks
+
+* **Github**: auth\_provider\_x509\_cert\_url extension:json
+
 ## Generic GCP Security Checklists
 
 * [Google Cloud Computing Platform CIS Benchmark](https://www.cisecurity.org/cis-benchmarks/)
@@ -260,23 +280,23 @@ Supposing that you have compromised a VM in GCP, there are some **GCP privileges
 [gcp-local-privilege-escalation-ssh-pivoting.md](gcp-local-privilege-escalation-ssh-pivoting.md)
 {% endcontent-ref %}
 
-If you have found some [**SSRF vulnerability in a GCP environment check this page**](../../pentesting-web/ssrf-server-side-request-forgery.md#6440).
+If you have found some [**SSRF vulnerability in a GCP environment check this page**](../../pentesting-web/ssrf-server-side-request-forgery/#6440).
 
-## Cloud privilege escalation <a href="cloud-privilege-escalation" id="cloud-privilege-escalation"></a>
+## GCP Post Exploitation <a href="#cloud-privilege-escalation" id="cloud-privilege-escalation"></a>
 
-### GCP Interesting Permissions <a href="organization-level-iam-permissions" id="organization-level-iam-permissions"></a>
+### GCP Interesting Permissions <a href="#organization-level-iam-permissions" id="organization-level-iam-permissions"></a>
 
-The most common way once you have obtained some cloud credentials of has compromised some service running inside a cloud is to **abuse miss-configured privileges **the compromised account may have. So, the first thing you should do is to enumerate your privileges.
+The most common way once you have obtained some cloud credentials of has compromised some service running inside a cloud is to **abuse miss-configured privileges** the compromised account may have. So, the first thing you should do is to enumerate your privileges.
 
 Moreover, during this enumeration, remember that **permissions can be set at the highest level of "Organization"** as well.
 
-{% content-ref url="gcp-interesting-permissions.md" %}
-[gcp-interesting-permissions.md](gcp-interesting-permissions.md)
+{% content-ref url="gcp-interesting-permissions/" %}
+[gcp-interesting-permissions](gcp-interesting-permissions/)
 {% endcontent-ref %}
 
-### Bypassing access scopes <a href="bypassing-access-scopes" id="bypassing-access-scopes"></a>
+### Bypassing access scopes <a href="#bypassing-access-scopes" id="bypassing-access-scopes"></a>
 
-When [access scopes](https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam) are used, the OAuth token that is generated for the computing instance (VM) will **have a **[**scope**](https://oauth.net/2/scope/)** limitation included**. However, you might be able to **bypass** this limitation and exploit the permissions the compromised account has.
+When [access scopes](https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam) are used, the OAuth token that is generated for the computing instance (VM) will **have a** [**scope**](https://oauth.net/2/scope/) **limitation included**. However, you might be able to **bypass** this limitation and exploit the permissions the compromised account has.
 
 The **best way to bypass** this restriction is either to **find new credentials** in the compromised host, to **find the service key to generate an OUATH token** without restriction or to **jump to a different VM less restricted**.
 
@@ -290,7 +310,7 @@ Also keep an eye out for instances that have the default service account assigne
 
 Google states very clearly [**"Access scopes are not a security mechanism… they have no effect when making requests not authenticated through OAuth"**](https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam).
 
-Therefore, if you **find a **[**service account key**](https://cloud.google.com/iam/docs/creating-managing-service-account-keys)** **stored on the instance you can bypass the limitation. These are **RSA private keys** that can be used to authenticate to the Google Cloud API and **request a new OAuth token with no scope limitations**.
+Therefore, if you **find a** [**service account key**](https://cloud.google.com/iam/docs/creating-managing-service-account-keys) stored on the instance you can bypass the limitation. These are **RSA private keys** that can be used to authenticate to the Google Cloud API and **request a new OAuth token with no scope limitations**.
 
 Check if any service account has exported a key at some point with:
 
@@ -320,7 +340,7 @@ The contents of the file look something like this:
 }
 ```
 
-Or, if **generated from the CLI **they will look like this:
+Or, if **generated from the CLI** they will look like this:
 
 ```json
 {
@@ -348,19 +368,17 @@ curl https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=$TOKEN
 
 You should see `https://www.googleapis.com/auth/cloud-platform` listed in the scopes, which means you are **not limited by any instance-level access scopes**. You now have full power to use all of your assigned IAM permissions.
 
-
-
-### Service account impersonation <a href="service-account-impersonation" id="service-account-impersonation"></a>
+### Service account impersonation <a href="#service-account-impersonation" id="service-account-impersonation"></a>
 
 Impersonating a service account can be very useful to **obtain new and better privileges**.
 
 There are three ways in which you can [impersonate another service account](https://cloud.google.com/iam/docs/understanding-service-accounts#impersonating\_a\_service\_account):
 
 * Authentication **using RSA private keys** (covered [above](./#bypassing-access-scopes))
-* Authorization **using Cloud IAM policies** (covered [here](gcp-iam-escalation.md#iam.serviceaccounttokencreator))
+* Authorization **using Cloud IAM policies** (covered [here](broken-reference/))
 * **Deploying jobs on GCP services** (more applicable to the compromise of a user account)
 
-### Granting access to management console <a href="granting-access-to-management-console" id="granting-access-to-management-console"></a>
+### Granting access to management console <a href="#granting-access-to-management-console" id="granting-access-to-management-console"></a>
 
 Access to the [GCP management console](https://console.cloud.google.com) is **provided to user accounts, not service accounts**. To log in to the web interface, you can **grant access to a Google account** that you control. This can be a generic "**@gmail.com**" account, it does **not have to be a member of the target organization**.
 
@@ -376,21 +394,21 @@ If you succeeded here, try **accessing the web interface** and exploring from th
 
 This is the **highest level you can assign using the gcloud tool**.
 
-### Spreading to Workspace via domain-wide delegation of authority <a href="spreading-to-g-suite-via-domain-wide-delegation-of-authority" id="spreading-to-g-suite-via-domain-wide-delegation-of-authority"></a>
+### Spreading to Workspace via domain-wide delegation of authority <a href="#spreading-to-g-suite-via-domain-wide-delegation-of-authority" id="spreading-to-g-suite-via-domain-wide-delegation-of-authority"></a>
 
-[**Workspace**](https://gsuite.google.com) is Google's c**ollaboration and productivity platform** which consists of things like Gmail, Google Calendar, Google Drive, Google Docs, etc.&#x20;
+[**Workspace**](https://gsuite.google.com) is Google's c**ollaboration and productivity platform** which consists of things like Gmail, Google Calendar, Google Drive, Google Docs, etc.
 
 **Service accounts** in GCP can be granted the **rights to programatically access user data** in Workspace by impersonating legitimate users. This is known as [domain-wide delegation](https://developers.google.com/admin-sdk/reports/v1/guides/delegation). This includes actions like **reading** **email** in GMail, accessing Google Docs, and even creating new user accounts in the G Suite organization.
 
 Workspace has [its own API](https://developers.google.com/gsuite/aspects/apis), completely separate from GCP. Permissions are granted to Workspace and **there isn't any default relation between GCP and Workspace**.
 
-However, it's possible to **give** a service account **permissions** over a Workspace user. If you have access to the Web UI at this point, you can browse to **IAM -> Service Accounts** and see if any of the accounts have **"Enabled" listed under the "domain-wide delegation" column**. The column itself may **not appear if no accounts are enabled **(you can read the details of each service account to confirm this). As of this writing, there is no way to do this programatically, although there is a [request for this feature](https://issuetracker.google.com/issues/116182848) in Google's bug tracker.
+However, it's possible to **give** a service account **permissions** over a Workspace user. If you have access to the Web UI at this point, you can browse to **IAM -> Service Accounts** and see if any of the accounts have **"Enabled" listed under the "domain-wide delegation" column**. The column itself may **not appear if no accounts are enabled** (you can read the details of each service account to confirm this). As of this writing, there is no way to do this programatically, although there is a [request for this feature](https://issuetracker.google.com/issues/116182848) in Google's bug tracker.
 
 To create this relation it's needed to **enable it in GCP and also in Workforce**.
 
 #### Test Workspace access
 
-To test this access you'll need the** service account credentials exported in JSON** format. You may have acquired these in an earlier step, or you may have the access required now to create a key for a service account you know to have domain-wide delegation enabled.
+To test this access you'll need the **service account credentials exported in JSON** format. You may have acquired these in an earlier step, or you may have the access required now to create a key for a service account you know to have domain-wide delegation enabled.
 
 This topic is a bit tricky… your service account has something called a "client\_email" which you can see in the JSON credential file you export. It probably looks something like `account-name@project-name.iam.gserviceaccount.com`. If you try to access Workforce API calls directly with that email, even with delegation enabled, you will fail. This is because the Workforce directory will not include the GCP service account's email addresses. Instead, to interact with Workforce, we need to actually impersonate valid Workforce users.
 
@@ -426,10 +444,10 @@ If you have success creating a new admin account, you can log on to the [Google 
 Another promising way to **escalate privileges inside the cloud is to enumerate as much sensitive information as possible** from the services that are being used. Here you can find some enumeration recommendations for some GCP services, but more could be used so feel free to submit PRs indicating ways to enumerate more services:
 
 {% hint style="info" %}
-Note that you can enumerate most resources with `list` (list items of that type), `describe` (describe parent and children items) and  `get-iam-policy` (get policy attached to that specific resource).&#x20;
+Note that you can enumerate most resources with `list` (list items of that type), `describe` (describe parent and children items) and `get-iam-policy` (get policy attached to that specific resource).
 {% endhint %}
 
-There is a gcloud API endpoint that aims to **list all the resources the accessible from the used user accoun**t, it's in alpha bet and only supports a couple of resources, but maybe in the future you can list all you have access to with it: [https://helpmanual.io/man1/gcloud\_alpha\_resources\_list/](https://helpmanual.io/man1/gcloud\_alpha\_resources\_list/)&#x20;
+There is a gcloud API endpoint that aims to **list all the resources the accessible from the used user accoun**t, it's in alpha bet and only supports a couple of resources, but maybe in the future you can list all you have access to with it: [https://helpmanual.io/man1/gcloud\_alpha\_resources\_list/](https://helpmanual.io/man1/gcloud\_alpha\_resources\_list/)
 
 {% content-ref url="gcp-buckets-enumeration.md" %}
 [gcp-buckets-enumeration.md](gcp-buckets-enumeration.md)
@@ -458,6 +476,31 @@ There is a gcloud API endpoint that aims to **list all the resources the accessi
 {% content-ref url="gcp-looting.md" %}
 [gcp-looting.md](gcp-looting.md)
 {% endcontent-ref %}
+
+### Persistance
+
+{% content-ref url="gcp-persistance.md" %}
+[gcp-persistance.md](gcp-persistance.md)
+{% endcontent-ref %}
+
+## Capture gcloud, gsutil... network
+
+```bash
+gcloud config set proxy/address 127.0.0.1
+gcloud config set proxy/port 8080
+gcloud config set proxy/type http
+gcloud config set auth/disable_ssl_validation True
+
+# If you don't want to completely disable ssl_validation use:
+gcloud config set core/custom_ca_certs_file cert.pem
+
+# Back to normal
+gcloud config unset proxy/address
+gcloud config unset proxy/port
+gcloud config unset proxy/type
+gcloud config unset auth/disable_ssl_validation
+gcloud config unset core/custom_ca_certs_file
+```
 
 ## References
 

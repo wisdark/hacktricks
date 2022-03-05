@@ -5,7 +5,7 @@ Do you use **Hacktricks every day**? Did you find the book **very** **useful**? 
 [**Support Hacktricks through github sponsors**](https://github.com/sponsors/carlospolop) **so we can dedicate more time to it and also get access to the Hacktricks private group where you will get the help you need and much more!**
 {% endhint %}
 
-If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**\
+If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**\
 If you want to **share some tricks with the community** you can also submit **pull requests** to [**https://github.com/carlospolop/hacktricks**](https://github.com/carlospolop/hacktricks) that will be reflected in this book and don't forget to **give ⭐** on **github** to **motivate** **me** to continue developing this book.
 
 ## Assets discoveries
@@ -116,6 +116,12 @@ python3 favihash.py -f https://target/favicon.ico -t targets.txt -s
 
 Simply said, favihash will allow us to discover domains that have the same favicon icon hash as our target.
 
+Moreover, you can also search technologies using the favicon hash as explained in [**this blog post**](https://medium.com/@Asm0d3us/weaponizing-favicon-ico-for-bugbounties-osint-and-what-not-ace3c214e139). That means that if you know the **hash of the favicon of a vulnerable version of a web tech** you can search if in shodan and **find more vulnerable places**:
+
+```bash
+hodan search org:"Target" http.favicon.hash:116323821 --fields ip_str,port --separator " " | awk '{print $1":"$2}'
+```
+
 ### Other ways
 
 **Note that you can use this technique to discover more domain names every time you find a new domain.**
@@ -199,6 +205,10 @@ You found **dev-int.bigcompanycdn.com**, make a Shodan query like the following:
 
 * http.html:”dev-int.bigcompanycdn.com”
 * http.html:”[https://dev-int-bigcompanycdn.com”](https://dev-int-bigcompanycdn.xn--com-9o0a)
+
+It is possible to use Shodan from the official CLI to quickly analyze all IPs in a file and see which ones have open ports/ vulnerabilities.
+
+* https://book.hacktricks.xyz/external-recon-methodology
 
 ### DNS Brute force
 
@@ -308,7 +318,7 @@ To perform the proposed idea you can use [**EyeWitness**](https://github.com/For
 
 ## Cloud Assets
 
-Just with some **specific keywords** identifying the company it's possible to enumerate possible cloud assets belonging to them with tools like [**cloud_enum**](https://github.com/initstring/cloud_enum)**,** [**CloudScraper**](https://github.com/jordanpotti/CloudScraper) **or** [**cloudlist**](https://github.com/projectdiscovery/cloudlist)**.**
+Just with some **specific keywords** identifying the company it's possible to enumerate possible cloud assets belonging to them with tools like [**cloud\_enum**](https://github.com/initstring/cloud\_enum)**,** [**CloudScraper**](https://github.com/jordanpotti/CloudScraper) **or** [**cloudlist**](https://github.com/projectdiscovery/cloudlist)**.**
 
 ## Recapitulation 1
 
@@ -331,7 +341,7 @@ Then, it's time for the real Bug Bounty hunt! In this methodology I'm **not goin
 [github-leaked-secrets.md](github-leaked-secrets.md)
 {% endcontent-ref %}
 
-You can also search for leaked secrets in all open repository platforms using: [https://searchcode.com/?q=auth_key](https://searchcode.com/?q=auth_key)
+You can also search for leaked secrets in all open repository platforms using: [https://searchcode.com/?q=auth\_key](https://searchcode.com/?q=auth\_key)
 
 ## [**Pentesting Web Methodology**](../pentesting/pentesting-web/)
 
@@ -350,10 +360,10 @@ As you can see there is a lot of different vulnerabilities to search for.
 
 There are several tools out there that will perform part of the proposed actions against a given scope.
 
-* \*\*\*\*[**https://github.com/yogeshojha/rengine**](https://github.com/yogeshojha/rengine)\*\*\*\*
-* \*\*\*\*[**https://github.com/j3ssie/Osmedeus**](https://github.com/j3ssie/Osmedeus)\*\*\*\*
-* \*\*\*\*[**https://github.com/six2dez/reconftw**](https://github.com/six2dez/reconftw)\*\*\*\*
-* \*\*\*\*[**https://github.com/hackerspider1/EchoPwn**](https://github.com/hackerspider1/EchoPwn) _\*\*_- A little old and not updated
+* [**https://github.com/yogeshojha/rengine**](https://github.com/yogeshojha/rengine)
+* [**https://github.com/j3ssie/Osmedeus**](https://github.com/j3ssie/Osmedeus)
+* [**https://github.com/six2dez/reconftw**](https://github.com/six2dez/reconftw)
+* [**https://github.com/hackerspider1/EchoPwn**](https://github.com/hackerspider1/EchoPwn) - A little old and not updated
 
 ## **References**
 

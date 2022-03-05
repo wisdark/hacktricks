@@ -2,11 +2,11 @@
 
 {% hint style="danger" %}
 Do you use **Hacktricks every day**? Did you find the book **very** **useful**? Would you like to **receive extra help** with cybersecurity questions? Would you like to **find more and higher quality content on Hacktricks**?\
-[**Support Hacktricks through github sponsors**](https://github.com/sponsors/carlospolop)** so we can dedicate more time to it and also get access to the Hacktricks private group where you will get the help you need and much more!**
+[**Support Hacktricks through github sponsors**](https://github.com/sponsors/carlospolop) **so we can dedicate more time to it and also get access to the Hacktricks private group where you will get the help you need and much more!**
 {% endhint %}
 
-If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks **or** PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**\
-If you want to **share some tricks with the community** you can also submit **pull requests** to [**https://github.com/carlospolop/hacktricks**](https://github.com/carlospolop/hacktricks) that will be reflected in this book and don't forget to** give ⭐** on **github** to **motivate** **me** to continue developing this book.
+If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**\
+If you want to **share some tricks with the community** you can also submit **pull requests** to [**https://github.com/carlospolop/hacktricks**](https://github.com/carlospolop/hacktricks) that will be reflected in this book and don't forget to **give ⭐** on **github** to **motivate** **me** to continue developing this book.
 
 ## Basic overview
 
@@ -18,7 +18,7 @@ Main concepts of an Active Directory:
 
 1. **Directory** – Contains all the information about the objects of the Active directory
 2. **Object** – An object references almost anything inside the directory (a user, group, shared folder...)
-3. **Domain** – The objects of the directory are contained inside the domain. Inside a "forest" more than one domain can exist and each of them will have their own objects collection.&#x20;
+3. **Domain** – The objects of the directory are contained inside the domain. Inside a "forest" more than one domain can exist and each of them will have their own objects collection.
 4. **Tree** – Group of domains with the same root. Example: _dom.local, email.dom.local, www.dom.local_
 5. **Forest** – The forest is the highest level of the organization hierarchy and is composed by a group of trees. The trees are connected by trust relationships.
 
@@ -47,77 +47,82 @@ You can take a lot to [https://wadcoms.github.io/](https://wadcoms.github.io) to
 
 If you just have access to an AD environment but you don't have any credentials/sessions you could:
 
-* **Pentest the network:** Scan the network, find machines and open ports and try to **exploit vulnerabilities** or **extract credentials** from them (for example, [printers could be very interesting targets](ad-information-in-printers.md)**. Take a look to the General **[**Pentesting Methodology**](../../pentesting-methodology.md) to find more information about how to do this.
+* **Pentest the network:** Scan the network, find machines and open ports and try to **exploit vulnerabilities** or **extract credentials** from them (for example, [printers could be very interesting targets](ad-information-in-printers.md)**. Take a look to the General** [**Pentesting Methodology**](../../pentesting-methodology.md) to find more information about how to do this.
 * **Check for null and Guest access on smb services** (this won't work on modern Windows versions):
   * `enum4linux -a -u "" -p "" <DC IP> && enum4linux -a -u "guest" -p "" <DC IP>`
   * `smbmap -u "" -p "" -P 445 -H <DC IP> && smbmap -u "guest" -p "" -P 445 -H <DC IP>`
   * `smbclient -U '%' -L //<DC IP> && smbclient -U 'guest%' -L //`
-  * [**A more detailed guide on how to enumerate a SMB server can be found here.**](broken-reference)
+  * [**A more detailed guide on how to enumerate a SMB server can be found here.**](broken-reference/)
 * **Enumerate Ldap**:
   * `nmap -n -sV --script "ldap* and not brute" -p 389 <DC IP>`
   * [**A more detailed guide on how to enumerate LDAP can be found here.**](../../pentesting/pentesting-ldap.md)
 * **Poison the network**
   * Gather credentials [**impersonating services with Responder**](../../pentesting/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md)
-  * Access host by [abusing the relay attack](../../pentesting/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md#relay-attack)****
+  * Access host by [abusing the relay attack](../../pentesting/pentesting-network/spoofing-llmnr-nbt-ns-mdns-dns-and-wpad-and-relay-attacks.md#relay-attack)
   * Gather credentials **exposing** [**fake UPnP services with evil-S**](../../pentesting/pentesting-network/spoofing-ssdp-and-upnp-devices.md)[**SDP**](https://medium.com/@nickvangilder/exploiting-multifunction-printers-during-a-penetration-test-engagement-28d3840d8856)
-* **OSINT**: Try to **extract possible usernames** from services (mainly web) inside the domain environments and also from the publicly available web pages of the company. If you find the complete names of company workers, you could try different AD **username conventions (**[**read this**](https://activedirectorypro.com/active-directory-user-naming-convention/)**)**. The most common conventions are: _NameSurname_, _Name.Surname_, _NamSur_ (3letters of each), _Nam.Sur_, _NSurname_, _N.Surname_, _SurnameName_, _Surname.Name_, _SurnameN_, _Surname.N_, 3 _random letters and 3 random numbers_ (abc123). You could also try **statistically most used usernames**: [https://github.com/insidetrust/statistically-likely-usernames](https://github.com/insidetrust/statistically-likely-usernames) **Read the following Username enumeration section to learn how to find if a username is valid or not.**
+* [**OSINT**](https://book.hacktricks.xyz/external-recon-methodology):
+  * Extract usernames/names from internal documents, social media, services (mainly web) inside the domain environments and also from the publicly available.
+  * If you find the complete names of company workers, you could try different AD **username conventions (**[**read this**](https://activedirectorypro.com/active-directory-user-naming-convention/)). The most common conventions are: _NameSurname_, _Name.Surname_, _NamSur_ (3letters of each), _Nam.Sur_, _NSurname_, _N.Surname_, _SurnameName_, _Surname.Name_, _SurnameN_, _Surname.N_, 3 _random letters and 3 random numbers_ (abc123).
+  * Tools:
+    * [w0Tx/generate-ad-username](https://github.com/w0Tx/generate-ad-username)
+    * [urbanadventurer/username-anarchy](https://github.com/urbanadventurer/username-anarchy)
 
 ### User enumeration
 
-When an **invalid username is requested** the server will respond using the **Kerberos error** code _**KRB5KDC\_ERR\_C\_PRINCIPAL\_UNKNOWN**_, allowing us to determine that the username was invalid. **Valid usernames** will illicit either the **TGT in a AS-REP** response **or** the error _**KRB5KDC\_ERR\_PREAUTH\_REQUIRED**_, indicating that the user is required to perform pre-authentication.
+When an **invalid username is requested** the server will respond using the **Kerberos error** code _KRB5KDC\_ERR\_C\_PRINCIPAL\_UNKNOWN_, allowing us to determine that the username was invalid. **Valid usernames** will illicit either the **TGT in a AS-REP** response or the error _KRB5KDC\_ERR\_PREAUTH\_REQUIRED_, indicating that the user is required to perform pre-authentication.
 
 ```
+./kerbrute_linux_amd64 userenum -d lab.ropnop.com usernames.txt
 nmap -p 88 --script=krb5-enum-users --script-args="krb5-enum-users.realm='DOMAIN'" <IP>
 Nmap -p 88 --script=krb5-enum-users --script-args krb5-enum-users.realm='<domain>',userdb=/root/Desktop/usernames.txt <IP>
 msf> use auxiliary/gather/kerberos_enumusers
-./kerbrute_linux_amd64 userenum -d lab.ropnop.com usernames.txt
 crackmapexec smb dominio.es  -u '' -p '' --users | awk '{print $4}' | uniq
-enum4linux -U 10.10.10.161 | grep 'user:' | sed 's/user:\[//g' | sed 's/\]//g' | awk '{print $1}'
 ```
-
-You could also use the **impacket script of ASREPRoast** to enumerate valid usernames.
 
 ### Knowing one or several usernames
 
-Ok, so you know you have already a valid username but no passwords...Then try:
+Ok, so you know you have already a valid username but no passwords... Then try:
 
-* [**ASREPRoast**](asreproast.md): If a user **doesn't have** the attribute _**DONT\_REQ\_PREAUTH**_ you can **request a AS\_REP message** for that user that will contain some data encrypted by a derivation of the password of the user.
-* [**Password Spraying**](password-spraying.md): Let's **try** the most **common passwords** with each of the discovered users, maybe some user is using a bad password (keep in mind the password policy)
-* A final option if the accounts cannot be locked is the [**traditional bruteforce**](password-spraying.md)****
+* [**ASREPRoast**](asreproast.md): If a user **doesn't have** the attribute _DONT\_REQ\_PREAUTH_ you can **request a AS\_REP message** for that user that will contain some data encrypted by a derivation of the password of the user.
+* [**Password Spraying**](password-spraying.md): Let's try the most **common passwords** with each of the discovered users, maybe some user is using a bad password (keep in mind the password policy!) or could login with empty password: [Invoke-SprayEmptyPassword.ps1](https://github.com/S3cur3Th1sSh1t/Creds/blob/master/PowershellScripts/Invoke-SprayEmptyPassword.ps1).
 
-## Enumerating Active Directory (Some creds/Session)
+## Enumerating Active Directory WITH credentials/session
 
-For this phase you need to have **compromised the credentials or a session of a valid domain account.**
+For this phase you need to have **compromised the credentials or a session of a valid domain account.** If you have some valid credentials or a shell as a domain user, **you should remember that the options given before are still options to compromise other users**.
 
 ### Enumeration
 
-If you have some valid credentials or a shell as a domain user, **you should remember that the options given before are still options to compromise other users**.\
-Regarding [**ASREPRoast**](asreproast.md)you can now find every possible vulnerable user, and regarding [**Password Spraying**](password-spraying.md) you can get a **list of all the usernames** and try the password of the compromised account (if you know it). It's very easy to obtain all the domain usernames from Windows (`net user /domain` ,`Get-DomainUser`or `wmic useraccount get name,sid`). In_\* linux\\_\* you can use: `GetADUsers.py -all -dc-ip 10.10.10.110 domain.com/username`
+#### Extracting all domain users
+
+It's very easy to obtain all the domain usernames from Windows (`net user /domain` ,`Get-DomainUser`or `wmic useraccount get name,sid`). In Linux, you can use: `GetADUsers.py -all -dc-ip 10.10.10.110 domain.com/username` or `enum4linux -a -u "user" -p "password" <DC IP>`
 
 Having compromised an account is a **big step to start compromising the whole domain**, because you are going to be able to start the **Active Directory Enumeration:**
 
-* You could use some[ Windows binaries from the CMD to perform a basic recon](../basic-cmd-for-pentesters.md#domain-info), but using [powershell for recon](../basic-powershell-for-pentesters/) will probably be stealthier, and you could even [**use powerview**](../basic-powershell-for-pentesters/powerview.md) **to extract more detailed information**. Always **learn what a CMD or powershell/powerview command does** before executing it, this way you will know **how stealth are you being**.
-* Another amazing tool for recon in an active directory is [**BloodHound**](bloodhound.md). It is **not very stealthy** (depending on the collection methods you use), but **if you don't care** about that, you should totally give it a **try**.
-* If you are using **Linux**, you could also [enumerate the domain using **pywerview**](https://github.com/the-useless-one/pywerview)**.**
-* You could also **try** [**https://github.com/tomcarver16/ADSearch**](https://github.com/tomcarver16/ADSearch)
+Regarding [**ASREPRoast**](asreproast.md)you can now find every possible vulnerable user, and regarding [**Password Spraying**](password-spraying.md) you can get a **list of all the usernames** and try the password of the compromised account, empty passwords and new promising passwords.
+
+* You could use some[Windows binaries from the CMD to perform a basic recon](../basic-cmd-for-pentesters.md#domain-info), but using [powershell for recon](../basic-powershell-for-pentesters/) will probably be stealthier, and you could even [**use powerview**](../basic-powershell-for-pentesters/powerview.md) **to extract more detailed information**. Always **learn what a CMD or powershell/powerview command does** before executing it, this way you will know **how stealth are you being**.
+* Another amazing tool for recon in an active directory is [**BloodHound**](bloodhound.md). It is **not very stealthy** (depending on the collection methods you use), but **if you don't care** about that, you should totally give it a **try**. Find where users can RDP, find path to other groups, etc.
+* Look in the LDAP database, with **ldapsearch** or **AdExplorer.exe** to look for credentials in fields _userPassword_ & _unixUserPassword_, or even for _Description_.
+* If you are using **Linux**, you could also enumerate the domain using [the-useless-one/pywerview](https://github.com/the-useless-one/pywerview).
+* You could also try automated tools as:
+  * [tomcarver16/ADSearch](https://github.com/tomcarver16/ADSearch)
+  * [61106960/adPEAS](https://github.com/61106960/adPEAS)
 
 **Even if this Enumeration section looks small this is the most important part of all. Access the links (mainly the one of cmd, powershell, powerview and BloodHound), learn how to enumerate a domain and practice until you feel comfortable. During an assessment, this will be the key moment to find your way to DA or to decide that nothing can be done.**
 
 ### **Kerberoast**
 
-The goal of **Kerberoasting** is to harvest **TGS tickets for services that run on behalf of user accounts** in the AD, not computer accounts. Thus, **part** of these TGS **tickets** are **encrypted** with **keys** derived from user passwords. As a consequence, their credentials could be **cracked offline**.\
-You can know that a **user account** is being used as a **service** because the property **"ServicePrincipalName"** is **not null**.\
-**Find more information about this attack** [**in the Kerberoast page**](kerberoast.md)**.**
+The goal of Kerberoasting is to harvest **TGS tickets for services that run on behalf of domain user accounts**, not computer accounts. Thus, part of these TGS tickets are **encrypted wit keys derived from user passwords**. As a consequence, their credentials could be **cracked offline**. You can know that a **user account** is being used as a **service** because the property **"ServicePrincipalName"** is **not null**. **Find more information about this attack** [**in the Kerberoast page**](kerberoast.md)**.**
+
+### Remote connexion (RDP, SSH, FTP, Win-RM, etc)
+
+Once you have obtained some credentials you could check if you have access to any **machine**. For that matter, you could use **CrackMapExec** to attempt connecting on several servers with different protocols, accordingly to your ports scans.
 
 ### Local Privilege Escalation
 
-If you have compromised credentials or a session as a regular domain user and you have **access** with this user to **any machine in the domain** you should try to find your way to **escalate privileges locally**. This is because only with admin privileges you will be able to **dump hashes of other users** in memory (LSASS) and locally (SAM).\
-There is a complete page in this book about [**local privilege escalation in Windows**](../windows-local-privilege-escalation/) and a [**checklist**](../checklist-windows-privilege-escalation.md)**. Also, don't forget to use **[**WinPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite).
+If you have compromised credentials or a session as a regular domain user and you have **access** with this user to **any machine in the domain** you should try to find your way to **escalate privileges locally and looting for credentials**. This is because only with local administrator privileges you will be able to **dump hashes of other users** in memory (LSASS) and locally (SAM).
 
-### Win-RM
-
-Once you have obtained some credentials you could check if you have **access** to any **machine** using the **win-rm service**.\
-[**More information about how to use and abuse win-rm here.**](../../pentesting/5985-5986-pentesting-winrm.md)
+There is a complete page in this book about [**local privilege escalation in Windows**](../windows-local-privilege-escalation/) and a [**checklist**](../checklist-windows-privilege-escalation.md). Also, don't forget to use [**WinPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite).
 
 ## Privesc on Active Directory (Some "privileged" Creds/Session)
 
@@ -211,7 +216,7 @@ And if someone tries to delete this user from the Domain Admins (for example) in
 ### **DSRM Credentials**
 
 There is a **local administrator** account inside each **DC**. Having admin privileges in this machine, you can use mimikatz to **dump the local Administrator hash**. Then, modifying a registry to **activate this password** so you can remotely access to this local Administrator user.\
-[**More information about DSRM Credentials here.**](dsrm-credentials.md)****
+[**More information about DSRM Credentials here.**](dsrm-credentials.md)\*\*\*\*
 
 ### **ACL Persistence**
 
@@ -238,7 +243,7 @@ You can create you **own SSP** to **capture** in **clear text** the **credential
 
 It registers a **new Domain Controller** in the AD and uses it to **push attributes** (SIDHistory, SPNs...) on specified objects **without** leaving any **logs** regarding the **modifications**. You **need DA** privileges and be inside the **root domain**.\
 Note that if you use wrong data, pretty ugly logs will appear.\
-[**More information about DCShadow here.**](dcshadow.md)****
+[**More information about DCShadow here.**](dcshadow.md)\*\*\*\*
 
 ## **Forest Privilege Escalation -** Domain Trusts
 
@@ -275,7 +280,7 @@ A trust relationship can also be **transitive** (A trust B, B trust C, then A tr
 1. **Enumerate** the trusting relationships
 2. Check if any **security principal** (user/group/computer) has **access** to resources of the **other domain**, maybe by ACE entries or by being in groups of the other domain. Look for **relationships across domains** (the trust was created for this probably).
    1. kerberoast in this case could be another option.
-3. **Compromise** the **accounts** which can **pivot** through domains.&#x20;
+3. **Compromise** the **accounts** which can **pivot** through domains.
 
 There are three **main** ways that security principals (users/groups/computer) from one domain can have access into resources in another foreign/trusting domain:
 
@@ -285,7 +290,7 @@ There are three **main** ways that security principals (users/groups/computer) f
 
 ### Child-to-Parent forest privilege escalation
 
-Also, notice that there are **2 trusted keys**, one for _Child --> Parent_ and another one for P_arent --> Child_.
+Also, notice that there are **2 trusted keys**, one for _Child --> Parent_ and another one for P\_arent --> Child\_.
 
 ```bash
 Invoke-Mimikatz -Command '"lsadump::trust /patch"' -ComputerName dc.my.domain.local
@@ -304,7 +309,7 @@ Invoke-Mimikatz -Command '"kerberos::golden /user:Administrator /domain:dollarco
 /ticket:C:\path\save\ticket.kirbi
 ```
 
-For finding the **SID** of the **"Enterprise Admins"** group you can find the **SID** of the **root domain** and set it in S-1-5-21_root domain_-519. For example, from root domain SID _S-1-5-21-280534878-1496970234-700767426_ the "Enterprise Admins"group SID is _S-1-5-21-280534878-1496970234-700767426-519_
+For finding the **SID** of the **"Enterprise Admins"** group you can find the **SID** of the **root domain** and set it in S-1-5-21\_root domain\_-519. For example, from root domain SID _S-1-5-21-280534878-1496970234-700767426_ the "Enterprise Admins"group SID is _S-1-5-21-280534878-1496970234-700767426-519_
 
 [http://www.harmj0y.net/blog/redteaming/a-guide-to-attacking-domain-trusts/](http://www.harmj0y.net/blog/redteaming/a-guide-to-attacking-domain-trusts/)
 
@@ -371,7 +376,7 @@ Invoke-Mimikatz -Command '"kerberos::golden /user:Administrator /domain:<current
 **For user objects:**
 
 * ObjectSID (different from the domain)
-* lastLogon, lastlogontimestamp&#x20;
+* lastLogon, lastlogontimestamp
 * Logoncount (very low number is suspicious)
 * whenCreated
 * Badpwdcount (very low number is suspicious)
@@ -402,6 +407,6 @@ If you don't execute this from a Domain Controller, ATA is going to catch you, s
 * [Python script to enumerate active directory](https://github.com/ropnop/windapsearch)
 * [Python script to enumerate active directory](https://github.com/CroweCybersecurity/ad-ldap-enum)
 
-![](<../../.gitbook/assets/68747470733a2f2f7777772e6275796d6561636f666665652e636f6d2f6173736574732f696d672f637573746f6d5f696d616765732f6f72616e67655f696d672e706e67 (6) (4) (10).png>)
+![](<../../.gitbook/assets/68747470733a2f2f7777772e6275796d6561636f666665652e636f6d2f6173736574732f696d672f637573746f6d5f696d616765732f6f72616e67655f696d672e706e67 (6) (4) (1) (1) (2).png>)
 
 ​[**Buy me a coffee here**](https://www.buymeacoffee.com/carlospolop)

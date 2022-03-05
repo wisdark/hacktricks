@@ -164,7 +164,7 @@ As we can see above, each Container has its own hostname and domainname.
 ### User namespace
 
 User namespaces are available from Linux kernel versions > 3.8. With User namespace, **userid and groupid in a namespace is different from host machine’s userid and groupid** for the same user and group. When Docker Containers use User namespace, each **container gets their own userid and groupid**. For example, **root** user **inside** **Container** is **not** root **inside** **host** **machine**. This provides greater security. In case the Container gets compromised and the hacker gets root access inside Container, the hacker still cannot break inside the host machine since the root user inside the Container is not root inside the host machine. Docker introduced support for user namespace in version 1.10.\
-To use user namespace, Docker daemon needs to be started with `–userns-remap=default`(In ubuntu 14.04, this can be done by modifying `/etc/default/docker` and then executing `sudo service docker restart`)\
+To use user namespace, Docker daemon needs to be started with **`--userns-remap=default`**(In ubuntu 14.04, this can be done by modifying `/etc/default/docker` and then executing `sudo service docker restart`)\
 Following output shows Docker daemon running with user namespace turned on:
 
 ```
@@ -195,6 +195,11 @@ smakam14@jungle1:/usr$ cat /proc/8955/uid_map
 As we can see above, userid 0(root) in container 1 is mapped to userid 231072 in host machine.\
 In the current Docker user namespace implementation, UID and GID mapping happens at Docker daemon level. There is work ongoing to allow the mappings to be done at Container level so that multi-tenant support is possible.
 
+### CGroup Namespace
+
+Each cgroup namespace has its **own set of cgroup root directories**. These root directories are the base points for the relative locations displayed in the corresponding records in the `/proc/[pid]/cgroup` file. When a process creates a new cgroup namespace using clone(2) or unshare(2) with the CLONE\_NEWCGROUP flag, its current cgroups directories become the cgroup root directories of the new namespace. (This applies both for the cgroups version 1 hierarchies and the cgroups version 2 unified hierarchy.)
+
 ## References
 
 * [https://sreeninet.wordpress.com/2016/03/06/docker-security-part-2docker-engine/](https://sreeninet.wordpress.com/2016/03/06/docker-security-part-2docker-engine/)
+* [https://man7.org/linux/man-pages/man7/cgroup\_namespaces.7.html](https://man7.org/linux/man-pages/man7/cgroup\_namespaces.7.html)

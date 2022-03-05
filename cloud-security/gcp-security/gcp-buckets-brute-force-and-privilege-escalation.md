@@ -17,7 +17,7 @@ Note that other cloud resources could be searched for and that some times these 
 
 As other clouds, GCP also offers Buckets to its users. These buckets might be  (to list the content, read, write...).
 
-![](<../../.gitbook/assets/image (628) (1).png>)
+![](<../../.gitbook/assets/image (628) (1) (1).png>)
 
 The following tools can be used to generate variations of the name given and search for miss-configured buckets with that names:
 
@@ -25,7 +25,7 @@ The following tools can be used to generate variations of the name given and sea
 
 ## Privilege Escalation
 
-If the bucket policy allowed either “allUsers” or “allAuthenticatedUsers” to **write to their bucket policy **(the **storage.buckets.setIamPolicy** permission)**, **then anyone can modify the bucket policy and grant himself full access.
+If the bucket policy allowed either “allUsers” or “allAuthenticatedUsers” to **write to their bucket policy** (the **storage.buckets.setIamPolicy** permission)**,** then anyone can modify the bucket policy and grant himself full access.
 
 ### Check Permissions
 
