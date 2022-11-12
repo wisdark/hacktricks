@@ -1,5 +1,21 @@
 # Android Forensics
 
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
 ## Locked Device
 
 To start extracting data from an Android device it has to be unlocked. If it's locked you can:
@@ -10,7 +26,7 @@ To start extracting data from an Android device it has to be unlocked. If it's l
 
 ## Data Adquisition
 
-Create an [android backup using adb](mobile-apps-pentesting/android-app-pentesting/adb-commands.md#backup) and extract it using [Android Backup Extractor](https://sourceforge.net/projects/adbextractor/): `java -jar abe.jar unpack file.backup file.tar`
+Create an [android backup using adb](mobile-pentesting/android-app-pentesting/adb-commands.md#backup) and extract it using [Android Backup Extractor](https://sourceforge.net/projects/adbextractor/): `java -jar abe.jar unpack file.backup file.tar`
 
 ### If root access or physical connection to JTAG interface
 
@@ -21,3 +37,19 @@ Create an [android backup using adb](mobile-apps-pentesting/android-app-pentesti
 ### Memory
 
 Use Linux Memory Extractor (LiME) to extract the RAM information. It's a kernel extension that should be loaded via adb.
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>

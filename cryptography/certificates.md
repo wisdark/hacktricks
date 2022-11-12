@@ -1,5 +1,23 @@
 # Certificates
 
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+<figure><img src="../.gitbook/assets/image (10).png" alt=""><figcaption></figcaption></figure>
+
+**Security Skills as a Service** platform bridges the current skill set gap by combining **global offensive security talent with smart automation**, providing real-time data you need to make informed decisions.
+
+{% embed url="https://www.syncubes.com/" %}
+
 ## What is a Certificate
 
 In cryptography, a **public key certificate,** also known as a **digital certificate** or **identity certificate,** is an electronic document used to prove the ownership of a public key. The certificate includes information about the key, information about the identity of its owner (called the subject), and the digital signature of an entity that has verified the certificate's contents (called the issuer). If the signature is valid, and the software examining the certificate trusts the issuer, then it can use that key to communicate securely with the certificate's subject.
@@ -43,7 +61,7 @@ The most common format for public key certificates is defined by [X.509](https:/
     * In a Web certificate this will appear as a _X509v3 extension_ and will have the value `TLS Web Server Authentication`
   * **Subject Alternative Name:** Allows users to specify additional host **names** for a single SSL **certificate**. The use of the SAN extension is standard practice for SSL certificates, and it's on its way to replacing the use of the common **name**.
   * **Basic Constraint:** This extension describes whether the certificate is a CA certificate or an end entity certificate. A CA certificate is something that signs certificates of others and a end entity certificate is the certificate used in a web page for example (the last par of the chain).
-  * &#x20;**Subject Key Identifier** (SKI): This extension declares a unique **identifier** for the public **key** in the certificate. It is required on all CA certificates. CAs propagate their own SKI to the Issuer **Key Identifier** (AKI) extension on issued certificates. It's the hash of the subject public key.
+  * **Subject Key Identifier** (SKI): This extension declares a unique **identifier** for the public **key** in the certificate. It is required on all CA certificates. CAs propagate their own SKI to the Issuer **Key Identifier** (AKI) extension on issued certificates. It's the hash of the subject public key.
   * **Authority Key Identifier**: It contains a key identifier which is derived from the public key in the issuer certificate. It's the hash of the issuer public key.
   * **Authority Information Access** (AIA): This extension contains at most two types of information :
     * Information about **how to get the issuer of this certificate** (CA issuer access method)
@@ -51,11 +69,11 @@ The most common format for public key certificates is defined by [X.509](https:/
   * **CRL Distribution Points**: This extension identifies the location of the CRL from which the revocation of this certificate can be checked. The application that processes the certificate can get the location of the CRL from this extension, download the CRL and then check the revocation of this certificate.
   * **CT Precertificate SCTs**: Logs of Certificate transparency regarding the certificate
 
-### Difference between OSCP and CRL Distribution Points
+### Difference between OCSP and CRL Distribution Points
 
 **OCSP** (RFC 2560) is a standard protocol that consists of an **OCSP client and an OCSP responder**. This protocol **determines revocation status of a given digital public-key certificate** **without** having to **download** the **entire CRL**.\
 **CRL** is the **traditional method** of checking certificate validity. A **CRL provides a list of certificate serial numbers** that have been revoked or are no longer valid. CRLs let the verifier check the revocation status of the presented certificate while verifying it. CRLs are limited to 512 entries.\
-From [here](https://www.arubanetworks.com/techdocs/ArubaOS%206\_3\_1\_Web\_Help/Content/ArubaFrameStyles/CertRevocation/About\_OCSP\_and\_CRL.htm#:\~:text=OCSP%20\(RFC%202560\)%20is%20a,to%20download%20the%20entire%20CRL.\&text=A%20CRL%20provides%20a%20list,or%20are%20no%20longer%20valid.).
+From [here](https://www.arubanetworks.com/techdocs/ArubaOS%206\_3\_1\_Web\_Help/Content/ArubaFrameStyles/CertRevocation/About\_OCSP\_and\_CRL.htm).
 
 ### What is Certificate Transparency
 
@@ -81,9 +99,9 @@ There are different formats that can be used to store a certificate.
 
 * It is the most common format used for certificates
 * Most servers (Ex: Apache) expects the certificates and private key to be in a separate files\
-  \-   Usually they are Base64 encoded ASCII files\
-  \-   Extensions used for PEM certificates are .cer, .crt, .pem, .key files\
-  \-   Apache and similar server uses PEM format certificates
+  \- Usually they are Base64 encoded ASCII files\
+  \- Extensions used for PEM certificates are .cer, .crt, .pem, .key files\
+  \- Apache and similar server uses PEM format certificates
 
 #### **DER Format**
 
@@ -176,3 +194,21 @@ openssl pkcs7 -print_certs -in certificatename.p7b -out certificatename.cer
 ```
 openssl pkcs12 -export -in certificatename.cer -inkey privateKey.key -out certificatename.pfx -certfile  cacert.cer
 ```
+
+<img src="../.gitbook/assets/image (10).png" alt="" data-size="original">
+
+**Security Skills as a Service** platform bridges the current skill set gap by combining **global offensive security talent with smart automation**, providing real-time data you need to make informed decisions.
+
+{% embed url="https://www.syncubes.com/" %}
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>

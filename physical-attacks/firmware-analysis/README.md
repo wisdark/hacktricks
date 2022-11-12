@@ -1,5 +1,21 @@
 # Firmware Analysis
 
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
 ## Introduction
 
 Firmware is a type of software that provides communication and control over a device’s hardware components. It’s the first piece of code that a device runs. Usually, it **boots the operating system** and provides very specific runtime services for programs by **communicating with various hardware components**. Most, if not all, electronic devices have firmware.
@@ -158,9 +174,9 @@ Some **interesting things to look** for inside the firmware:
 
 Tools that search for this kind of information (even if you always should take a manual look and get comfortable with the filesystem structure, the tools can help you finding **hidden things**):
 
-* ****[**LinPEAS**](https://github.com/carlospolop/PEASS-ng)**:** Awesome bash script that in this case is useful for searching **sensitive information** inside the filesystem. Just **chroot inside the firmware filesystem and run it**.
-* ****[**Firmwalker**](https://github.com/craigz28/firmwalker)**:** Bash script to search for potential sensitive information
-* ****[**The Firmware Analysis and Comparison Tool (FACT)**](https://github.com/fkie-cad/FACT\_core):&#x20;
+* [**LinPEAS**](https://github.com/carlospolop/PEASS-ng)**:** Awesome bash script that in this case is useful for searching **sensitive information** inside the filesystem. Just **chroot inside the firmware filesystem and run it**.
+* [**Firmwalker**](https://github.com/craigz28/firmwalker)**:** Bash script to search for potential sensitive information
+* [**The Firmware Analysis and Comparison Tool (FACT)**](https://github.com/fkie-cad/FACT\_core):
   * Identification of software components such as operating system, CPU architecture, and third-party components along with their associated version information
   * Extraction of firmware filesystem (s ) from images
   * Detection of certificates and private keys
@@ -172,9 +188,10 @@ Tools that search for this kind of information (even if you always should take a
   * Detection of binary mitigations such as NX, DEP, ASLR, stack canaries, RELRO, and FORTIFY\_SOURCE
   * REST API
   * and more...
-* ****[**FwAnalyzer**](https://github.com/cruise-automation/fwanalyzer): FwAnalyzer is a tool to analyze (ext2/3/4), FAT/VFat, SquashFS, UBIFS filesystem images, cpio archives, and directory content using a set of configurable rules.
-* ****[**ByteSweep**](https://gitlab.com/bytesweep/bytesweep): A Free Software IoT Firmware Security Analysis Tool
-* ****[**ByteSweep-go**](https://gitlab.com/bytesweep/bytesweep-go): This is a complete rewrite of the original ByteSweep project in Go.
+* [**FwAnalyzer**](https://github.com/cruise-automation/fwanalyzer): FwAnalyzer is a tool to analyze (ext2/3/4), FAT/VFat, SquashFS, UBIFS filesystem images, cpio archives, and directory content using a set of configurable rules.
+* [**ByteSweep**](https://gitlab.com/bytesweep/bytesweep): A Free Software IoT Firmware Security Analysis Tool
+* [**ByteSweep-go**](https://gitlab.com/bytesweep/bytesweep-go): This is a complete rewrite of the original ByteSweep project in Go.
+* [**EMBA**](https://github.com/e-m-b-a/emba): _EMBA_ is designed as the central firmware analysis tool for penetration testers. It supports the complete security analysis process starting with the _firmware extraction_ process, doing _static analysis_ and _dynamic analysis_ via emulation and finally generating a report. _EMBA_ automatically discovers possible weak spots and vulnerabilities in firmware. Examples are insecure binaries, old and outdated software components, potentially vulnerable scripts or hard-coded passwords.
 
 {% hint style="warning" %}
 Inside the filesystem you can also find **source code** of programs (that you should always **check**), but also **compiled binaries**. These programs might be somehow exposed and you should **decompile** and **check** them for potential vulnerabilities.
@@ -234,11 +251,11 @@ There are several tools, based in **qemu** in general, that will allow you to em
 
 * [**https://github.com/firmadyne/firmadyne**](https://github.com/firmadyne/firmadyne)**:**
   * You need to install several things, configure postgres, then run the extractor.py script to extract the firmware, use the getArch.sh script to get the architecture. Then, use tar2db.py and makeImage.sh scripts to store information from the extracted image in the database and generate a QEMU image that we can emulate. The, use inferNetwork.sh script to get the network interfaces, and finally use the run.sh script, which is automatically created in the ./scratch/1/folder.
-* [**https://github.com/attify/firmware-analysis-toolkit**](https://github.com/attify/firmware-analysis-toolkit)**:**&#x20;
-  * This tool depends on firmadyne and automates the process of emulating the firmware using firmadynee. you need to configure `fat.config` before using it: `sudo python3 ./fat.py IoTGoat-rpi-2.img --qemu 2.5.0`&#x20;
-* ****[**https://github.com/therealsaumil/emux**](https://github.com/therealsaumil/emux)****
-* ****[**https://github.com/getCUJO/MIPS-X**](https://github.com/getCUJO/MIPS-X)****
-* ****[**https://github.com/qilingframework/qiling#qltool**](https://github.com/qilingframework/qiling#qltool)
+* [**https://github.com/attify/firmware-analysis-toolkit**](https://github.com/attify/firmware-analysis-toolkit)**:**
+  * This tool depends on firmadyne and automates the process of emulating the firmware using firmadynee. you need to configure `fat.config` before using it: `sudo python3 ./fat.py IoTGoat-rpi-2.img --qemu 2.5.0`
+* [**https://github.com/therealsaumil/emux**](https://github.com/therealsaumil/emux)
+* [**https://github.com/getCUJO/MIPS-X**](https://github.com/getCUJO/MIPS-X)
+* [**https://github.com/qilingframework/qiling#qltool**](https://github.com/qilingframework/qiling#qltool)
 
 ## **Dynamic analysis**
 
@@ -301,8 +318,8 @@ Utilize the following references for further guidance:
 
 ## Prepared OSs to analyze Firmware
 
-* ****[**AttifyOS**](https://github.com/adi0x90/attifyos): AttifyOS is a distro intended to help you perform security assessment and penetration testing of Internet of Things (IoT) devices. It saves you a lot of time by providing a pre-configured environment with all the necessary tools loaded.
-* ****[**EmbedOS**](https://github.com/scriptingxss/EmbedOS): Embedded security testing operating system based on Ubuntu 18.04 preloaded with firmware security testing tools.
+* [**AttifyOS**](https://github.com/adi0x90/attifyos): AttifyOS is a distro intended to help you perform security assessment and penetration testing of Internet of Things (IoT) devices. It saves you a lot of time by providing a pre-configured environment with all the necessary tools loaded.
+* [**EmbedOS**](https://github.com/scriptingxss/EmbedOS): Embedded security testing operating system based on Ubuntu 18.04 preloaded with firmware security testing tools.
 
 ## Vulnerable firmware to practice
 
@@ -329,3 +346,19 @@ To practice discovering vulnerabilities in firmware, use the following vulnerabl
 ## Trainning and Cert
 
 * [https://www.attify-store.com/products/offensive-iot-exploitation](https://www.attify-store.com/products/offensive-iot-exploitation)
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>

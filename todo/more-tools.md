@@ -1,6 +1,23 @@
-# More Tools
 
-## BlueTeam
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+
+# BlueTeam
 
 * [https://github.com/yarox24/attack\_monitor](https://github.com/yarox24/attack\_monitor)
 * [https://capsule8.com/blog/dont-get-kicked-out-a-tale-of-rootkits-and-other-backdoors/](https://capsule8.com/blog/dont-get-kicked-out-a-tale-of-rootkits-and-other-backdoors/)
@@ -8,7 +25,7 @@
 * [https://github.com/PaperMtn/lil-pwny](https://github.com/PaperMtn/lil-pwny) : Check disclosed accounts
 * [https://github.com/rabobank-cdc/DeTTECT](https://github.com/rabobank-cdc/DeTTECT)
 
-## OSINT
+# OSINT
 
 * [https://github.com/3vangel1st/kamerka](https://github.com/3vangel1st/kamerka)
 * [https://github.com/BullsEye0/google\_dork\_list](https://github.com/BullsEye0/google\_dork\_list)
@@ -29,7 +46,7 @@
 * [https://github.com/zricethezav/gitleaks](https://github.com/zricethezav/gitleaks)
 * [https://www.nmmapper.com/sys/tools/subdomainfinder/](https://www.nmmapper.com/sys/tools/subdomainfinder/) : 8 Subdomain finder tools, sublist3r, amass and more
 
-## **WEB**
+# **WEB**
 
 * [https://github.com/AlisamTechnology/ATSCAN](https://github.com/AlisamTechnology/ATSCAN)
 * [https://github.com/momenbasel/KeyFinder](https://github.com/momenbasel/KeyFinder)
@@ -56,12 +73,12 @@
 * [https://github.com/Quitten/Autorize](https://github.com/Quitten/Autorize) : Automatic authentication tests (remove cookies and try to send the request)
 * [https://github.com/pikpikcu/xrcross](https://github.com/pikpikcu/xrcross): XRCross is a Reconstruction, Scanner, and a tool for penetration / BugBounty testing. This tool was built to test (XSS|SSRF|CORS|SSTI|IDOR|RCE|LFI|SQLI) vulnerabilities
 
-## Windows
+# Windows
 
 * [https://github.com/Mr-Un1k0d3r/PoisonHandler](https://github.com/Mr-Un1k0d3r/PoisonHandler) : Lateral movements
 * [https://freddiebarrsmith.com/trix/trix.html](https://freddiebarrsmith.com/trix/trix.html) : LOL bins
 * [https://gist.github.com/netbiosX/ee35fcd3722e401a38136cff7b751d79](https://gist.github.com/netbiosX/ee35fcd3722e401a38136cff7b751d79) ([https://pentestlab.blog/2020/01/13/persistence-image-file-execution-options-injection/](https://pentestlab.blog/2020/01/13/persistence-image-file-execution-options-injection/)): Persistence
-* [https://github.com/odzhan/injection](https://github.com/odzhan/injection) : Windows Process Injection techniques&#x20;
+* [https://github.com/odzhan/injection](https://github.com/odzhan/injection) : Windows Process Injection techniques
 * [https://github.com/BankSecurity/Red\_Team](https://github.com/BankSecurity/Red\_Team) : Red Team scripts
 * [https://github.com/l0ss/Grouper2](https://github.com/l0ss/Grouper2) : find security-related misconfigurations in Active Directory Group Policy.
 * [https://www.wietzebeukema.nl/blog/powershell-obfuscation-using-securestring](https://www.wietzebeukema.nl/blog/powershell-obfuscation-using-securestring) : Securestring obfuscation
@@ -72,7 +89,7 @@
 * [https://bestestredteam.com/2018/10/02/tracking-pixel-in-microsoft-office-document/](https://bestestredteam.com/2018/10/02/tracking-pixel-in-microsoft-office-document/) : Track who open a document
 * [https://github.com/Integration-IT/Active-Directory-Exploitation-Cheat-Sheet](https://github.com/Integration-IT/Active-Directory-Exploitation-Cheat-Sheet) : Active Directory Cheat Sheet
 
-## Firmware
+# Firmware
 
 Tools q veo q pueden molar para analizar firmares (automaticas):
 
@@ -93,7 +110,7 @@ y por aqui la metodologia owasp para analizar firmware: [https://github.com/scri
 
 Firmware emulation: FIRMADYNE (https://github.com/firmadyne/firmadyne/) is a platform for automating the emulation and dynamic analysis of Linux-based firmware.
 
-## OTHER
+# OTHER
 
 * [https://twitter.com/HackAndDo/status/1202695084543791117](https://twitter.com/HackAndDo/status/1202695084543791117)
 * [https://github.com/weev3/LKWA](https://github.com/weev3/LKWA)
@@ -114,3 +131,22 @@ Firmware emulation: FIRMADYNE (https://github.com/firmadyne/firmadyne/) is a pla
 * [https://github.com/rackerlabs/scantron](https://github.com/rackerlabs/scantron) : automating scanning
 * [https://github.com/doyensec/awesome-electronjs-hacking](https://github.com/doyensec/awesome-electronjs-hacking) : This list aims to cover Electron.js security related topics.
 * [https://github.com/serain/bbrecon](https://github.com/serain/bbrecon) : Info about BB programs
+
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+

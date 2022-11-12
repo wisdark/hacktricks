@@ -1,6 +1,23 @@
-# AppArmor
 
-## Basic Information
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+
+# Basic Information
 
 **AppArmor** is a kernel enhancement to confine **programs** to a **limited** set of **resources **with **per-program profiles**. Profiles can **allow** **capabilities** like network access, raw socket access, and the permission to read, write, or execute files on matching paths.
 
@@ -13,21 +30,21 @@ AppArmor profiles can be in one of **two modes**:
 
 AppArmor differs from some other MAC systems on Linux: it is **path-based**, it allows mixing of enforcement and complain mode profiles, it uses include files to ease development, and it has a far lower barrier to entry than other popular MAC systems.
 
-### Parts of AppArmor
+## Parts of AppArmor
 
 * **Kernel module**: Does the actual work
 * **Policies**: Defines the behaviour and containment
 * **Parser**: Loads the policies into kernel
 * **Utilities**: Usermode programs to interact with apparmor
 
-### Profiles path
+## Profiles path
 
 Apparmor profiles are usually saved in _**/etc/apparmor.d/**_\
 With `sudo aa-status` you will be able to list the binaries that are restricted by some profile. If you can change the char "/" for a dot of the path of each listed binary and you will obtain the name of the apparmor profile inside the mentioned folder.
 
 For example, a **apparmor** profile for _/usr/bin/man_ will be located in _/etc/apparmor.d/usr.bin.man_
 
-### Commands
+## Commands
 
 ```bash
 aa-status     #check the current status 
@@ -39,7 +56,7 @@ aa-logprof    #used to change the policy when the binary/program is changed
 aa-mergeprof  #used to merge the policies
 ```
 
-## Creating a profile
+# Creating a profile
 
 * In order to indicate the affected executable, **absolute paths and wildcards** are allowed (for file globbing) for specifying files.
 * To indicate the access the binary will have over **files** the following **access controls** can be used: 
@@ -55,7 +72,7 @@ aa-mergeprof  #used to merge the policies
 * **Variables** can be defined in the profiles and can be manipulated from outside the profile. For example: @{PROC} and @{HOME} (add #include \<tunables/global> to the profile file)
 * **Deny rules are supported to override allow rules**.
 
-### aa-genprof
+## aa-genprof
 
 To easily start creating a profile apparmor can help you. It's possible to make **apparmor inspect the actions performed by a binary and then let you decide which actions you want to allow or deny**.\
 You just need to run:
@@ -76,7 +93,7 @@ Then, in the first console press "**s**" and then in the recorded actions indica
 Using the arrow keys you can select what you want to allow/deny/whatever
 {% endhint %}
 
-### aa-easyprof
+## aa-easyprof
 
 You can also create a template of an apparmor profile of a binary with:
 
@@ -115,7 +132,7 @@ You can then **enforce** the new profile with
 sudo apparmor_parser -a /etc/apparmor.d/path.to.binary
 ```
 
-### Modifying a profile from logs
+## Modifying a profile from logs
 
 The following tool will read the logs and ask the user if he wants to permit some of the detected forbidden actions:
 
@@ -127,7 +144,7 @@ sudo aa-logprof
 Using the arrow keys you can select what you want to allow/deny/whatever
 {% endhint %}
 
-### Managing a Profile
+## Managing a Profile
 
 ```bash
 #Main profile management commands
@@ -137,7 +154,7 @@ apparmor_parser -r /etc/apparmor.d/profile.name #Replace existing profile
 apparmor_parser -R /etc/apparmor.d/profile.name #Remove profile
 ```
 
-## Logs
+# Logs
 
 Example of **AUDIT** and **DENIED** logs from _/var/log/audit/audit.log_ of the executable **`service_bin`**:
 
@@ -166,7 +183,7 @@ AppArmor denials: 2 (since Wed Jan  6 23:51:08 2021)
 For more information, please see: https://wiki.ubuntu.com/DebuggingApparmor
 ```
 
-## Apparmor in Docker
+# Apparmor in Docker
 
 Note how the profile **docker-profile** of docker is loaded by default:
 
@@ -230,7 +247,7 @@ Note that you can **add/remove** **capabilities** to the docker container (this 
 Usually, when you **find** that you have a **privileged capability** available **inside** a **docker** container **but** some part of the **exploit isn't working**, this will be because docker **apparmor will be preventing it**.
 {% endhint %}
 
-### AppArmor Docker breakout
+## AppArmor Docker breakout
 
 You can find which **apparmor profile is running a container** using:
 
@@ -247,3 +264,22 @@ find /etc/apparmor.d/ -name "*lowpriv*" -maxdepth 1 2>/dev/null
 ```
 
 In the weird case you can **modify the apparmor docker profile and reload it.** You could remove the restrictions and "bypass" them.
+
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+

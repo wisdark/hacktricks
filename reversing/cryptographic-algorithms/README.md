@@ -1,28 +1,42 @@
 # Cryptographic/Compression Algorithms
 
+## Cryptographic/Compression Algorithms
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
 ## Identifying Algorithms
 
 If you ends in a code **using shift rights and lefts, xors and several arithmetic operations** it's highly possible that it's the implementation of a **cryptographic algorithm**. Here it's going to be showed some ways to **identify the algorithm that it's used without needing to reverse each step**.
 
 ### API functions
 
-#### CryptDeriveKey
+**CryptDeriveKey**
 
 If this function is used, you can find which **algorithm is being used** checking the value of the second parameter:
 
-![](<../../.gitbook/assets/image (375).png>)
+![](<../../.gitbook/assets/image (254) (1).png>)
 
 Check here the table of possible algorithms and their assigned values: [https://docs.microsoft.com/en-us/windows/win32/seccrypto/alg-id](https://docs.microsoft.com/en-us/windows/win32/seccrypto/alg-id)
 
-#### RtlCompressBuffer/RtlDecompressBuffer
+**RtlCompressBuffer/RtlDecompressBuffer**
 
 Compresses and decompresses a given buffer of data.
 
-#### CryptAcquireContext
+**CryptAcquireContext**
 
-&#x20;The **CryptAcquireContext** function is used to acquire a handle to a particular key container within a particular cryptographic service provider (CSP). **This returned handle is used in calls to CryptoAPI** functions that use the selected CSP.
+The **CryptAcquireContext** function is used to acquire a handle to a particular key container within a particular cryptographic service provider (CSP). **This returned handle is used in calls to CryptoAPI** functions that use the selected CSP.
 
-#### CryptCreateHash
+**CryptCreateHash**
 
 Initiates the hashing of a stream of data. If this function is used, you can find which **algorithm is being used** checking the value of the second parameter:
 
@@ -67,7 +81,7 @@ It's composed of 3 main parts:
 **In order to identify a RC4 in a disassembly/decompiled code you can check for 2 loops of size 0x100 (with the use of a key) and then a XOR of the input data with the 256 values created before in the 2 loops probably using a %256 (mod 256)**
 {% endhint %}
 
-### **Initialization stage/Substitution Box:** ****(Note the number 256 used as counter and how a 0 is written in each place of the 256 chars)
+### **Initialization stage/Substitution Box:** (Note the number 256 used as counter and how a 0 is written in each place of the 256 chars)
 
 ![](<../../.gitbook/assets/image (377).png>)
 
@@ -96,7 +110,7 @@ It's composed of 3 main parts:
 ### Characteristics
 
 * It's rare to find some malware using it but there are examples (Ursnif)
-* Simple to determine if an algorithm is Serpent or not based on it's length (extremely long function)&#x20;
+* Simple to determine if an algorithm is Serpent or not based on it's length (extremely long function)
 
 ### Identifying
 
@@ -135,17 +149,17 @@ Therefore, it's possible to identify this algorithm checking the **magic number*
 
 ### Identify
 
-#### Init
+**Init**
 
 You can identify both of them checking the constants. Note that the sha\_init has 1 constant that MD5 doesn't have:
 
 ![](<../../.gitbook/assets/image (385).png>)
 
-#### MD5 Transform
+**MD5 Transform**
 
 Note the use of more constants
 
-![](<../../.gitbook/assets/image (253) (1) (1) (1).png>)
+![](<../../.gitbook/assets/image (253) (1) (1).png>)
 
 ## CRC (hash)
 
@@ -158,13 +172,9 @@ Check **lookup table constants**:
 
 ![](<../../.gitbook/assets/image (387).png>)
 
-
-
 A CRC hash algorithm looks like:
 
 ![](<../../.gitbook/assets/image (386).png>)
-
-
 
 ## APLib (Compression)
 
@@ -177,8 +187,20 @@ A CRC hash algorithm looks like:
 
 The graph is quiet large:
 
-![](<../../.gitbook/assets/image (207) (2) (1).png>)
+![](<../../.gitbook/assets/image (207) (2).png>)
 
 Check **3 comparisons to recognise it**:
 
 ![](<../../.gitbook/assets/image (384).png>)
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>

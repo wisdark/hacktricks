@@ -1,6 +1,23 @@
-# Seccomp
 
-## Basic Information
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+
+# Basic Information
 
 **Seccomp **or Secure Computing mode, in summary, is a feature of Linux kernel which can act as **syscall filter**.\
 Seccomp has 2 modes.
@@ -11,7 +28,7 @@ seccomp mode is **enabled via the `prctl(2)` system call** using the `PR_SET_SEC
 
 **seccomp-bpf** is an extension to seccomp that allows **filtering of system calls using a configurable policy** implemented using Berkeley Packet Filter rules. It is used by OpenSSH and vsftpd as well as the Google Chrome/Chromium web browsers on Chrome OS and Linux. (In this regard seccomp-bpf achieves similar functionality, but with more flexibility and higher performance, to the older systrace—which seems to be no longer supported for Linux.)
 
-### **Original/Strict Mode**
+## **Original/Strict Mode**
 
 In this mode** **Seccomp **only allow the syscalls**  `exit()`, `sigreturn()`, `read()` and `write()` to already-open file descriptors. If any other syscall is made, the process is killed using SIGKILL
 
@@ -49,7 +66,7 @@ int main(int argc, char **argv)
 ```
 {% endcode %}
 
-### Seccomp-bpf
+## Seccomp-bpf
 
 This mode allows f**iltering of system calls using a configurable policy** implemented using Berkeley Packet Filter rules.
 
@@ -103,7 +120,7 @@ void main(void) {
 ```
 {% endcode %}
 
-## Seccomp in Docker
+# Seccomp in Docker
 
 **Seccomp-bpf** is supported by **Docker **to restrict the **syscalls **from the containers effectively decreasing the surface area. You can find the **syscalls blocked **by **default **in [https://docs.docker.com/engine/security/seccomp/](https://docs.docker.com/engine/security/seccomp/) and the **default seccomp profile **can be found here [https://github.com/moby/moby/blob/master/profiles/seccomp/default.json](https://github.com/moby/moby/blob/master/profiles/seccomp/default.json).\
 You can run a docker container with a **different seccomp** policy with:
@@ -127,6 +144,25 @@ docker run -it --security-opt seccomp=default.json modified-ubuntu strace uname
 If you are using **Docker just to launch an application**, you can **profile** it with **`strace`** and **just allow the syscalls** it needs
 {% endhint %}
 
-### Deactivate it in Docker
+## Deactivate it in Docker
 
 Launch a container with the flag: **`--security-opt seccomp=unconfined`**
+
+
+<details>
+
+<summary><strong>Support HackTricks and get benefits!</strong></summary>
+
+- Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
+
+- Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+
+- Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
+
+- **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+
+- **Share your hacking tricks by submitting PRs to the** [**hacktricks github repo**](https://github.com/carlospolop/hacktricks)**.**
+
+</details>
+
+
