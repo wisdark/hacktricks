@@ -2,15 +2,23 @@
 
 <details>
 
-<summary><strong><a href="https://www.twitch.tv/hacktricks_live/schedule">🎙️ HackTricks LIVE Twitch</a> Wednesdays 5.30pm (UTC) 🎙️ - <a href="https://www.youtube.com/@hacktricks_LIVE">🎥 Youtube 🎥</a></strong></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
 * Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** 🐦[**@carlospolopm**](https://twitter.com/hacktricks_live)**.**
 * **Share your hacking tricks by submitting PRs to the [hacktricks repo](https://github.com/carlospolop/hacktricks) and [hacktricks-cloud repo](https://github.com/carlospolop/hacktricks-cloud)**.
 
 </details>
+
+**Try Hard Security Group**
+
+<figure><img src="/.gitbook/assets/telegram-cloud-document-1-5159108904864449420.jpg" alt=""><figcaption></figcaption></figure>
+
+{% embed url="https://discord.gg/tryhardsecurity" %}
+
+***
 
 ## Nmap tip
 
@@ -194,9 +202,9 @@ rportfwd stop [bind port]
 
 To note:
 
-* Beacon's reverse port forward **always tunnels the traffic to the Team Server** and the **Team Server sends the traffic to its intended destination**, so shouldn't be used to relay traffic between individual machines.
-* The **traffic is tunnelled inside Beacon's C2 traffic**, not over separate sockets, and also works over P2P links.
-* You **don't need to be a local admin** to create reverse port forwards on high ports.
+- Beacon's reverse port forward is designed to **tunnel traffic to the Team Server, not for relaying between individual machines**.
+- Traffic is **tunneled within Beacon's C2 traffic**, including P2P links.
+- **Admin privileges are not required** to create reverse port forwards on high ports.
 
 ### rPort2Port local
 
@@ -391,7 +399,7 @@ C:\SocksOverRDP-x64> regsvr32.exe SocksOverRDP-Plugin.dll
 
 Now we can **connect** to the **victim** over **RDP** using **`mstsc.exe`**, and we should receive a **prompt** saying that the **SocksOverRDP plugin is enabled**, and it will **listen** on **127.0.0.1:1080**.
 
-**Connect** via **RDP** and upload & execute in the victim machine the **`SocksOverRDP-Server.exe` ** binary:
+**Connect** via **RDP** and upload & execute in the victim machine the `SocksOverRDP-Server.exe` binary:
 
 ```
 C:\SocksOverRDP-x64> SocksOverRDP-Server.exe
@@ -464,7 +472,7 @@ ssh <user>@1.1.1.2 -C -c blowfish-cbc,arcfour -o CompressionLevel=9 -D 1080
 
 ### DNSCat2
 
-****[**Download it from here**](https://github.com/iagox86/dnscat2)**.**
+[**Download it from here**](https://github.com/iagox86/dnscat2)**.**
 
 Establishes a C\&C channel through DNS. It doesn't need root privileges.
 
@@ -518,7 +526,7 @@ ping 1.1.1.100 #After a successful connection, the victim will be in the 1.1.1.1
 
 ### ptunnel-ng
 
-****[**Download it from here**](https://github.com/utoni/ptunnel-ng.git).
+[**Download it from here**](https://github.com/utoni/ptunnel-ng.git).
 
 ```bash
 # Generate it
@@ -534,19 +542,99 @@ ssh -p 2222 -l user 127.0.0.1
 ssh -D 9050 -p 2222 -l user 127.0.0.1
 ```
 
+## ngrok
+
+**[ngrok](https://ngrok.com/) is a tool to expose solutions to Internet in one command line.**  
+*Exposition URI are like:* **UID.ngrok.io**
+
+### Installation
+
+- Create an account: https://ngrok.com/signup
+- Client download:
+```bash
+tar xvzf ~/Downloads/ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+chmod a+x ./ngrok
+# Init configuration, with your token
+./ngrok config edit
+```
+
+### Basic usages
+
+**Documentation:** [https://ngrok.com/docs/getting-started/](https://ngrok.com/docs/getting-started/).
+
+*It is also possible to add authentication and TLS, if necessary.*
+
+#### Tunneling TCP
+
+```bash
+# Pointing to 0.0.0.0:4444 
+./ngrok tcp 4444
+# Example of resulting link: 0.tcp.ngrok.io:12345
+# Listen (example): nc -nvlp 4444
+# Remote connect (example): nc $(dig +short 0.tcp.ngrok.io) 12345
+```
+
+#### Exposing files with HTTP
+
+```bash
+./ngrok http file:///tmp/httpbin/
+# Example of resulting link: https://abcd-1-2-3-4.ngrok.io/
+```
+
+#### Sniffing HTTP calls
+
+*Useful for XSS,SSRF,SSTI ...*  
+Directly from stdout or in the HTTP interface [http://127.0.0.1:4040](http://127.0.0.1:4000).
+
+#### Tunneling internal HTTP service
+
+```bash
+./ngrok http localhost:8080 --host-header=rewrite
+# Example of resulting link: https://abcd-1-2-3-4.ngrok.io/
+# With basic auth
+./ngrok http localhost:8080 --host-header=rewrite --auth="myuser:mysuperpassword"
+```
+
+#### ngrok.yaml simple configuration example
+
+It opens 3 tunnels:
+- 2 TCP
+- 1 HTTP with static files exposition from /tmp/httpbin/
+
+```yaml
+tunnels:
+  mytcp:
+    addr: 4444
+    proto: tcptunne
+  anothertcp:
+    addr: 5555
+    proto: tcp
+  httpstatic:
+    proto: http
+    addr: file:///tmp/httpbin/
+```
+
 ## Other tools to check
 
 * [https://github.com/securesocketfunneling/ssf](https://github.com/securesocketfunneling/ssf)
 * [https://github.com/z3APA3A/3proxy](https://github.com/z3APA3A/3proxy)
 
+**Try Hard Security Group**
+
+<figure><img src="/.gitbook/assets/telegram-cloud-document-1-5159108904864449420.jpg" alt=""><figcaption></figcaption></figure>
+
+{% embed url="https://discord.gg/tryhardsecurity" %}
+
+***
+
 <details>
 
-<summary><strong><a href="https://www.twitch.tv/hacktricks_live/schedule">🎙️ HackTricks LIVE Twitch</a> Wednesdays 5.30pm (UTC) 🎙️ - <a href="https://www.youtube.com/@hacktricks_LIVE">🎥 Youtube 🎥</a></strong></summary>
+<summary><strong>Learn AWS hacking from zero to hero with</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE (HackTricks AWS Red Team Expert)</strong></a><strong>!</strong></summary>
 
 * Do you work in a **cybersecurity company**? Do you want to see your **company advertised in HackTricks**? or do you want to have access to the **latest version of the PEASS or download HackTricks in PDF**? Check the [**SUBSCRIPTION PLANS**](https://github.com/sponsors/carlospolop)!
 * Discover [**The PEASS Family**](https://opensea.io/collection/the-peass-family), our collection of exclusive [**NFTs**](https://opensea.io/collection/the-peass-family)
 * Get the [**official PEASS & HackTricks swag**](https://peass.creator-spring.com)
-* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** [**🐦**](https://github.com/carlospolop/hacktricks/tree/7af18b62b3bdc423e11444677a6a73d4043511e9/\[https:/emojipedia.org/bird/README.md)[**@carlospolopm**](https://twitter.com/carlospolopm)**.**
+* **Join the** [**💬**](https://emojipedia.org/speech-balloon/) [**Discord group**](https://discord.gg/hRep4RUj7f) or the [**telegram group**](https://t.me/peass) or **follow** me on **Twitter** 🐦[**@carlospolopm**](https://twitter.com/hacktricks_live)**.**
 * **Share your hacking tricks by submitting PRs to the [hacktricks repo](https://github.com/carlospolop/hacktricks) and [hacktricks-cloud repo](https://github.com/carlospolop/hacktricks-cloud)**.
 
 </details>
